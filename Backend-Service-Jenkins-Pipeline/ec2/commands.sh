@@ -25,3 +25,23 @@ $ ssh-keygen -c ''
 $ ssh-copy-id ec2-user@<docker-server-ip>
 
 
+###add swap file: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/ch-swapspace
+$ sudo dd if=/dev/zero of=/swapfile bs=1048576 count=2024
+# 2024+0 records in
+# 2024+0 records out
+# 2122317824 bytes (2.1 GB) copied, 31.1797 s, 68.1 MB/s
+
+$ sudo mkswap /swapfile
+# mkswap: /swapfile: insecure permissions 0644, 0600 suggested.
+# Setting up swapspace version 1, size = 2 GiB (2122313728 bytes)
+# no label, UUID=59b5a7d5-f89a-4dd1-bfad-4d070bf22dbe
+
+$ sudo chmod 0600 /swapfile
+$ sudo vi /etc/fstab
+# /swapfile          swap            swap    defaults        0 0
+$ sudo systemctl daemon-reload
+$ sudo swapon /swapfile
+$ free -h
+#               total        used        free      shared  buff/cache   available
+# Mem:           952M        486M         69M        412K        396M        329M
+# Swap:          2.0G          0B        2.0G
