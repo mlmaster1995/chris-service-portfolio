@@ -51,3 +51,19 @@ $ sudo useradd dockeradmin
 $ sudo passwd dockeradmin
 $ sudo usermod -aG docker dockeradmin
 $ ssh-copy-id dockeradmin@<docker-ip> # on Jenkins server
+
+
+###setup docker env for app deployment in docker server
+$ sudo mkdir /opt/docker-test
+$ sudo chown -R dockeradmin:dockeradmin /opt/docker-test
+
+# test tomcat image
+$ docker pull tomcat:9.0.86-jdk17-corretto-al2
+$ docker run --name tomcat9 -d -p8888:8080 5ed
+
+# build, run, start service image
+$ cd /opt/docker
+$ docker build -t docker-test-app:0.0.1 .
+$ docker kill docker-test-app:0.0.1
+$ docker rm docker-test-app:0.0.1
+$ docker run -d -p8888:8080 docker-test-app:0.0.1
