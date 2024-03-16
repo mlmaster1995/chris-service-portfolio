@@ -34,7 +34,7 @@ $ sudo vi /etc/ssh/sshd_config # enable password auth access
 $ sudo systemctl restart sshd
 
 $ sudo ssh-keygen -c ''
-$ sudo ssh-copy-id ansibleadmin@<managed-node-id> # same user & setup needs to be done on the managed node as well
+$ sudo ssh-copy-id ansibleadmin@<managed-node-id> # --->  !!!same user & setup needs to be done on the managed node as well and also update new users on all accessed documents by ansible!!!!
 
 $ sudo vi /etc/ansible/hosts
 #[<managed-node-group-name>]
@@ -55,3 +55,18 @@ $ ansible all -m ping
 $ ansible all -m command -a uptime
 # 1xx.3x.8x.2xx | CHANGED | rc=0 >>
 #  23:11:48 up 8 min,  2 users,  load average: 0.00, 0.01, 0.00
+
+$ ansible all --list-hosts
+$ ansible-inventory --graph
+$ ansible-inventory --list
+$ ansible-doc -l
+
+$ ansible-playbook <playbook>.yml
+$ ansible-playbook --syntax-check <playbook>.yml
+$ ansible-playbook -vv -C <playbook>.yml # dry run with task results and taks config
+
+###integrate jenkins to ansible
+#1 update push over ssh to Jenins server
+#2 must setup ssh access to ansible server on the Jenkins server
+#3 update id_rsa(from Jenkins server)as access key on Jenkins config to access Ansible server
+$ sudo chown ansibleadmin:ansibleadmin -R /opt/docker

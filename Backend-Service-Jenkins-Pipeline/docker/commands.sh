@@ -66,4 +66,29 @@ $ cd /opt/docker
 $ docker build -t docker-test-app:0.0.1 .
 $ docker kill docker-test-app:0.0.1
 $ docker rm docker-test-app:0.0.1
-$ docker run -d -p8888:8080 docker-test-app:0.0.1
+$ docker run --name testapp -d -p8888:8080 docker-test-app:0.0.1
+
+
+###push to docker hug
+$ docker login
+$ docker image ls
+# REPOSITORY        TAG                         IMAGE ID       CREATED          SIZE
+# docker-test-app   0.0.2                       e6a0250b32dd   15 minutes ago   498MB
+# tomcat            9.0.86-jdk17-corretto-al2   5eda5bd6ebaf   4 days ago       498MB
+
+$ docker tag docker-test-app:0.0.2  ykuo2014/docker-test-app:SNAPSHOT-1
+$ docker image ls
+# docker-test-app            0.0.2                       e6a0250b32dd   20 minutes ago   498MB
+# ykuo2014/docker-test-app   SNAPSHOT-1                  e6a0250b32dd   20 minutes ago   498MB
+# tomcat                     9.0.86-jdk17-corretto-al2   5eda5bd6ebaf   4 days ago       498MB
+
+$ docker push ykuo2014/docker-test-app:SNAPSHOT-1
+# Using default tag: latest
+# The push refers to repository [docker.io/ykuo2014/docker-test-app]
+# 8f70060431fd: Pushed
+# e59454cf98d7: Mounted from library/tomcat
+# 3c819d317ea3: Mounted from library/tomcat
+# b8781dcf16ad: Mounted from library/tomcat
+# f53db3209d01: Mounted from library/tomcat
+# b21c32065eaf: Mounted from library/tomcat
+# latest: digest: sha256:e4628717d6ecb5965ef8132ca6953a013332ae62eba4c41d4ec17126b13c9aa0 size: 1577

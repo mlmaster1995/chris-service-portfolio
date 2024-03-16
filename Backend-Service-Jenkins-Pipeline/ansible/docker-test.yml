@@ -1,0 +1,39 @@
+#workflow: ansible server -> docker server
+---
+- name: test docker build
+  hosts: docker
+  tasks:
+  - name: copy war to docker server
+    ansible.builtin.copy:
+    src: /opt/docker/webapp.war
+    dest: /opt/docker-test
+    owner: ansibleadmin
+    group: ansibleadmin
+    mode: '0644'
+
+  - name: copy dockerfile to docker server
+  ???
+
+  - name: build the docker image
+    ansible.builtin.command: /usr/bin/docker build -t  docker-test-app:0.0.2 .
+    args:
+      chdir: /opt/docker-test
+
+  - name: tag the image
+    ansible.builtin.command: /usr/bin/docker tag docker-test-app:0.0.2  ykuo2014/docker-test-app:SNAPSHOT-1
+    ignore_errors: true
+
+  - name: push the image
+    ansible.builtin.command: /usr/bin/docker push ykuo2014/docker-test-app:SNAPSHOT-1
+    ignore_errors: true
+
+  - name: stop the container
+    ansible.builtin.command: /usr/bin/docker kill testapp
+    ignore_errors: true
+
+  - name: rm the container
+    ansible.builtin.command: /usr/bin/docker rm testapp
+    ignore_errors: true
+
+  - name: start the container
+    ansible.builtin.command: /usr/bin/docker run --name testapp -d -p8888:8080 ykuo2014/docker-test-app:SNAPSHOT-1
