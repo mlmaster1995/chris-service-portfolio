@@ -3,19 +3,19 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
   name: chris-eks
-  region: us-east-2
+  region: us-east-1
   tags: 
    env: dev/test
-   account: ae-dev
+   account: chris-free
 vpc:
-  id: "vpc-0066c6c38293965fa"
+  id: "vpc-0abd1bb7d1a1a20dc"
   subnets:
     public:
-      us-east-2a:
-          id: "subnet-03a2f92dbd872ba62"
-      us-east-2b:
-          id: "subnet-08fb02a627abcae9f"
+      us-east-1b:
+          id: "subnet-007bf72041d7ab626"
+      us-east-1a:
+          id: "subnet-0e7f1a11e9ba646a6"
 nodeGroups:
-  - name: ng-1
+  - name: test-ng
     instanceType: m3.large
     desiredCapacity: 2

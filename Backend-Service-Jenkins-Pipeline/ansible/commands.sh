@@ -1,3 +1,5 @@
+########Ansible Server as a master node for CI/CD with Jenkins
+### update hostname
 $ sudo yum update -y
 $ sudo hostnamectl set-hostname ansible-server
 $ sudo reboot now
@@ -13,12 +15,14 @@ $ hostnamectl
 #         Kernel: Linux 5.10.210-201.852.amzn2.x86_64
 #     Architecture: x86-64
 
+### add new user
 $ sudo useradd ansibleadmin
 $ sudo passwd ansibleadmin
 $ sudo usermod -aG wheel ansibleadmin
 $ visudo /etc/sudoers
 #  %wheel  ALL=(ALL)       NOPASSWD: ALL 
 
+### setup ansible package
 $ sudo amazon-linux-extras install ansible2 -y
 $ rpm -qa | grep -i ansible
 # ansible-2.9.23-1.amzn2.noarch

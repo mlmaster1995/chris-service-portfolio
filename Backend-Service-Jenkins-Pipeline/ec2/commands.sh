@@ -1,4 +1,5 @@
-### change server name
+########### Jenkins server
+###change server name
 $ sudo chmod 600 ./cicdkey.pem
 $ sudo hostnamectl set-hostname jenkins-server
 $ hostnamectl
@@ -45,3 +46,5 @@ $ free -h
 #               total        used        free      shared  buff/cache   available
 # Mem:           952M        486M         69M        412K        396M        329M
 # Swap:          2.0G          0B        2.0G
+
+
