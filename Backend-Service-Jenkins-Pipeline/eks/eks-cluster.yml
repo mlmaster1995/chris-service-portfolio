@@ -1,0 +1,21 @@
+# yaml: https://eksctl.io/usage/schema/#
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: chris-eks
+  region: us-east-2
+  tags: 
+   env: dev/test
+   account: ae-dev
+vpc:
+  id: "vpc-0066c6c38293965fa"
+  subnets:
+    public:
+      us-east-2a:
+          id: "subnet-03a2f92dbd872ba62"
+      us-east-2b:
+          id: "subnet-08fb02a627abcae9f"
+nodeGroups:
+  - name: ng-1
+    instanceType: m3.large
+    desiredCapacity: 2

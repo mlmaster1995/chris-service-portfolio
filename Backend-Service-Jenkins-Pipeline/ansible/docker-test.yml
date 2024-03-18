@@ -5,14 +5,19 @@
   tasks:
   - name: copy war to docker server
     ansible.builtin.copy:
-    src: /opt/docker/webapp.war
-    dest: /opt/docker-test
-    owner: ansibleadmin
-    group: ansibleadmin
-    mode: '0644'
+      src: /opt/docker/webapp.war
+      dest: /opt/docker-test
+      owner: ansibleadmin
+      group: ansibleadmin
+      mode: '0644'
 
   - name: copy dockerfile to docker server
-  ???
+    ansible.builtin.copy:
+      src: /opt/docker/Dockerfile
+      dest: /opt/docker-test
+      owner: ansibleadmin
+      group: ansibleadmin
+      mode: '0644'
 
   - name: build the docker image
     ansible.builtin.command: /usr/bin/docker build -t  docker-test-app:0.0.2 .

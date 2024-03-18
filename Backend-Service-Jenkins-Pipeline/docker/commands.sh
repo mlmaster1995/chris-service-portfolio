@@ -69,7 +69,7 @@ $ docker rm docker-test-app:0.0.1
 $ docker run --name testapp -d -p8888:8080 docker-test-app:0.0.1
 
 
-###push to docker hug
+###push to docker hub
 $ docker login
 $ docker image ls
 # REPOSITORY        TAG                         IMAGE ID       CREATED          SIZE
