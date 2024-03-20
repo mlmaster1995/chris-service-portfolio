@@ -47,36 +47,40 @@ $ sudo systemctl status sshd
 # Mar 18 21:39:40 eks-bookstrap-server sshd[3304]: Server listening on :: port 22.
 # Mar 18 21:39:40 eks-bookstrap-server systemd[1]: Started OpenSSH server daemon.
 
-### rollout the cluster
-$ eksctl create cluster -f eks-cluster.yml --profile chris
-# 2024-03-18 18:24:03 [ℹ]  eksctl version 0.174.0-dev+3c1a5c4c2.2024-03-15T18:43:47Z
-# 2024-03-18 18:24:03 [ℹ]  using region us-east-1
-# 2024-03-18 18:24:03 [✔]  using existing VPC (vpc-0abd1bb7d1a1a20dc) and subnets (private:map[] public:map[us-east-1a:{subnet-0e7f1a11e9ba646a6 us-east-1a 172.31.80.0/20 0 } us-east-1b:{subnet-007bf72041d7ab626 us-east-1b 172.31.16.0/20 0 }])
-# 2024-03-18 18:24:03 [!]  custom VPC/subnets will be used; if resulting cluster doesn't function as expected, make sure to review the configuration of VPC/subnets
-# 2024-03-18 18:24:04 [ℹ]  nodegroup "test-ng" will use "ami-0b047bdfc83a5c3f4" [AmazonLinux2/1.29]
-# 2024-03-18 18:24:04 [ℹ]  using Kubernetes version 1.29
-# ...
-# 2024-03-18 18:38:48 [ℹ]  kubectl command should work with "/Users/chris.young/.kube/config", try 'kubectl get nodes'
-# 2024-03-18 18:38:48 [✔]  EKS cluster "chris-eks" in "us-east-1" region is ready
-$ eksctl delete cluster --name chris-eks --profile chris
+### rollout eks
+$ aws sts get-caller-identity
+# {
+#     "Account": "...",
+#     "UserId": "...:...",
+#     "Arn": "arn:aws:sts::<...>:assumed-role/eks-bootstrap-access-role/i-0c6da4de180ecdf1d"
+# }
 
-### install kubectl on amazon linux(https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html)
+#(https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-eksctl.html)
+$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+$ sudo cp /tmp/eksctl /usr/local/bin
+$ eksctl version
+#0.174.0
+
+#https://eksctl.io/usage/minimum-iam-policies/
+$ eksctl create cluster -f eks-cluster.yml
+
+
+#https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
 $ uname -a
-# Linux eks-bookstrap-server 5.10.210-201.855.amzn2.x86_64 #1 SMP Tue Mar 12 19:03:26 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
-$ curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.0/2024-01-04/bin/darwin/amd64/kubectl
+$ curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.17/2024-01-04/bin/linux/amd64/kubectl
 $ chmod +x ./kubectl
-$ mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl  && rm -rf ./kubectl
-$ export PATH=$HOME/bin:$PATH
-$ rm -rf ~/.kube
-$ aws eks update-kubeconfig --region us-east-1 --name chris-eks --profile chris
+$ sudo cp ./kubectl /usr/local/bin/kubectl
+$ aws eks update-kubeconfig --region us-east-1 --name chris-eks
 # Added new context arn:aws:eks:us-east-1:336371013214:cluster/chris-eks to /Users/chris.young/.kube/config
 
-### install kubectl on mac(https://gist.github.com/Zheaoli/335bba0ad0e49a214c61cbaaa1b20306)
-$ curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.17/2024-01-04/bin/darwin/amd64/kubectl
-$ chmod +x ./kubectl
-$ sudo mv ./kubectl /usr/local/bin/kubectl
-$ rm -rf ~/.kube
-$ aws eks update-kubeconfig --region us-east-1 --name chris-eks --profile chris
-# Added new context arn:aws:eks:us-east-1:336371013214:cluster/chris-eks to /Users/chris.young/.kube/config
-$ kubectl version --client
-# Client Version: version.Info{Major:"1", Minor:"23+", GitVersion:"v1.23.17-eks-5e0fdde", GitCommit:"462fb841c09eeed8cb38ba5ee9adf967ef6b56ab", GitTreeState:"clean", BuildDate:"2024-01-02T20:41:24Z", GoVersion:"go1.19.13", Compiler:"gc", Platform:"darwin/amd64"}
+$ kubectl get nodes -owide
+# NAME                            STATUS   ROLES    AGE    VERSION               INTERNAL-IP     EXTERNAL-IP    OS-IMAGE         KERNEL-VERSION                  CONTAINER-RUNTIME
+# ip-172-31-30-176.ec2.internal   Ready    <none>   109m   v1.29.0-eks-5e0fdde   172.31.30.176       ...      Amazon Linux 2   5.10.210-201.852.amzn2.x86_64   containerd://1.7.11
+# ip-172-31-85-62.ec2.internal    Ready    <none>   109m   v1.29.0-eks-5e0fdde   172.31.85.62        ...      Amazon Linux 2   5.10.210-201.852.amzn2.x86_64   containerd://1.7.11
+
+$ eksctl delete cluster --region us-east-1 --name chris-eks
+
+
+$ vi ~/.bashrc
+# alias k='kubectl'
+

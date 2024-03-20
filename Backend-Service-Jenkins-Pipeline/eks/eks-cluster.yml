@@ -8,13 +8,13 @@ metadata:
    env: dev/test
    account: chris-free
 vpc:
-  id: "vpc-0abd1bb7d1a1a20dc"
+  id: "..."
   subnets:
     public:
       us-east-1b:
-          id: "subnet-007bf72041d7ab626"
+          id: "..."
       us-east-1a:
-          id: "subnet-0e7f1a11e9ba646a6"
+          id: "..."
 nodeGroups:
   - name: test-ng
     instanceType: m3.large
