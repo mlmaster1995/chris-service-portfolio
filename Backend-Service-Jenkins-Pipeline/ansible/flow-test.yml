@@ -1,0 +1,47 @@
+#workflow: 
+# ansible server
+#   -> aws ecr
+#     -> docker server -> docker
+#     -> eks server -> eks
+---
+- name: test ecr access
+  hosts: localhost
+  tasks:
+  - name: build the docker image
+    ansible.builtin.command: /usr/bin/docker build -t  docker-test-app:0.0.2 .
+    args:
+      chdir: /opt/docker
+
+  - name: aws ecr login
+    ansible.builtin.shell: |
+      /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <id>.dkr.ecr.us-east-1.amazonaws.com
+
+  - name: tag the image
+    ansible.builtin.command: /usr/bin/docker tag docker-test-app:0.0.2 <id>.dkr.ecr.us-east-1.amazonaws.com/docker-test-app:SNAPSHOT-2
+    ignore_errors: true
+
+  - name: push to ecr
+    ansible.builtin.command: /usr/bin/docker push <id>.dkr.ecr.us-east-1.amazonaws.com/docker-test-app:SNAPSHOT-2
+    ignore_errors: true
+
+
+- name: test docker deploy
+  hosts: docker
+  tasks:
+  - name: stop the container
+    ansible.builtin.command: /usr/bin/docker kill testapp
+    ignore_errors: true
+
+  - name: rm the container
+    ansible.builtin.command: /usr/bin/docker rm testapp
+    ignore_errors: true
+
+  - name: aws ecr login
+    ansible.builtin.shell: |
+      /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <id>.dkr.ecr.us-east-1.amazonaws.com
+
+  - name: start the container
+    ansible.builtin.command: /usr/bin/docker run --name testapp -d -p8888:8080 <id>.dkr.ecr.us-east-1.amazonaws.com/docker-test-app:SNAPSHOT-2
+
+- name: test eks deploy
+  ????
