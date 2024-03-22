@@ -47,7 +47,7 @@ $ grep docker /etc/group
 
 ###integrate Jenkins with docker
 # add dockeradmin user -> install "publish over ssh" plugin -> config "system" on Jenkins UI -> add ssh server(docker server)
-$ sudo useradd dockeradmin 
+$ sudo useradd dockeradmin
 $ sudo passwd dockeradmin
 $ sudo usermod -aG docker dockeradmin
 $ ssh-copy-id dockeradmin@<docker-ip> # on Jenkins server
