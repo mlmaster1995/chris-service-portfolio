@@ -44,4 +44,11 @@
     ansible.builtin.command: /usr/bin/docker run --name testapp -d -p8888:8080 <id>.dkr.ecr.us-east-1.amazonaws.com/docker-test-app:SNAPSHOT-2
 
 - name: test eks deploy
-  ????
+  hosts: eks
+  tasks:
+  - name: stop pod
+    ansible.builtin.command: /usr/local/bin/kubectl delete pods app
+    ignore_errors: true
+
+  - name: deploy eks pod
+    ansible.builtin.command: /usr/local/bin/kubectl run app --image=336371013214.dkr.ecr.us-east-1.amazonaws.com/docker-test-app:SNAPSHOT-2
