@@ -1,11 +1,13 @@
 package com.chris.entity;
 
+import com.chris.dto.GymMemberDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "member")
 public class GymMemberEntity {
@@ -36,5 +39,19 @@ public class GymMemberEntity {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+    }
+
+    public GymMemberDto toDto() {
+        return GymMemberDto.builder()
+                .id(this.id)
+                .firstName(this.firstName)
+                .lastName(this.lastName)
+                .email(this.email)
+                .build();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{id=%s, first_name=%s, last_name=%s}", id, firstName, lastName);
     }
 }

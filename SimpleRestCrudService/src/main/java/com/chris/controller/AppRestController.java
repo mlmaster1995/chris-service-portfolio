@@ -1,7 +1,7 @@
 package com.chris.controller;
 
-import com.chris.service.CrudService;
 import com.chris.entity.GymMemberEntity;
+import com.chris.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,27 +25,27 @@ public class AppRestController {
     }
 
     @GetMapping("/employees")
-    public List<GymMemberEntity> getAllEmployeeEndPoints(){
-        return appService.getAllEmployees();
+    public List<GymMemberEntity> getAllEmployeeEndPoints() {
+        return null;
     }
 
     @GetMapping("/employees/{employeeId}")
-    public GymMemberEntity getEmployeeEndPoints(@PathVariable int employeeId){
-        return appService.getEmployee(Long.valueOf(employeeId));
+    public GymMemberEntity getEmployeeEndPoints(@PathVariable int employeeId) {
+        return null;
     }
 
     @PostMapping("/employees")
-    public String addEmployeeEndPoints(@RequestBody GymMemberEntity employee){
-        return "employee "+appService.addEmployee(employee)+ " has been added";
+    public String addEmployeeEndPoints(@RequestBody GymMemberEntity employee) {
+        return null;
     }
 
     @PutMapping("/employees")
-    public GymMemberEntity updateEmployeeEndPiont(@RequestBody GymMemberEntity employee){
-        return appService.updateEmployee(employee);
+    public GymMemberEntity updateEmployeeEndPiont(@RequestBody GymMemberEntity employee) {
+        return null;
     }
 
     @DeleteMapping("/employees/{employeeId}")
-    public String deleteEmployeeEndPoint(@PathVariable int employeeId){
-        return "employee "+appService.deleteEmployee(employeeId)+ " has been added";
+    public String deleteEmployeeEndPoint(@PathVariable int employeeId) {
+        return "employee " + appService.deleteMember(employeeId) + " has been added";
     }
 }

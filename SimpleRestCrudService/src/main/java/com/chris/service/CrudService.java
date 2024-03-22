@@ -1,13 +1,17 @@
 package com.chris.service;
 
-import com.chris.entity.GymMemberEntity;
+import com.chris.dto.GymMemberDto;
 
 import java.util.List;
 
 public interface CrudService {
-    List<GymMemberEntity> getAllEmployees();
-    GymMemberEntity getEmployee(Long employeeId);
-    Long addEmployee(GymMemberEntity employee);
-    GymMemberEntity updateEmployee(GymMemberEntity employee);
-    int deleteEmployee(int employeeId);
+    List<GymMemberDto> findAllMembers();
+
+    GymMemberDto getMemberById(Long memberId);
+
+    void saveMember(GymMemberDto member);
+
+    GymMemberDto updateMember(GymMemberDto member);
+
+    int deleteMember(int memberId);
 }

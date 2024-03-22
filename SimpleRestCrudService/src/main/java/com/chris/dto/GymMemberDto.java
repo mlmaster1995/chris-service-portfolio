@@ -1,5 +1,6 @@
 package com.chris.dto;
 
+import com.chris.entity.GymMemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,10 @@ public class GymMemberDto implements Serializable, Comparator {
     private String lastName;
     private String email;
 
+    public GymMemberEntity toEntity() {
+        return new GymMemberEntity(this.id, this.firstName, this.lastName, this.email);
+    }
+
     @Override
     public int compare(Object o1, Object o2) {
         if (o1 instanceof GymMemberDto && o2 instanceof GymMemberDto) {
@@ -48,9 +53,7 @@ public class GymMemberDto implements Serializable, Comparator {
         if (obj instanceof GymMemberDto) {
             GymMemberDto mem = (GymMemberDto) obj;
 
-            return mem.firstName.equals(this.firstName) &&
-                    mem.lastName.equals(this.lastName) &&
-                    mem.email.equals(this.email);
+            return mem.firstName.equals(this.firstName) && mem.lastName.equals(this.lastName) && mem.email.equals(this.email);
         }
 
         return false;
