@@ -21,11 +21,16 @@ import java.util.Comparator;
 @AllArgsConstructor
 @ToString
 public class GymMemberDto implements Serializable, Comparator {
-
-    private Long id;
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;
+
+    public GymMemberDto(String firstName, String lastName, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
 
     public GymMemberEntity toEntity() {
         return new GymMemberEntity(this.id, this.firstName, this.lastName, this.email);

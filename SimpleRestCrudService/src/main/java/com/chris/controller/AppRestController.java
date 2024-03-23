@@ -1,7 +1,7 @@
 package com.chris.controller;
 
 import com.chris.entity.GymMemberEntity;
-import com.chris.service.CrudService;
+import com.chris.service.MemberCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class AppRestController {
-    private CrudService appService;
+    private MemberCrudService appService;
 
     @Autowired
-    public AppRestController(CrudService appService) {
+    public AppRestController(MemberCrudService appService) {
         this.appService = appService;
     }
 
@@ -46,6 +46,6 @@ public class AppRestController {
 
     @DeleteMapping("/employees/{employeeId}")
     public String deleteEmployeeEndPoint(@PathVariable int employeeId) {
-        return "employee " + appService.deleteMember(employeeId) + " has been added";
+        return null;
     }
 }

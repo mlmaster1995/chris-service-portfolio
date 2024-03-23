@@ -1,11 +1,10 @@
 package com.chris.dao;
 
 import com.chris.entity.GymMemberEntity;
+import com.chris.exception.AppServiceException;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +35,45 @@ public class MemberDaoImpl implements MemberDao {
     public List<GymMemberEntity> findAllMembers() {
         List<GymMemberEntity> memberEntities = new ArrayList<>();
         try {
-            TypedQuery<GymMemberEntity> query =
-                    _manager.createQuery("from GymMemberEntity", GymMemberEntity.class);
+            TypedQuery<GymMemberEntity> query = _manager.createQuery("from GymMemberEntity", GymMemberEntity.class);
             memberEntities = query.getResultList();
         } catch (Exception exp) {
-            _LOG.error("fails to get all members: " + exp);
+            throw new AppServiceException("fails to get all members: " + exp);
         }
 
         return memberEntities;
+    }
+
+    @Override
+    public GymMemberEntity findMemberById(Integer memberId) {
+        GymMemberEntity member = null;
+        try {
+            member = _manager.find(GymMemberEntity.class, memberId);
+        } catch (Exception exp) {
+            throw new AppServiceException("fails to find the member with id..." + memberId);
+        }
+
+        return member;
+    }
+
+    @Override
+    public GymMemberEntity findMemberByEmail(String email) {
+        GymMemberEntity entity = null;
+        try {
+            TypedQuery<GymMemberEntity> query =
+                    _manager.createQuery("from GymMemberEntity where email=:theEmail", GymMemberEntity.class);
+
+            query.setParameter("theEmail", email);
+
+            entity = query.getSingleResult();
+
+            if (entity == null) {
+                throw new AppServiceException(String.format("member with email(%s) not exists...", email));
+            }
+        } catch (Exception exp) {
+            throw new AppServiceException("fails to find the member with email: " + exp);
+        }
+        return entity;
     }
 
     @Override
@@ -53,36 +83,57 @@ public class MemberDaoImpl implements MemberDao {
             _manager.persist(member);
             _LOG.warn("gym member entity({}) is persisted", member.toString());
         } catch (Exception exp) {
-            _LOG.error("failed to persist the member: " + exp);
+            throw new AppServiceException("failed to persist the member: " + exp);
         }
     }
 
     @Override
-    public GymMemberEntity getMemberById(Long memberId) {
-        Session session = _manager.unwrap(Session.class);
-        GymMemberEntity employee = session.get(GymMemberEntity.class, memberId);
-        return employee;
+    @Transactional
+    public void updateMember(GymMemberEntity employee) {
+        try {
+            _manager.merge(employee);
+        } catch (Exception exp) {
+            throw new AppServiceException("fails to update the member:" + exp);
+        }
     }
 
     @Override
-    public GymMemberEntity updateMember(GymMemberEntity employee) {
-        Session session = _manager.unwrap(Session.class);
-
-        GymMemberEntity tmpEmployee = getMemberById(employee.getId());
-        tmpEmployee.setFirstName(employee.getFirstName());
-        tmpEmployee.setLastName(employee.getLastName());
-        tmpEmployee.setEmail(employee.getEmail());
-        session.update(tmpEmployee);
-        return getMemberById(employee.getId());
-    }
-
-    @Override
-    public int deleteMember(int memberId) {
-        Session session = _manager.unwrap(Session.class);
-        Query query = session.createQuery("delete from Employee where " +
-                "id=:employeeId");
-        query.setParameter("employeeId", Long.valueOf(memberId));
-        query.executeUpdate();
-        return memberId;
+    @Transactional
+    public void deleteMemberById(Integer memberId) {
+        try {
+            GymMemberEntity entity = this.findMemberById(memberId);
+            _manager.remove(entity);
+        } catch (Exception exp) {
+            throw new AppServiceException("fails to delete member by id: " + exp);
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

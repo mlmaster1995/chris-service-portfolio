@@ -24,7 +24,7 @@ import lombok.Setter;
 public class GymMemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -52,6 +52,6 @@ public class GymMemberEntity {
 
     @Override
     public String toString() {
-        return String.format("{id=%s, first_name=%s, last_name=%s}", id, firstName, lastName);
+        return String.format("{id=%s, first_name=%s, last_name=%s, email=%s}", id, firstName, lastName, email);
     }
 }

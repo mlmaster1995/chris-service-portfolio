@@ -4,14 +4,19 @@ import com.chris.entity.GymMemberEntity;
 
 import java.util.List;
 
+/**
+ * general interface for dao layer
+ */
 public interface MemberDao {
     List<GymMemberEntity> findAllMembers();
 
-    GymMemberEntity getMemberById(Long memberId);
+    GymMemberEntity findMemberById(Integer memberId);
+
+    GymMemberEntity findMemberByEmail(String email);
 
     void saveMember(GymMemberEntity member);
 
-    GymMemberEntity updateMember(GymMemberEntity member);
+    void updateMember(GymMemberEntity member);
 
-    int deleteMember(int memberId);
+    void deleteMemberById(Integer memberId);
 }
