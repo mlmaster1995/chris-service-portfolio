@@ -89,12 +89,3 @@ public class GymMemberDto implements Serializable, Comparator {
 
 
 
-
-
-
-
-
-
-
-
-

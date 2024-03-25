@@ -29,8 +29,6 @@ public class MemberDaoImpl implements MemberDao {
         this._manager = entityManager;
     }
 
-    //ToDo: add pagination
-
     @Override
     public List<GymMemberEntity> findAllMembers() {
         List<GymMemberEntity> memberEntities = new ArrayList<>();
@@ -38,7 +36,7 @@ public class MemberDaoImpl implements MemberDao {
             TypedQuery<GymMemberEntity> query = _manager.createQuery("from GymMemberEntity", GymMemberEntity.class);
             memberEntities = query.getResultList();
         } catch (Exception exp) {
-            throw new AppServiceException("fails to get all members: " + exp);
+            throw new AppServiceException("fails to get all members...: " + exp);
         }
 
         return memberEntities;
@@ -71,7 +69,7 @@ public class MemberDaoImpl implements MemberDao {
                 throw new AppServiceException(String.format("member with email(%s) not exists...", email));
             }
         } catch (Exception exp) {
-            throw new AppServiceException("fails to find the member with email: " + exp);
+            throw new AppServiceException("fails to find the member with email...: " + exp);
         }
         return entity;
     }
@@ -83,17 +81,18 @@ public class MemberDaoImpl implements MemberDao {
             _manager.persist(member);
             _LOG.warn("gym member entity({}) is persisted", member.toString());
         } catch (Exception exp) {
-            throw new AppServiceException("failed to persist the member: " + exp);
+            throw new AppServiceException("failed to persist the member...: " + exp);
         }
     }
 
     @Override
     @Transactional
-    public void updateMember(GymMemberEntity employee) {
+    public void updateMember(GymMemberEntity member) {
         try {
-            _manager.merge(employee);
+            _manager.merge(member);
+            _LOG.warn("gym member entity({}) is updated", member.toString());
         } catch (Exception exp) {
-            throw new AppServiceException("fails to update the member:" + exp);
+            throw new AppServiceException("fails to update the member...:" + exp);
         }
     }
 
@@ -103,8 +102,9 @@ public class MemberDaoImpl implements MemberDao {
         try {
             GymMemberEntity entity = this.findMemberById(memberId);
             _manager.remove(entity);
+            _LOG.warn("gym member entity with id({}) is removed", memberId);
         } catch (Exception exp) {
-            throw new AppServiceException("fails to delete member by id: " + exp);
+            throw new AppServiceException("fails to delete member by id...: " + exp);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.chris.dao;
 
 import com.chris.entity.GymMemberEntity;
+import com.chris.exception.AppServiceException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.chris.util.AppBeanConstant.MEMBER_DAO_IMPL_BEAN;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -60,6 +62,7 @@ class MemberDaoImplTest {
         assertTrue(entities.size() == 7);
     }
 
+
     @Order(3)
     @Test
     public void testSaveMember() {
@@ -69,7 +72,7 @@ class MemberDaoImplTest {
 
     @Order(3)
     @Test
-    public void testUpdateMember() {
+    public void testUpdateMember1() {
         //save a tmp one
         GymMemberEntity entity = new GymMemberEntity();
         entity.setFirstName("kuo");
@@ -87,6 +90,26 @@ class MemberDaoImplTest {
         assertTrue(target.get(0).getEmail().equals("ykuo2014@outlook.com"));
     }
 
+    @Order(3)
+    @Test
+    public void testUpdateMember2() {
+        //save a tmp one
+        GymMemberEntity entity = new GymMemberEntity();
+        entity.setFirstName("json");
+        entity.setLastName("test");
+        entity.setEmail("jtest@outlook.com");
+        _memberDaoImpl.updateMember(entity);
+
+        //get the entity
+        List<GymMemberEntity> entities = _memberDaoImpl.findAllMembers();
+        List<GymMemberEntity> target = entities.stream().filter(x -> x.getFirstName().equals("json") &&
+                x.getLastName().equals("test")).collect(Collectors.toList());
+
+        assertTrue(target.get(0).getFirstName().equals("json"));
+        assertTrue(target.get(0).getLastName().equals("test"));
+        assertTrue(target.get(0).getEmail().equals("jtest@outlook.com"));
+    }
+
     @Order(4)
     @Test
     public void testDeleteMemberById() {
@@ -99,6 +122,14 @@ class MemberDaoImplTest {
 
         entities = _memberDaoImpl.findAllMembers();
         assertTrue(entities.isEmpty());
+    }
+
+    @Order(4)
+    @Test
+    public void testDeleteMemberById2() {
+        assertThrows(AppServiceException.class, () -> {
+            _memberDaoImpl.deleteMemberById(1000);
+        });
     }
 
     @Order(5)
