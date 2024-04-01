@@ -4,5 +4,3 @@ $ pip3 --version
 $ pip3 install boto3
 $ pip3 list | grep -i boto3
 # boto3           1.34.69
-
-
