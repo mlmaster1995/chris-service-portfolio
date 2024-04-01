@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource("/test.properties")
+@TestPropertySource("/application.properties")
 @SpringBootTest
 class AppRestControllerTest {
     @Autowired
@@ -91,13 +91,13 @@ class AppRestControllerTest {
 
     @Order(2)
     @Test
-    @Sql("/insert-data.sql")
+    @Sql("/insert-data-part.sql")
     public void testFindAllMembersEp() throws Exception {
         //from client
         _mockMvc.perform(get("/api/members"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(6)));
+                .andExpect(jsonPath("$", hasSize(5)));
 
         //from controller
         doCallRealMethod().when(_memberService).findAllMembers();
@@ -105,13 +105,13 @@ class AppRestControllerTest {
         ans.getBody().stream().forEach(x -> System.out.println("body data: " + x.toString()));
         System.out.println(ans.toString());
         assertTrue(ans.getStatusCode().value() == 200);
-        assertTrue(ans.getBody().size() == 6);
+        assertTrue(ans.getBody().size() == 5);
     }
 
 
     @Order(3)
     @Test
-    @Sql("/insert-data.sql")
+    @Sql("/insert-data-part.sql")
     public void testFindAllMembersException() throws Exception {
         doThrow(new AppServiceException("mocked error at service layer")).when(_memberService).findAllMembers();
 

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource("/test.properties")
+@TestPropertySource("/application.properties")
 @SpringBootTest
 class MemberCrudServiceImplTest {
     @Autowired

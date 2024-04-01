@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource("/test.properties")
+@TestPropertySource("/application.properties")
 @SpringBootTest
 class MemberDaoImplTest {
     @Autowired
@@ -45,7 +45,7 @@ class MemberDaoImplTest {
     }
 
     @Order(1)
-    @Sql("/insert-data.sql")
+    @Sql("/insert-data-part.sql")
     @Test
     public void testFindMemberById() {
         GymMemberEntity entity = _memberDaoImpl.findMemberById(4);
@@ -54,12 +54,23 @@ class MemberDaoImplTest {
 
 
     @Order(2)
-    @Sql("/insert-data.sql")
+    @Sql("/insert-data-page.sql")
     @Test
     public void testFindAll() {
         List<GymMemberEntity> entities = _memberDaoImpl.findAllMembers();
         entities.forEach(member -> System.out.println(member.toString()));
-        assertTrue(entities.size() == 7);
+        assertTrue(entities.size() == 5);
+    }
+
+    @Order(2)
+    @Sql("/insert-data-page.sql")
+    @Test
+    public void testFindAllPage(){
+        List<GymMemberEntity> entities = _memberDaoImpl.findAllMembers(1, 2);
+        System.out.println("size: " + entities.size());
+        entities.stream().forEach(x -> System.out.println(x.toString()));
+
+        assertTrue(entities.size() == 10);
     }
 
 

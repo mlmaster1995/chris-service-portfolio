@@ -41,6 +41,7 @@ public class AppRestController extends BaseController<ResponseEntity> {
     public AppRestController(
             @Qualifier(value = MEMBER_SERVICE_BEAN) MemberCrudService appService, ObjectMapper mapper) {
         super();
+
         this._memberCrudService = appService;
         this._mapper = mapper;
     }
@@ -48,6 +49,7 @@ public class AppRestController extends BaseController<ResponseEntity> {
     @GetMapping("/members")
     public ResponseEntity<List<GymMemberDto>> findAllMembers() {
         List<GymMemberDto> list = new ArrayList<>();
+
         try {
             list = _memberCrudService.findAllMembers();
         } catch (Exception exp) {

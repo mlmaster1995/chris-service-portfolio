@@ -9,6 +9,7 @@ import java.util.List;
  */
 public interface MemberDao {
     List<GymMemberEntity> findAllMembers();
+    List<GymMemberEntity> findAllMembers(int startPageNumber, int totalPageCount);
 
     GymMemberEntity findMemberById(Integer memberId);
 
