@@ -1,13 +1,14 @@
 import boto3
 import time
 
-ec2_client = boto3.client('ec2')
 
+ec2_client = boto3.client('ec2')
 
 
 ################## create vpc
 chris_vpc_name = 'chris-vpc-20240330'
 chris_vpc_cidrBlock = '192.168.0.0/16'
+
 chris_vpc_desc = ec2_client.describe_vpcs(
     Filters=[
         {
@@ -23,6 +24,7 @@ chris_vpc_id = None
 chris_vpcs = chris_vpc_desc.get('Vpcs')
 if not chris_vpcs:
     print(f"vpc with name '{chris_vpc_name}' not exists, and will create one...")
+
     chris_vpc = ec2_client.create_vpc(
         CidrBlock=chris_vpc_cidrBlock,
         DryRun=False,
@@ -47,9 +49,6 @@ if not chris_vpcs:
 else:
     chris_vpc_id = chris_vpcs[0]['VpcId']
     print(f"vpc with name '{chris_vpc_name} & id '{chris_vpc_id}' exists already...")
-
-
-
 
 
 ################## create igw
@@ -99,6 +98,7 @@ else:
 
     chris_igw_attached = chris_igws[0].get('Attachments')[0].get('State') == 'available'
 
+#attach to vpc
 if not chris_igw_attached:
     chris_igw_attach = ec2_client.attach_internet_gateway(
         DryRun=False,
@@ -244,9 +244,9 @@ for subnet_info in chris_subnet_info:
 
         print(f"subnet with name '{subnet_name}' is created...")
 
+        ##associate subnet to the route table
         #if 'pub' in subnet_name:
         subnet_id = chris_subnet.get('Subnet').get('SubnetId')
-
         associate_route_table = ec2_client.associate_route_table(
             DryRun = False,
             RouteTableId = chris_route_table_id,
