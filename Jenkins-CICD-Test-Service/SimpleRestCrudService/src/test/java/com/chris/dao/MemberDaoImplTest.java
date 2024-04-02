@@ -45,7 +45,7 @@ class MemberDaoImplTest {
     }
 
     @Order(1)
-    @Sql("/insert-data-part.sql")
+    @Sql("/insert-member-data-part.sql")
     @Test
     public void testFindMemberById() {
         GymMemberEntity entity = _memberDaoImpl.findMemberById(4);
@@ -54,7 +54,7 @@ class MemberDaoImplTest {
 
 
     @Order(2)
-    @Sql("/insert-data-page.sql")
+    @Sql("/insert-member-data-page.sql")
     @Test
     public void testFindAll() {
         List<GymMemberEntity> entities = _memberDaoImpl.findAllMembers();
@@ -63,7 +63,7 @@ class MemberDaoImplTest {
     }
 
     @Order(2)
-    @Sql("/insert-data-page.sql")
+    @Sql("/insert-member-data-page.sql")
     @Test
     public void testFindAllPage(){
         List<GymMemberEntity> entities = _memberDaoImpl.findAllMembers(1, 2);

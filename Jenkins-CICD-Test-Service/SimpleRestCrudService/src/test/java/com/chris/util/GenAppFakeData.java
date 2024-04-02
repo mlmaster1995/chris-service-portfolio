@@ -16,7 +16,7 @@ public class GenAppFakeData {
         String base = "INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('%s','%s','%s2024%s@chrismember.ca');";
 
         try {
-            File myObj = new File("src/test/resources/fake-data.txt");
+            File myObj = new File("src/test/resources/fake-name-data.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String line = myReader.nextLine();

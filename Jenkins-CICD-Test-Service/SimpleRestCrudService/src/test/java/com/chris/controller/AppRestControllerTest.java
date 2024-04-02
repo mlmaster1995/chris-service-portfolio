@@ -83,7 +83,7 @@ class AppRestControllerTest {
         assertTrue(entity.getBody().getEmail().equals("neil@chrismember.ca"));
 
         //from client
-        _mockMvc.perform(get("/api/members/{memberId}", memberId))
+        _mockMvc.perform(get("/api/v1/members/{memberId}", memberId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.email", is("neil@chrismember.ca")));
@@ -91,10 +91,10 @@ class AppRestControllerTest {
 
     @Order(2)
     @Test
-    @Sql("/insert-data-part.sql")
+    @Sql("/insert-member-data-part.sql")
     public void testFindAllMembersEp() throws Exception {
         //from client
-        _mockMvc.perform(get("/api/members"))
+        _mockMvc.perform(get("/api/v1/members"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(5)));
@@ -111,7 +111,7 @@ class AppRestControllerTest {
 
     @Order(3)
     @Test
-    @Sql("/insert-data-part.sql")
+    @Sql("/insert-member-data-part.sql")
     public void testFindAllMembersException() throws Exception {
         doThrow(new AppServiceException("mocked error at service layer")).when(_memberService).findAllMembers();
 
@@ -121,7 +121,7 @@ class AppRestControllerTest {
         assertNull(ans.getBody());
 
         //from client
-        _mockMvc.perform(MockMvcRequestBuilders.get("/api/members")).andExpect(status().isBadRequest());
+        _mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/members")).andExpect(status().isBadRequest());
     }
 
     @Order(4)
@@ -130,7 +130,7 @@ class AppRestControllerTest {
         _template.execute("INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('Neil','Hamilton','neil@chrismember.ca')");
 
         String bodyInStr = "{\"email\":\"neil@chrismember.ca\"}";
-        _mockMvc.perform(post("/api/member/email")
+        _mockMvc.perform(post("/api/v1/member/email")
                         .contentType(MediaType.APPLICATION_JSON).content(bodyInStr))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -150,7 +150,7 @@ class AppRestControllerTest {
                 .email("kyang3@lakeheadu.ca")
                 .build();
 
-        _mockMvc.perform(post("/api/member")
+        _mockMvc.perform(post("/api/v1/member")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(_mapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -175,7 +175,7 @@ class AppRestControllerTest {
         dto.setLastName("yang");
         dto.setEmail("ykuo2014@outlook.com");
 
-        _mockMvc.perform(put("/api/member")
+        _mockMvc.perform(put("/api/v1/member")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(_mapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -202,7 +202,7 @@ class AppRestControllerTest {
 
         int id = dtos.get(0).getId();
 
-        _mockMvc.perform(delete("/api/members/{memberId}", id))
+        _mockMvc.perform(delete("/api/v1/members/{memberId}", id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.valueOf("text/plain;charset=UTF-8")));
 
