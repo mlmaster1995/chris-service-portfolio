@@ -1,14 +1,44 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
 import boto3
 import time
 
-
 ec2_client = boto3.client('ec2')
+
+################## vpc params
+chris_vpc_name = 'chris-vpc-20240330'
+chris_vpc_cidrBlock = '192.168.0.0/16'
+chris_route_table_name='chris-vpc-pub-route-table'
+chris_subnet_info=[('pri-us-east-1a','192.168.0.0/20','us-east-1a'),
+               ('pri-us-east-1b','192.168.16.0/20','us-east-1b'),
+               ('pri-us-east-1c','192.168.32.0/20','us-east-1c'),
+               ('pub-us-east-1d','192.168.48.0/20','us-east-1d'),
+               ('pub-us-east-1e','192.168.64.0/20','us-east-1e'),
+               ('pub-us-east-1f','192.168.80.0/20','us-east-1f')]
 
 
 ################## create vpc
-chris_vpc_name = 'chris-vpc-20240330'
-chris_vpc_cidrBlock = '192.168.0.0/16'
-
 chris_vpc_desc = ec2_client.describe_vpcs(
     Filters=[
         {
@@ -113,8 +143,6 @@ else:
 
 
 ################## create route table
-chris_route_table_name='chris-vpc-pub-route-table'
-
 chris_route_desc = ec2_client.describe_route_tables(
     Filters = [
         {
@@ -195,13 +223,6 @@ else:
 # 
 # private route table -> associate the private net -> attach nat to the table
 # 
-chris_subnet_info=[('pri-us-east-1a','192.168.0.0/20','us-east-1a'),
-               ('pri-us-east-1b','192.168.16.0/20','us-east-1b'),
-               ('pri-us-east-1c','192.168.32.0/20','us-east-1c'),
-               ('pub-us-east-1d','192.168.48.0/20','us-east-1d'),
-               ('pub-us-east-1e','192.168.64.0/20','us-east-1e'),
-               ('pub-us-east-1f','192.168.80.0/20','us-east-1f')]
-
 for subnet_info in chris_subnet_info:
     subnet_name = subnet_info[0]
     subnet_cidrBlock = subnet_info[1]

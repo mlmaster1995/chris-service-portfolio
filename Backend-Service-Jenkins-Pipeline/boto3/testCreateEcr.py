@@ -21,29 +21,43 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
 # SOFTWARE.                                                                     #
 #################################################################################
-"""
-use boto3 module a resource directly 
-"""
 import boto3
-import logging
+from botocore.exceptions import ClientError
 
-## create bucket
-bucket_name = 'chris-boto3-test'
+ecr_client = boto3.client('ecr')
+
+ecr_repo_name = 'simple-crude-service'
+
+ecr_repo_exists = False
+ecr_repo_desc =  ecr_client.describe_repositories(
+    maxResults=100
+)
+
 try:
-    s3 = boto3.resource('s3')
+    ecr_repos = ecr_repo_desc.get('repositories')
+    for ecr_repo in ecr_repos:
+        ecr_name = ecr_repo.get('repositoryName')
 
-    all_bucket = [bucket.name for bucket in s3.buckets.all()]
+        if ecr_name == ecr_repo_name:
+            print(f"ecr repo with name '{ecr_repo_name}' exists already...")
+            ecr_repo_exists = True
 
-    if(bucket_name not in all_bucket):
-        print(f"'{bucket_name}' bucket not exists, and create it now...")
-        s3.create_bucket(Bucket=bucket_name)
-        print(f"'{bucket_name}' bucket has been created")
-    else:
-        print(f"'{bucket_name}' bucket has been created ALREADY... ")
-except Exception as exp:
-    logging.error(exp)
+    if not ecr_repo_exists:
+        print(f"ecr repo with name '{ecr_repo_name}' not exists, and will create one...")
+        response = ecr_client.create_repository(
+            repositoryName = ecr_repo_name,
+            tags=[
+                {
+                    'Key': 'name',
+                    'Value': ecr_repo_name
+                },
+            ],
+            imageTagMutability='IMMUTABLE',
+            imageScanningConfiguration={
+                'scanOnPush': True
+            }
+        )
 
-## upload file
-file1='s3-f1.txt'
-s3.Bucket(bucket_name).upload_file('./s3-f1.txt', 's3-f1.txt')
-print(f"file '{file1}' has been uploaded into bucket '{bucket_name}'")
+except ClientError as e:
+    print(e)
+
