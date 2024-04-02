@@ -22,7 +22,6 @@
 # SOFTWARE.                                                                     #
 #################################################################################
 
-########### Jenkins server
 ###change server name
 $ sudo chmod 600 ./cicdkey.pem
 $ sudo hostnamectl set-hostname jenkins-server

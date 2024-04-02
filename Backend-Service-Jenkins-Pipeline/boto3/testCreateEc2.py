@@ -53,7 +53,7 @@ if not instance_exists:
             'sg-012bda3ab1224aeb2',
         ],
         SubnetId='subnet-007bf72041d7ab626',
-        UserData='#!/bin/bash \n yum update -y \n service httpd start \nchkconfig httpd on',
+        UserData='#!/bin/bash \nsudo yum update -y \n service httpd start \nchkconfig httpd on',
         DryRun=False,
         KeyName='cicdkey',
         TagSpecifications=[

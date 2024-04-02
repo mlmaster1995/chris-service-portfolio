@@ -26,8 +26,11 @@ import time
 
 ec2_client = boto3.client('ec2')
 
+dry_run = False
+
 ################## vpc params
-chris_vpc_name = 'chris-vpc-20240330'
+chris_vpc_id = None
+chris_vpc_name = 'chris-cicd-vpc'
 chris_vpc_cidrBlock = '192.168.0.0/16'
 chris_route_table_name='chris-vpc-pub-route-table'
 chris_subnet_info=[('pri-us-east-1a','192.168.0.0/20','us-east-1a'),
@@ -50,14 +53,13 @@ chris_vpc_desc = ec2_client.describe_vpcs(
     ]
 )
 
-chris_vpc_id = None
 chris_vpcs = chris_vpc_desc.get('Vpcs')
 if not chris_vpcs:
     print(f"vpc with name '{chris_vpc_name}' not exists, and will create one...")
 
     chris_vpc = ec2_client.create_vpc(
         CidrBlock=chris_vpc_cidrBlock,
-        DryRun=False,
+        DryRun=dry_run,
         TagSpecifications=[
             {
                 'ResourceType': 'vpc',
@@ -92,7 +94,7 @@ chris_igw_desc = ec2_client.describe_internet_gateways(
             ]
         },
     ],
-    DryRun=False
+    DryRun=dry_run
 )
 
 chris_igws = chris_igw_desc.get('InternetGateways')
@@ -112,7 +114,7 @@ if not chris_igws:
                 ]
             },
         ],
-        DryRun=False
+        DryRun=dry_run
     )
 
     # wait for creation
@@ -131,7 +133,7 @@ else:
 #attach to vpc
 if not chris_igw_attached:
     chris_igw_attach = ec2_client.attach_internet_gateway(
-        DryRun=False,
+        DryRun=dry_run,
         InternetGatewayId=chris_igw_id,
         VpcId=chris_vpc_id
     )
@@ -152,7 +154,7 @@ chris_route_desc = ec2_client.describe_route_tables(
             ]
         },
     ],
-    DryRun=False
+    DryRun=dry_run
 )
 
 chris_route_tables = chris_route_desc.get('RouteTables')
@@ -161,7 +163,7 @@ if not chris_route_tables:
     print(f"route table with name '{chris_route_table_name} not exists and will create it...'")
 
     chris_route_table = ec2_client.create_route_table(
-        DryRun = False,
+        DryRun = dry_run,
         VpcId = chris_vpc_id,
         TagSpecifications=[
             {
@@ -184,7 +186,7 @@ if not chris_route_tables:
     # add igw to the route table 
     chris_route = ec2_client.create_route(
         DestinationCidrBlock='0.0.0.0/0',
-        DryRun=False,
+        DryRun=dry_run,
         GatewayId=chris_igw_id,
         RouteTableId=chris_route_table_id
     )
@@ -237,7 +239,7 @@ for subnet_info in chris_subnet_info:
                 ]
             },
         ],
-        DryRun=False,
+        DryRun=dry_run,
     )
 
     chris_subnets = chris_subnet_desc.get('Subnets')
@@ -260,7 +262,7 @@ for subnet_info in chris_subnet_info:
             AvailabilityZone = subnet_zone,
             CidrBlock = subnet_cidrBlock,
             VpcId= chris_vpc_id,
-            DryRun=False
+            DryRun=dry_run
         )
 
         print(f"subnet with name '{subnet_name}' is created...")
@@ -269,7 +271,7 @@ for subnet_info in chris_subnet_info:
         #if 'pub' in subnet_name:
         subnet_id = chris_subnet.get('Subnet').get('SubnetId')
         associate_route_table = ec2_client.associate_route_table(
-            DryRun = False,
+            DryRun = dry_run,
             RouteTableId = chris_route_table_id,
             SubnetId = subnet_id
         )
