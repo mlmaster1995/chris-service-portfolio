@@ -12,31 +12,31 @@
             <![CDATA[
                START TRANSACTION;
 
-               CREATE TABLE IF NOT EXISTS `member` (
-                  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                  `first_name` VARCHAR(45) DEFAULT NULL,
-                  `last_name` VARCHAR(45) DEFAULT NULL,
-                  `email` VARCHAR(128) DEFAULT NULL UNIQUE,
-                  `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+                   CREATE TABLE IF NOT EXISTS `member` (
+                      `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                      `first_name` VARCHAR(45) DEFAULT NULL,
+                      `last_name` VARCHAR(45) DEFAULT NULL,
+                      `email` VARCHAR(128) DEFAULT NULL UNIQUE,
+                      `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                      `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
-                INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES
-                ('Neil'	    ,'Hamilton',    'neil@chrismember.ca'),
-                ('Dominic'	,'Buckland',    'dominic@chrismember.ca'),
-                ('Lily'	    ,'Stewart',     'stewart@chrismember.ca'),
-                ('Dan'	    ,'Burgess',     'burgess@chrismember.ca'),
-                ('Trevor'	,'Coleman',     'coleman@chrismember.ca'),
-                ('William'	,'Glover',      'glover@chrismember.ca'),
-                ('Jennifer'	,'Skinner',     'skinner@chrismember.ca'),
-                ('Fiona'	,'Tucker',      'tucker@chrismember.ca'),
-                ('Blake'	,'Langdon',     'langdon@chrismember.ca'),
-                ('Jonathan'	,'Hardacre',    'jonathan@chrismember.ca'),
-                ('Leslie'   ,'Andrews',     'leslie@chrismember.ca'),
-                ('Emma'     ,'Baumgarten',  'emma@chrismember.ca'),
-                ('Avani'    ,'Gupta',       'avani@chrismember.ca'),
-                ('Yuri'     ,'Petrov',      'yuri@chrismember.ca'),
-                ('Juan'     ,'Vega',        'juan@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES
+                    ('Neil'	    ,'Hamilton',    'neil@chrismember.ca'),
+                    ('Dominic'	,'Buckland',    'dominic@chrismember.ca'),
+                    ('Lily'	    ,'Stewart',     'stewart@chrismember.ca'),
+                    ('Dan'	    ,'Burgess',     'burgess@chrismember.ca'),
+                    ('Trevor'	,'Coleman',     'coleman@chrismember.ca'),
+                    ('William'	,'Glover',      'glover@chrismember.ca'),
+                    ('Jennifer'	,'Skinner',     'skinner@chrismember.ca'),
+                    ('Fiona'	,'Tucker',      'tucker@chrismember.ca'),
+                    ('Blake'	,'Langdon',     'langdon@chrismember.ca'),
+                    ('Jonathan'	,'Hardacre',    'jonathan@chrismember.ca'),
+                    ('Leslie'   ,'Andrews',     'leslie@chrismember.ca'),
+                    ('Emma'     ,'Baumgarten',  'emma@chrismember.ca'),
+                    ('Avani'    ,'Gupta',       'avani@chrismember.ca'),
+                    ('Yuri'     ,'Petrov',      'yuri@chrismember.ca'),
+                    ('Juan'     ,'Vega',        'juan@chrismember.ca');
 
                 COMMIT;
             ]]>

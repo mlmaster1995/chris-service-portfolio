@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -33,11 +34,18 @@ public class AppAccessAuth {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(config -> config
                 .requestMatchers(HttpMethod.GET, "/api/v1/members").hasRole("USER")
-                .requestMatchers(HttpMethod.GET, "/api/v1/member/**").hasRole("USER")
+                .requestMatchers(HttpMethod.GET, "/api/v1/members/**").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/v1/member/email").hasRole("USER")
                 .requestMatchers(HttpMethod.POST, "/api/v1/member").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/member").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/employees/**").hasRole("ADMIN"));
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/members/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/health").permitAll());
+
+        //use http basic auth
+        http.httpBasic(Customizer.withDefaults());
+
+        //disable csrf
+        http.csrf(csrf -> csrf.disable());
 
         return http.build();
     }

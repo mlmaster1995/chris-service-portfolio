@@ -39,7 +39,7 @@ class AppAuthDaoImplTest {
     @Test
     public void testFindUserByName1() {
         assertThrows(AppServiceException.class, () -> {
-            AuthUser user = _authDao.findByUserName("chris");
+            AuthUser user = _authDao.findUserByUserName("chris");
         });
     }
 
@@ -47,7 +47,7 @@ class AppAuthDaoImplTest {
     @Test
     @Sql("/insert-auth-data.sql")
     public void testFindUserByName2() {
-        AuthUser user = _authDao.findByUserName("user");
+        AuthUser user = _authDao.findUserByUserName("user");
 
         System.out.println("user: " + user.toString());
 

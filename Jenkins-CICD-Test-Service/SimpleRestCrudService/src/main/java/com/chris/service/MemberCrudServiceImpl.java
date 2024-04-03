@@ -90,6 +90,9 @@ public class MemberCrudServiceImpl implements MemberCrudService {
     @Override
     public void updateMember(GymMemberDto memberDto) {
         try {
+            if (memberDto.getId() == null) {
+                throw new AppServiceException("member id is null");
+            }
             _memberDao.updateMember(memberDto.toEntity());
             _LOG.warn("member dto({}) is updated...", memberDto.toString());
         } catch (Exception exp) {

@@ -27,10 +27,11 @@ public class AppAuthDaoImpl implements AppAuthDao {
     }
 
     @Override
-    public AuthUser findByUserName(String username) {
+    public AuthUser findUserByUserName(String username) {
         AuthUser user = null;
         try {
-            TypedQuery<AuthUser> query = _manager.createQuery("from AuthUser where username=:data and enabled=true", AuthUser.class);
+            TypedQuery<AuthUser> query = _manager.createQuery(
+                    "from AuthUser where username=:data and enabled=true", AuthUser.class);
             query.setParameter("data", username);
 
             user = query.getSingleResult();

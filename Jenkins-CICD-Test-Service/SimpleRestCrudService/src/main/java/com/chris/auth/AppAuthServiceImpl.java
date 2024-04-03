@@ -23,7 +23,8 @@ public class AppAuthServiceImpl implements AppAuthService {
     private final AppAuthDao _authDao;
 
     @Autowired
-    public AppAuthServiceImpl(@Qualifier(value = APP_AUTH_DAO_BEAN) AppAuthDao authDao) {
+    public AppAuthServiceImpl(
+            @Qualifier(value = APP_AUTH_DAO_BEAN) AppAuthDao authDao) {
         _authDao = authDao;
     }
 
@@ -52,7 +53,7 @@ public class AppAuthServiceImpl implements AppAuthService {
     public AuthUser findUserByUserName(String userName) {
         AuthUser user = null;
         try {
-            user = _authDao.findByUserName(userName);
+            user = _authDao.findUserByUserName(userName);
         } catch (Exception exp) {
             _LOG.error("fails to find the user at the service layer...:" + exp);
         }

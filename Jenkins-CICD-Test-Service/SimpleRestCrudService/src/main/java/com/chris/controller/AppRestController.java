@@ -102,7 +102,7 @@ public class AppRestController extends BaseController<ResponseEntity> {
             return new ResponseEntity<>(exp.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(String.format("member({}) is persisted...", member.toString()), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("member(%s) is persisted...", member.toString()), HttpStatus.OK);
     }
 
     /**
@@ -120,7 +120,7 @@ public class AppRestController extends BaseController<ResponseEntity> {
             return new ResponseEntity<>(exp.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(String.format("member({}) is updated...", member.toString()), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("member(%s) is updated...", member.toString()), HttpStatus.OK);
     }
 
     @DeleteMapping("/members/{memberId}")
@@ -132,6 +132,6 @@ public class AppRestController extends BaseController<ResponseEntity> {
             return new ResponseEntity<>(exp.toString(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(String.format("member with id ({}) is deleted...", memberId), HttpStatus.OK);
+        return new ResponseEntity<>(String.format("member with id (%s) is deleted...", memberId), HttpStatus.OK);
     }
 }

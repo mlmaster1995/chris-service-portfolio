@@ -1,6 +1,6 @@
 package com.chris.auth;
 
 public interface AppAuthDao {
-    AuthUser findByUserName(String userName);
+    AuthUser findUserByUserName(String userName);
     Role findRoleByRoleName(String roleName);
 }
