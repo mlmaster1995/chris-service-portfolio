@@ -82,7 +82,7 @@ try:
     ec2_exists = False
     ec2_image='ami-02d7fd1c2af6eead0'
     ec2_type='t2.micro'
-    ec2_data='#!/bin/bash \nsudo yum update -y'
+    ec2_data='#!/bin/bash \nsudo yum update -y' #use commands in the jenkins part
     ec2_key='cicdkey'
 
     ec2_desc = ec2_client.describe_instances(
