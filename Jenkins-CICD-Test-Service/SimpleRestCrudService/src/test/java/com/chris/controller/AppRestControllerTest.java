@@ -60,7 +60,7 @@ class AppRestControllerTest {
 
     @Autowired
     @Qualifier(value = APP_CONTROLLER_BEAN)
-    private AppRestController _appController;
+    private MemberRestController _appController;
 
     @AfterEach
     public void afterEachTest() {

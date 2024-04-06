@@ -32,15 +32,15 @@ import static com.chris.util.AppBeanConstant.MEMBER_SERVICE_BEAN;
 @RestController(value = APP_CONTROLLER_BEAN)
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
-public class AppRestController extends BaseController<ResponseEntity> {
-    private Logger _LOG = LoggerFactory.getLogger(AppRestController.class);
+public class MemberRestController extends BaseController<ResponseEntity> {
+    private Logger _LOG = LoggerFactory.getLogger(MemberRestController.class);
 
     private final MemberCrudService _memberCrudService;
 
     private final ObjectMapper _mapper;
 
     @Autowired
-    public AppRestController(
+    public MemberRestController(
             @Qualifier(value = MEMBER_SERVICE_BEAN) MemberCrudService appService, ObjectMapper mapper) {
         super();
 
