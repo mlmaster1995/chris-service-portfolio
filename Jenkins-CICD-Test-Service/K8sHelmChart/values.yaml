@@ -1,0 +1,83 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+
+############# parent chart values: !!! override values of sub-chart !!! #############
+
+# simple-rest-crud-service is an independent service in this project, not depends on any other serivce, 
+# but this helm chart is structured with multi-microserves for the future project
+# so just deploy this service ONLY, set 'initContainers.enabled=false' or it should setup as 'true'
+simple-rest-crud-service:
+  enabled: true
+  k8s:
+    servicemonitor: false
+    hpa: false
+  image: 
+    repository: ??
+    tag: 1.0.0-SNAPSHOT
+    pullPolicy: Always
+  replicaCount: 1
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 80
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 128Mi
+    requests:
+      cpu: 1500m
+      memory: 128Mi
+  initContainers:
+    enabled: false
+  configmap:
+    data: 
+      RULE_SCHEDULER_SERVICE_PORT: "8080"
+      RULE_SCHEDULER_SERVICE_MANAGEMENT_PORT: "8081"
+      DB_SERVER: batch-rules-proxy.proxy-cmxmrn4aqaci.us-east-2.rds.amazonaws.com
+  secret:
+    stringData:
+      DB_USER: "batch_rules_user_test"
+      DB_PASSWORD: "UEBzc3cwcmQx"
+
+
+############# parent chart values: k8s resources, status of serviceAccount
+# global.serviceAccount.enabled = k8s.serviceaccount
+k8s:
+  serviceaccount: true
+
+############# parent chart values: global values used by sub-chart
+# serviceAccount.name = global.serviceAccount.name
+global:
+  deploy:
+    env: aedev
+  serviceAccount:
+    enabled: true
+    name: batch-rule-engine
+
+############# parent chart values: service account def
+# global.serviceAccount.name = serviceAccount.name
+serviceAccount:
+  annotations: {}
+  name: batch-rule-engine

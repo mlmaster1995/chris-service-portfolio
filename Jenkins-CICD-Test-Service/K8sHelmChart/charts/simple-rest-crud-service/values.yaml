@@ -1,0 +1,147 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+
+############# subchart values: k8s resources
+k8s:
+  deployment: true
+  service: true
+  configmap: true
+  servicemonitor: false
+  secret: true
+  hpa: false
+
+############# subchart values: deploy env 
+deploy:
+  env: aedev
+
+############# subchart values: auto scaling
+replicaCount: 1
+hpa:
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 80
+
+
+############# subchart values: service def
+# server port is service-advertise-port
+# management port is health-check and metrics-check 
+service:
+  type: ClusterIP
+  server: 
+    port: 8080
+  management:
+    port: 8081
+  healthcheck: 
+    exists: true
+    path: /actuator/health
+    readinessProbe: 
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+
+############# subchart values: image def
+image:
+  repository: 264603349251.dkr.ecr.us-east-2.amazonaws.com/batchrules/batch-rule-scheduler-service-image
+  tag: 1.0.0-SNAPSHOT-ae-5
+  pullPolicy: Always
+  
+# pull image from private repo with secret
+imagePullSecrets: []
+
+# full name override
+fullnameOverride: ""
+
+############# subchart values: pod resource
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+############# subchart values: service monitor for prometheus
+servicemonitor:
+  release: kube-prometheus-stack
+  jobLabel: app.kubernetes.io/name
+  endpoints:
+  - port: management
+    scheme: http
+    path: /actuator/prometheus
+
+############# subchart values: pod anno in spec
+podAnnotations: {}
+
+############# subchart values: pod privileges
+podSecurityContext: {}
+  # fsGroup: 2000
+  # runAsUser: 1000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+############# subchart values: pod allocation
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+############# subchart values: init container
+initContainers:
+  enabled: true
+  definition:
+  - name: init-batch-rule-scheduler-service-1
+    image: radial/busyboxplus:curl
+    command: 
+    - sh
+    - -c
+    args:
+    - "until curl http://batch-rule-manager-service.batch-rule-engine.svc.cluster.local:8081/actuator/health; do echo waiting for batch-rule-manager-service...; sleep 5; done"
+
+############# subchart values: pod env
+envFrom:
+  exist: true
+
+############# subchart values: configmap def
+configmap:
+  data: 
+    RULE_SCHEDULER_SERVICE_PORT: "8080"
+    RULE_SCHEDULER_SERVICE_MANAGEMENT_PORT: "8081"
+    RULE_MANAGER_SERVICE_HOST: batch-rule-manager-service.batch-rule-engine.svc.cluster.local
+    RULE_MANAGER_SERVICE_PORT: "8080"
+    KAFKA_BOOTSTRAP_SERVER: b-3.batchrulesmsk.xluqh9.c6.kafka.us-east-2.amazonaws.com:9092,b-2.batchrulesmsk.xluqh9.c6.kafka.us-east-2.amazonaws.com:9092,b-1.batchrulesmsk.xluqh9.c6.kafka.us-east-2.amazonaws.com:9092
+    DB_SERVER: batch-rules-proxy.proxy-cmxmrn4aqaci.us-east-2.rds.amazonaws.com
+
+############# subchart values: secret def
+secret:
+  stringData:
+    DB_USER: "batch_rules_user_test"
+    DB_PASSWORD: "UEBzc3cwcmQx"
