@@ -21,9 +21,3 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
 # SOFTWARE.                                                                     #
 #################################################################################
-apiVersion: v2
-appVersion: "1.0.0-SNAPSHOT"
-description: simple-rest-crud-service helm chart for kubernetes
-name: simple-rest-crud-service
-type: application
-version: 1.0.0

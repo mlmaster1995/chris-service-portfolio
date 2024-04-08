@@ -98,3 +98,16 @@ $ ansible-playbook -vv -C <playbook>.yml # dry run with task results and taks co
 #2 must setup ssh access to ansible server on the Jenkins server
 #3 update id_rsa(from Jenkins server)as access key on Jenkins config to access Ansible server
 $ sudo chown ansibleadmin:ansibleadmin -R /opt/docker
+
+
+###docker module: https://docs.ansible.com/ansible/latest/collections/community/docker/docker_image_module.html#examples
+$ ansible-galaxy collection list
+# ansible 2.9.23
+#   config file = /etc/ansible/ansible.cfg
+#   configured module search path = [u'/home/ansibleadmin/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+#   ansible python module location = /usr/lib/python2.7/site-packages/ansible
+#   executable location = /usr/bin/ansible
+#   python version = 2.7.18 (default, Dec 18 2023, 22:08:43) [GCC 7.3.1 20180712 (Red Hat 7.3.1-17)]
+$ ansible-galaxy collection install community.docker
+$ python list-collections.py
+# (u'community.docker', u'/home/ansibleadmin/.ansible/collections/ansible_collections/community/docker')

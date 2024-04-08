@@ -27,19 +27,18 @@ k8s:
   deployment: true
   service: true
   configmap: true
-  servicemonitor: false
   secret: true
   hpa: false
 
 ############# subchart values: deploy env 
 deploy:
-  env: aedev
+  env: chris-env
 
 ############# subchart values: auto scaling
 replicaCount: 1
 hpa:
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 90
   targetMemoryUtilizationPercentage: 80
 
@@ -55,7 +54,7 @@ service:
     port: 8081
   healthcheck: 
     exists: true
-    path: /actuator/health
+    path: /health
     readinessProbe: 
       initialDelaySeconds: 5
       periodSeconds: 5
@@ -65,8 +64,8 @@ service:
 
 ############# subchart values: image def
 image:
-  repository: 264603349251.dkr.ecr.us-east-2.amazonaws.com/batchrules/batch-rule-scheduler-service-image
-  tag: 1.0.0-SNAPSHOT-ae-5
+  repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app
+  tag: 1.0.0-SNAPSHOT
   pullPolicy: Always
   
 # pull image from private repo with secret
@@ -83,15 +82,6 @@ resources:
   requests:
     cpu: 1000m
     memory: 1Gi
-
-############# subchart values: service monitor for prometheus
-servicemonitor:
-  release: kube-prometheus-stack
-  jobLabel: app.kubernetes.io/name
-  endpoints:
-  - port: management
-    scheme: http
-    path: /actuator/prometheus
 
 ############# subchart values: pod anno in spec
 podAnnotations: {}
@@ -116,15 +106,15 @@ affinity: {}
 
 ############# subchart values: init container
 initContainers:
-  enabled: true
+  enabled: false
   definition:
-  - name: init-batch-rule-scheduler-service-1
+  - name: <dep service name>
     image: radial/busyboxplus:curl
     command: 
     - sh
     - -c
     args:
-    - "until curl http://batch-rule-manager-service.batch-rule-engine.svc.cluster.local:8081/actuator/health; do echo waiting for batch-rule-manager-service...; sleep 5; done"
+    - "until curl http://<service>.chris-service-portfolio.svc.cluster.local:8081/health; do echo waiting for <service-name>...; sleep 5; done"
 
 ############# subchart values: pod env
 envFrom:
@@ -132,16 +122,14 @@ envFrom:
 
 ############# subchart values: configmap def
 configmap:
-  data: 
-    RULE_SCHEDULER_SERVICE_PORT: "8080"
-    RULE_SCHEDULER_SERVICE_MANAGEMENT_PORT: "8081"
-    RULE_MANAGER_SERVICE_HOST: batch-rule-manager-service.batch-rule-engine.svc.cluster.local
-    RULE_MANAGER_SERVICE_PORT: "8080"
-    KAFKA_BOOTSTRAP_SERVER: b-3.batchrulesmsk.xluqh9.c6.kafka.us-east-2.amazonaws.com:9092,b-2.batchrulesmsk.xluqh9.c6.kafka.us-east-2.amazonaws.com:9092,b-1.batchrulesmsk.xluqh9.c6.kafka.us-east-2.amazonaws.com:9092
-    DB_SERVER: batch-rules-proxy.proxy-cmxmrn4aqaci.us-east-2.rds.amazonaws.com
+    data: 
+      APP_SERVER_PORT: "8080"
+      APP_MANAGEMENT_PORT: "8081"
+      DB_URL: "jdbc:mariadb://localhost:3306/crud-api"
+      DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
 
 ############# subchart values: secret def
 secret:
-  stringData:
-    DB_USER: "batch_rules_user_test"
-    DB_PASSWORD: "UEBzc3cwcmQx"
+    stringData:
+      DB_USER: "chris"
+      DB_PASSWORD: "chris2024!"

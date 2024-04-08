@@ -109,3 +109,20 @@ $ eksctl delete cluster --region us-east-1 --name chris-eks
 $ vi ~/.bashrc
 # alias k='kubectl'
 
+### install helm: https://helm.sh/docs/intro/install/
+$ sudo wget https://get.helm.sh/helm-v3.14.3-linux-arm.tar.gz
+$ sudo wget https://get.helm.sh/helm-v3.14.3-linux-amd64.tar.gz
+$ sudo tar -zxvf ./helm-v3.14.3-linux-amd64.tar.gz 
+$ sudo mv linux-amd64/helm /usr/local/bin/helm
+$ helm version
+#version.BuildInfo{Version:"v3.14.3", GitCommit:"f03cc04caaa8f6d7c3e67cf918929150cf6f3f12", GitTreeState:"clean", GoVersion:"go1.21.7"}
+
+# for any helm version issue: https://github.com/helm/helm/issues/10975
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+$ unzip awscliv2.zip
+$ sudo ./aws/install
+$ helm list -a
+# NAME	NAMESPACE	REVISION	UPDATED	STATUS	CHART	APP VERSION
+# ...
+
+

@@ -24,7 +24,7 @@
 
 ############# parent chart values: !!! override values of sub-chart !!! #############
 
-# simple-rest-crud-service is an independent service in this project, not depends on any other serivce, 
+# simple-rest-crud-service is an independent service in this project, NOT depends on any other serivce, 
 # but this helm chart is structured with multi-microserves for the future project
 # so just deploy this service ONLY, set 'initContainers.enabled=false' or it should setup as 'true'
 simple-rest-crud-service:
@@ -33,7 +33,7 @@ simple-rest-crud-service:
     servicemonitor: false
     hpa: false
   image: 
-    repository: ??
+    repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app
     tag: 1.0.0-SNAPSHOT
     pullPolicy: Always
   replicaCount: 1
@@ -44,22 +44,23 @@ simple-rest-crud-service:
     targetMemoryUtilizationPercentage: 80
   resources:
     limits:
-      cpu: 1500m
+      cpu: 1000m
       memory: 128Mi
     requests:
-      cpu: 1500m
+      cpu: 1000m
       memory: 128Mi
   initContainers:
     enabled: false
   configmap:
     data: 
-      RULE_SCHEDULER_SERVICE_PORT: "8080"
-      RULE_SCHEDULER_SERVICE_MANAGEMENT_PORT: "8081"
-      DB_SERVER: batch-rules-proxy.proxy-cmxmrn4aqaci.us-east-2.rds.amazonaws.com
+      APP_SERVER_PORT: "8080"
+      APP_MANAGEMENT_PORT: "8081"
+      DB_URL: "jdbc:mariadb://localhost:3306/crud-api"
+      DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
   secret:
     stringData:
-      DB_USER: "batch_rules_user_test"
-      DB_PASSWORD: "UEBzc3cwcmQx"
+      DB_USER: "chris"
+      DB_PASSWORD: "chris2024!"
 
 
 ############# parent chart values: k8s resources, status of serviceAccount
@@ -71,13 +72,13 @@ k8s:
 # serviceAccount.name = global.serviceAccount.name
 global:
   deploy:
-    env: aedev
+    env: chris-env
   serviceAccount:
     enabled: true
-    name: batch-rule-engine
+    name: chris-service-portfolio
 
 ############# parent chart values: service account def
 # global.serviceAccount.name = serviceAccount.name
 serviceAccount:
   annotations: {}
-  name: batch-rule-engine
+  name: chris-service-portfolio

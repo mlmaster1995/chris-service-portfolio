@@ -21,9 +21,45 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
 # SOFTWARE.                                                                     #
 #################################################################################
-apiVersion: v2
-appVersion: "1.0.0-SNAPSHOT"
-description: simple-rest-crud-service helm chart for kubernetes
-name: simple-rest-crud-service
-type: application
-version: 1.0.0
+import boto3
+from botocore.exceptions import ClientError
+
+##NOTE: ecr repo name is consistent in the ansible playbook
+ecr_repo_name = 'cicd-test-app'
+
+
+ecr_client = boto3.client('ecr')
+ecr_repo_exists = False
+ecr_repo_desc =  ecr_client.describe_repositories(
+    maxResults=100
+)
+
+try:
+    ecr_repos = ecr_repo_desc.get('repositories')
+    for ecr_repo in ecr_repos:
+        ecr_name = ecr_repo.get('repositoryName')
+
+        if ecr_name == ecr_repo_name:
+            print(f"ecr repo with name '{ecr_repo_name}' exists already...")
+            ecr_repo_exists = True
+
+    if not ecr_repo_exists:
+        print(f"ecr repo with name '{ecr_repo_name}' not exists, and will create one...")
+        response = ecr_client.create_repository(
+            repositoryName = ecr_repo_name,
+            tags=[
+                {
+                    'Key': 'name',
+                    'Value': ecr_repo_name
+                },
+            ],
+            imageTagMutability='IMMUTABLE',
+            imageScanningConfiguration={
+                'scanOnPush': True
+            }
+        )
+        print(f"ecr repo with name '{ecr_repo_name}' is created with response: '{response}'")
+
+except ClientError as e:
+    print(e)
+

@@ -21,9 +21,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
 # SOFTWARE.                                                                     #
 #################################################################################
-apiVersion: v2
-appVersion: "1.0.0-SNAPSHOT"
-description: simple-rest-crud-service helm chart for kubernetes
-name: simple-rest-crud-service
-type: application
-version: 1.0.0
+---
+- name: build and push image to ecr
+  hosts: localhost
+  tasks:
+  - name: build image
+    community.docker.docker_image:
+      build:
+        path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
+      name: cicd-test-app
+      tag: 1.0.0-SNAPHOST
+      push: false
+      source: build
+
+  - name: aws ecr login
+    ansible.builtin.shell: |
+      /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+
+  - name: tag the image
+    ansible.builtin.command: /usr/bin/docker tag cicd-test-app:1.0.0-SNAPHOST <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app:1.0.0-SNAPHOST
+    ignore_errors: true
+
+  - name: push to ecr
+    ansible.builtin.command: /usr/bin/docker push <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app:1.0.0-SNAPHOST
+    ignore_errors: true
+
+- name: build helm chart and push to ecr
+
+- name: deploy to eks

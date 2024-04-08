@@ -70,4 +70,4 @@ $ free -h
 # Mem:           952M        486M         69M        412K        396M        329M
 # Swap:          2.0G          0B        2.0G
 
-
+$ man -k 'ansible'
