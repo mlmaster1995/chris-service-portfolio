@@ -26,14 +26,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "batch-rule-scheduler-service.fullname" . }}
+  name: {{ include "simple-rest-crud-service.fullname" . }}
   labels:
-    {{- include "batch-rule-scheduler-service.labels" . | nindent 4 }}
+    {{- include "simple-rest-crud-service.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "batch-rule-scheduler-service.fullname" . }}
+    name: {{ include "simple-rest-crud-service.fullname" . }}
   minReplicas: {{ .Values.hpa.minReplicas }}
   maxReplicas: {{ .Values.hpa.maxReplicas }}
   metrics:

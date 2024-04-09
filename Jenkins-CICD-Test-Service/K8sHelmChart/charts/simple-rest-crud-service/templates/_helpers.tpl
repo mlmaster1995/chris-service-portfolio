@@ -25,7 +25,7 @@
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "batch-rule-scheduler-service.chart" -}}
+{{- define "simple-rest-crud-service.chart" -}}
     {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -33,25 +33,27 @@ Create chart name and version as used by the chart label.
 {{/*
 Common labels across all components
 */}}
-{{- define "batch-rule-scheduler-service.labels" -}}
-helm.sh/chart: {{ include "batch-rule-scheduler-service.chart" . }}
+{{- define "simple-rest-crud-service.labels" -}}
+helm.sh/chart: {{ include "simple-rest-crud-service.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/app-version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{ include "batch-rule-scheduler-service.selectorLabels" . }}
+{{ include "simple-rest-crud-service.selectorLabels" . }}
 {{- end }}
 {{/*
 Selector labels
 */}}
-{{- define "batch-rule-scheduler-service.selectorLabels" -}}
+{{- define "simple-rest-crud-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ .Chart.Name }}
-app.kubernetes.io/part-of: batch-rule-engine
+app.kubernetes.io/part-of: {{ .Release.Name}}
 app.kubernetes.io/env: {{ .Values.global.deploy.env }}
 {{- end }}
 
-
-{{- define "batch-rule-scheduler-service.global.serviceAccountName" -}}
+{{/*
+Service account name
+*/}}
+{{- define "simple-rest-crud-service.global.serviceAccountName" -}}
     {{- if .Values.global.serviceAccount.enabled }}
         {{- .Values.global.serviceAccount.name }}
     {{- else }}
@@ -63,7 +65,7 @@ app.kubernetes.io/env: {{ .Values.global.deploy.env }}
 Create a default fully qualified app name (chart name)
 We truncate at 63 chars, because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "batch-rule-scheduler-service.fullname" -}}
+{{- define "simple-rest-crud-service.fullname" -}}
     {{- if .Values.fullnameOverride }}
         {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
     {{- else }}

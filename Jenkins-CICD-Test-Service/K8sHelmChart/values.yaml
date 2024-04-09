@@ -33,7 +33,7 @@ simple-rest-crud-service:
     servicemonitor: false
     hpa: false
   image: 
-    repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app
+    repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service
     tag: 1.0.0-SNAPSHOT
     pullPolicy: Always
   replicaCount: 1
@@ -75,10 +75,10 @@ global:
     env: chris-env
   serviceAccount:
     enabled: true
-    name: chris-service-portfolio
+    name: jenkins-cicd-test-service
 
 ############# parent chart values: service account def
 # global.serviceAccount.name = serviceAccount.name
 serviceAccount:
   annotations: {}
-  name: chris-service-portfolio
+  name: jenkins-cicd-test-service

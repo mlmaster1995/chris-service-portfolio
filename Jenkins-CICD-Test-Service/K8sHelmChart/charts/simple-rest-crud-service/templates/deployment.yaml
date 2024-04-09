@@ -26,16 +26,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "batch-rule-scheduler-service.fullname" . }}
+  name: {{ include "simple-rest-crud-service.fullname" . }}
   labels:
-    {{- include "batch-rule-scheduler-service.labels" . | nindent 4 }}
+    {{- include "simple-rest-crud-service.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.k8s.hpa }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "batch-rule-scheduler-service.selectorLabels" . | nindent 6 }}
+      {{- include "simple-rest-crud-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -43,13 +43,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "batch-rule-scheduler-service.selectorLabels" . | nindent 8 }}
+        {{- include "simple-rest-crud-service.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "batch-rule-scheduler-service.global.serviceAccountName" . }}
+      serviceAccountName: {{ include "simple-rest-crud-service.global.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -62,11 +62,11 @@ spec:
           envFrom:
             {{- if .Values.k8s.configmap }}
             - configMapRef: 
-                name: {{ include "batch-rule-scheduler-service.fullname" . }}
+                name: {{ include "simple-rest-crud-service.fullname" . }}
             {{- end }}
             {{- if .Values.k8s.secret }}
             - secretRef:
-                name: {{ include "batch-rule-scheduler-service.fullname" . }}
+                name: {{ include "simple-rest-crud-service.fullname" . }}
             {{- end }}
           {{- end }}
           ports:
@@ -92,8 +92,13 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.sidecar.enabled }}
+        {{- with .Values.sidecar.value }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
       {{- if .Values.initContainers.exist}}
-      initContainers: 
+      initContainers:
         {{- toYaml .Values.initContainers.definition | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

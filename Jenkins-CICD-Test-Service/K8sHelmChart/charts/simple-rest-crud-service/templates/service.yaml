@@ -26,9 +26,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "batch-rule-scheduler-service.fullname" . }}
+  name: {{ include "simple-rest-crud-service.fullname" . }}
   labels:
-    {{- include "batch-rule-scheduler-service.labels" . | nindent 4 }}
+    {{- include "simple-rest-crud-service.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -41,5 +41,5 @@ spec:
       targetPort: {{ .Values.service.management.port }}
       protocol: TCP
   selector:
-    {{- include "batch-rule-scheduler-service.selectorLabels" . | nindent 4 }}
+    {{- include "simple-rest-crud-service.selectorLabels" . | nindent 4 }}
 {{- end -}}

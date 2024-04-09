@@ -45,90 +45,23 @@ Template Name: {{ .Template.Name }}
 Template Base Path: {{ .Template.BasePath }}
 
 Chart Structure: 
-                        ./batch-rule-engine-helm
-                        ├── Chart.yaml
-                        ├── charts
-                        │   ├── batch-query-service
-                        │   │   ├── Chart.yaml
-                        │   │   ├── templates
-                        │   │   │   ├── _helpers.tpl
-                        │   │   │   ├── configmap.yaml
-                        │   │   │   ├── deployment.yaml
-                        │   │   │   ├── hpa.yaml
-                        │   │   │   ├── secret.yaml
-                        │   │   │   ├── service.yaml
-                        │   │   │   └── servicemonitor.yml
-                        │   │   └── values.yaml
-                        │   ├── batch-result-writer-service
-                        │   │   ├── Chart.yaml
-                        │   │   ├── templates
-                        │   │   │   ├── _helpers.tpl
-                        │   │   │   ├── configmap.yaml
-                        │   │   │   ├── deployment.yaml
-                        │   │   │   ├── hpa.yaml
-                        │   │   │   ├── secret.yaml
-                        │   │   │   ├── service.yaml
-                        │   │   │   └── servicemonitor.yml
-                        │   │   └── values.yaml
-                        │   ├── batch-rule-manager-service
-                        │   │   ├── Chart.yaml
-                        │   │   ├── templates
-                        │   │   │   ├── _helpers.tpl
-                        │   │   │   ├── configmap.yaml
-                        │   │   │   ├── deployment.yaml
-                        │   │   │   ├── hpa.yaml
-                        │   │   │   ├── secret.yaml
-                        │   │   │   ├── service.yaml
-                        │   │   │   └── servicemonitor.yml
-                        │   │   └── values.yaml
-                        │   ├── batch-rule-python-worker
-                        │   │   ├── Chart.yaml
-                        │   │   ├── templates
-                        │   │   │   ├── _helpers.tpl
-                        │   │   │   ├── configmap.yaml
-                        │   │   │   ├── deployment.yaml
-                        │   │   │   ├── hpa.yaml
-                        │   │   │   ├── secret.yaml
-                        │   │   │   ├── service.yaml
-                        │   │   │   └── servicemonitor.yml
-                        │   │   └── values.yaml
-                        │   ├── batch-rule-runner-service
-                        │   │   ├── Chart.yaml
-                        │   │   ├── templates
-                        │   │   │   ├── _helpers.tpl
-                        │   │   │   ├── configmap.yaml
-                        │   │   │   ├── deployment.yaml
-                        │   │   │   ├── hpa.yaml
-                        │   │   │   ├── secret.yaml
-                        │   │   │   ├── service.yaml
-                        │   │   │   └── servicemonitor.yml
-                        │   │   └── values.yaml
-                        │   ├── batch-rule-scheduler-service
-                        │   │   ├── Chart.yaml
-                        │   │   ├── templates
-                        │   │   │   ├── _helpers.tpl
-                        │   │   │   ├── configmap.yaml
-                        │   │   │   ├── deployment.yaml
-                        │   │   │   ├── hpa.yaml
-                        │   │   │   ├── secret.yaml
-                        │   │   │   ├── service.yaml
-                        │   │   │   └── servicemonitor.yml
-                        │   │   └── values.yaml
-                        │   └── batch-tenant-manager-service
-                        │       ├── Chart.yaml
-                        │       ├── templates
-                        │       │   ├── _helpers.tpl
-                        │       │   ├── configmap.yaml
-                        │       │   ├── deployment.yaml
-                        │       │   ├── hpa.yaml
-                        │       │   ├── secret.yaml
-                        │       │   ├── service.yaml
-                        │       │   └── servicemonitor.yml
-                        │       └── values.yaml
-                        ├── templates
-                        │   ├── NOTES.txt
-                        │   ├── _helpers.tpl
-                        │   └── serviceaccount.yaml
-                        └── values.yaml
+    ./K8sHelmChart
+    ├── Chart.yaml
+    ├── charts
+    │   └── simple-rest-crud-service
+    │       ├── Chart.yaml
+    │       ├── templates
+    │       │   ├── _helpers.tpl
+    │       │   ├── configmap.yaml
+    │       │   ├── deployment.yaml
+    │       │   ├── hpa.yaml
+    │       │   ├── secret.yaml
+    │       │   └── service.yaml
+    │       └── values.yaml
+    ├── templates
+    │   ├── NOTES.txt
+    │   ├── _helpers.tpl
+    │   └── serviceaccount.yaml
+    └── values.yaml
 
-Batch-Rule-Engine is installed!!!
+jenkins-cicd-test-service is installed!!!

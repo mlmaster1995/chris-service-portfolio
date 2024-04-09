@@ -25,26 +25,26 @@
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "batch-rule-engine.chart" -}}
+{{- define "jenkins-cicd-test-service.chart" -}}
     {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels across all components
 */}}
-{{- define "batch-rule-engine.labels" -}}
-helm.sh/chart: {{ include "batch-rule-engine.chart" . }}
+{{- define "jenkins-cicd-test-service.labels" -}}
+helm.sh/chart: {{ include "jenkins-cicd-test-service.chart" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/app-version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{ include "batch-rule-engine.selectorLabels" . }}
+{{ include "jenkins-cicd-test-service.selectorLabels" . }}
 {{- end }}
 
 {{/*
 Selector labels
 */}}
-{{- define "batch-rule-engine.selectorLabels" -}}
+{{- define "jenkins-cicd-test-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ .Release.Name }}
 app.kubernetes.io/env: {{ .Values.global.deploy.env }}
 {{- end }}
@@ -52,9 +52,9 @@ app.kubernetes.io/env: {{ .Values.global.deploy.env }}
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "batch-rule-engine.serviceAccountName" -}}
+{{- define "jenkins-cicd-test-service.serviceAccountName" -}}
     {{- if .Values.k8s.serviceaccount }}
-        {{- default (include "batch-rule-engine.fullname" .) .Values.serviceAccount.name }}
+        {{- default (include "jenkins-cicd-test-service.fullname" .) .Values.serviceAccount.name }}
     {{- else }}
         {{- default "default" .Values.serviceAccount.name }}
     {{- end }}
@@ -64,7 +64,7 @@ Create the name of the service account to use
 Create a default fully qualified app name (chart name)
 We truncate at 63 chars, because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "batch-rule-engine.fullname" -}}
+{{- define "jenkins-cicd-test-service.fullname" -}}
     {{- if .Values.fullnameOverride }}
         {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
     {{- else }}
