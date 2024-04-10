@@ -25,11 +25,11 @@
 - name: build and push image to ecr
   hosts: localhost
   tasks:
-  - name: build image
+  - name: build app image
     community.docker.docker_image:
       build:
         path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
-      name: cicd-test-app
+      name: simple-rest-crud-service
       tag: 1.0.0-SNAPHOST
       push: false
       source: build
@@ -39,13 +39,39 @@
       /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
 
   - name: tag the image
-    ansible.builtin.command: /usr/bin/docker tag cicd-test-app:1.0.0-SNAPHOST <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app:1.0.0-SNAPHOST
-    ignore_errors: true
+    ansible.builtin.command: /usr/bin/docker tag simple-rest-crud-service:1.0.0-SNAPHOST <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service:1.0.0-SNAPHOST
 
   - name: push to ecr
-    ansible.builtin.command: /usr/bin/docker push <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app:1.0.0-SNAPHOST
+    ansible.builtin.command: /usr/bin/docker push <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service:1.0.0-SNAPHOST
+
+- name: build values.yaml template
+  ??
+
+- name: build helm chart
+  host: localhost
+  tasks: 
+  - name: build helm chart
+    ansible.builtin.command: helm package ./K8sHelmChart --version=1.0.0
+    args:
+      chdir: /opt/chris-service/Jenkins-CICD-Test-Service
+
+  - name: aws ecr login
+    ansible.builtin.shell: |
+      /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+
+  - name: push helm chart to ecr
+    ansible.builtin.command: helm push jenkins-cicd-test-service-chart-1.0.0.tgz oci://<aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+    args:
+     chdir: /opt/chris-service/Jenkins-CICD-Test-Service
+
+
+- name: deploy helm chart to eks
+  host: eks
+  tasks: 
+  - name: deploy to eks
+    ansible.builtin.command: helm install batch-rule-engine oci://<aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/jenkins-cicd-test-service-chart --version 1.0.0 --namespace chris-service-portfolio --atomic --timeout 300s --debug
     ignore_errors: true
 
-- name: build helm chart and push to ecr
-
-- name: deploy to eks
+  - name: upgrade to eks
+    ansible.builtin.command: helm upgrade batch-rule-engine oci://<aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/jenkins-cicd-test-service-chart --version 1.0.0 --namespace chris-service-portfolio --atomic --timeout 300s --debug
+    ignore_errors: true

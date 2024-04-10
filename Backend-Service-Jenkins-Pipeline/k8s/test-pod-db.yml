@@ -24,24 +24,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-pod
+  name: test-pod-db
   namespace: chris-service-portfolio
   labels:
-    run: test-pod
+    run: test-pod-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: test-pod
+      run: test-pod-db
   template:
     metadata:
       labels:
-        run: test-pod
-      name: test-pod
+        run: test-pod-db
+      name: test-pod-db
     spec:
-      # securityContext: 
-      #   runAsUser: 1010
-      #   runAsGroup: 1010
       containers:
       - image: amazonlinux:2
         name: test-pod
@@ -61,17 +58,13 @@ spec:
           periodSeconds: 5
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "500m"
+            memory: "128Mi"
+            cpu: "250m"
           limits:
-            memory: "256Mi"
-            cpu: "500m"
+            memory: "128Mi"
+            cpu: "250m"
       - image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
         name: sidecar-db
-        lifecycle:
-          postStart:
-            exec:
-              command: ["/bin/sh", "-c", "/opt/db-init.sh"]
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom: 
@@ -89,13 +82,13 @@ spec:
         resources:
           requests:
             memory: "256Mi"
-            cpu: "500m"
+            cpu: "250m"
           limits:
             memory: "256Mi"
-            cpu: "500m"
+            cpu: "250m"
         volumeMounts:
-          - mountPath: /opt/db-init.sh
-            subPath: db-init.sh
+          - mountPath: /docker-entrypoint-initdb.d/db-init.sql
+            subPath: db-init.sql
             name: config-vol
       volumes:
       - name: config-vol
@@ -103,5 +96,5 @@ spec:
           name: db-init
           defaultMode: 0755
           items: 
-          - key: "db-init.sh"
-            path: "db-init.sh"
+          - key: "db-init.sql"
+            path: "db-init.sql"

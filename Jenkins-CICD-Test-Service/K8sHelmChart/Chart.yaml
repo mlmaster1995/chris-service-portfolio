@@ -23,10 +23,10 @@
 #################################################################################
 apiVersion: v2
 appVersion: "1.0.0-SNAPSHOT"
-name: jenkins-cicd-test-service
+name: jenkins-cicd-test-service-chart
 description: jenkins-cicd-test-service helm chart for kubernetes
 type: application
-version: 1.0.3
+version: 1.0.0
 dependencies:
   - name: simple-rest-crud-service
     version: "1.0.0-SNAPSHOT"
