@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="chris.yang" id="20240401-1313">
+        <validCheckSum>ANY</validCheckSum>
+
+        <sql endDelimiter=";" splitStatements="true">
+            <![CDATA[
+                START TRANSACTION;
+
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('johnny','shields','johnny2024shields@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('gilberto','vonrueden','gilberto2024vonrueden@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('jerry','hettinger','jerry2024hettinger@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('raymond','terry','raymond2024terry@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('clay','schaefer','clay2024schaefer@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('julius','moen','julius2024moen@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('isaac','dietrich','isaac2024dietrich@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('cary','casper','cary2024casper@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('vincent','crooks','vincent2024crooks@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('leroy','metz','leroy2024metz@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('thomas','bahringer','thomas2024bahringer@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('marco','dibbert','marco2024dibbert@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ernest','bechtelar','ernest2024bechtelar@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('dave','hickle','dave2024hickle@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('bert','gorczany','bert2024gorczany@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('nelson','rohan','nelson2024rohan@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('woodrow','roberts','woodrow2024roberts@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('amos','little','amos2024little@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('brian','botsford','brian2024botsford@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ernest','shields','ernest2024shields@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('amos','halvorson','amos2024halvorson@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('carlton','mann','carlton2024mann@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ryan','okuneva','ryan2024okuneva@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('bradley','spencer','bradley2024spencer@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('jamie','lebsack','jamie2024lebsack@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('timothy','koch','timothy2024koch@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('percy','murray','percy2024murray@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('horace','denesik','horace2024denesik@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ryan','hoeger','ryan2024hoeger@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('lynn','cross','lynn2024cross@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('deb','blanchard','deb2024blanchard@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ahmed','carpenter','ahmed2024carpenter@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('cory','yeung','cory2024yeung@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('simone','leclair','simone2024leclair@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('veronica','mcconnell','veronica2024mcconnell@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('gaston','ryan','gaston2024ryan@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('marilyn','dubois','marilyn2024dubois@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('doreen','mckee','doreen2024mckee@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('sally','allard','sally2024allard@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('margaret','little','margaret2024little@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ghislaine','han','ghislaine2024han@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('susie','belisle','susie2024belisle@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('adele','porter','adele2024porter@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('debbie','downey','debbie2024downey@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('elaine','hynes','elaine2024hynes@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('jean-guy','walton','jean-guy2024walton@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('rosaire','kaur','rosaire2024kaur@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('warren','fitzpatrick','warren2024fitzpatrick@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('stephanie','sabourin','stephanie2024sabourin@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('dany','berger','dany2024berger@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('stephen','labrie','stephen2024labrie@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('jocelyn','forest','jocelyn2024forest@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('érica','dugas','érica2024dugas@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('mel','christie','mel2024christie@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('line','quinn','line2024quinn@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('arlene','labbe','arlene2024labbe@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('vern','pelletier','vern2024pelletier@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('emmanuel','baker','emmanuel2024baker@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('irina','fraser','irina2024fraser@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('marie','jacobs','marie2024jacobs@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('susanne','jean','susanne2024jean@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('angela','jones','angela2024jones@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('eileen','dennis','eileen2024dennis@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('lindsey','huynh','lindsey2024huynh@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('phil','sidhu','phil2024sidhu@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('harvey','mailloux','harvey2024mailloux@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('clare','carriere','clare2024carriere@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('deanna','st','deanna2024st@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('stuart','jordan','stuart2024jordan@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('ruth','robinson','ruth2024robinson@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('larry','patterson','larry2024patterson@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('anna','thomas','anna2024thomas@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('emile','lariviere','emile2024lariviere@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('christine','gelinas','christine2024gelinas@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('lawrence','barr','lawrence2024barr@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('nadia','wang','nadia2024wang@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('emma','barber','emma2024barber@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('lise','carter','lise2024carter@chrismember.ca');
+                    INSERT INTO `member` (`first_name`,`last_name`,`email`) VALUES ('pearl','guimond','pearl2024guimond@chrismember.ca');
+
+
+                COMMIT;
+            ]]>
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
