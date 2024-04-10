@@ -36,6 +36,28 @@ simple-rest-crud-service:
     repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service
     tag: 1.0.0-SNAPSHOT
     pullPolicy: Always
+  sidecar: 
+    enabled: true
+    value: 
+      - image: 336371013214.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
+        name: sidecar-db
+        lifecycle:
+          ????????
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        - name: MARIADB_DATABASE
+          value: "crud-api"
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
   replicaCount: 1
   hpa:
     minReplicas: 1
@@ -57,6 +79,12 @@ simple-rest-crud-service:
       APP_MANAGEMENT_PORT: "8081"
       DB_URL: "jdbc:mariadb://localhost:3306/crud-api"
       DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+      DB_INIT: |
+        #!/bin/bash
+        mysql -uroot -ppassword -h127.0.0.1 -e "DROP USER IF EXISTS chris"
+        mysql -uroot -ppassword -h127.0.0.1 -e "SELECT user FROM mysql.user"
+        mysql -uroot -ppassword -h127.0.0.1 -e "CREATE OR REPLACE USER chris@'%' IDENTIFIED BY 'chris2024'"
+        mysql -uroot -ppassword -h127.0.0.1 -e "GRANT ALL PRIVILEGES ON * . * TO 'chris'@'%'"
   secret:
     stringData:
       DB_USER: "chris"
