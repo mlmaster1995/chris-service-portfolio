@@ -1,0 +1,81 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-pod
+  namespace: chris-service-portfolio
+  labels:
+    run: test-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: test-pod
+  template:
+    metadata:
+      labels:
+        run: test-pod
+      name: test-pod
+    spec:
+      containers:
+      - image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
+        name: sidecar-db
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "/opt/db-init.sh"]
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: 
+            configMapKeyRef:
+              name: db-init
+              key: MYSQL_ROOT_PASSWORD
+        - name: MARIADB_DATABASE
+          valueFrom: 
+            configMapKeyRef:
+              name: db-init
+              key: MARIADB_DATABASE
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        volumeMounts:
+          - mountPath: /opt/db-init.sh
+            subPath: db-init.sh
+            name: config-vol
+      volumes:
+      - name: config-vol
+        configMap:
+          name: db-init
+          defaultMode: 0755
+          items: 
+          - key: "db-init.sh"
+            path: "db-init.sh"
