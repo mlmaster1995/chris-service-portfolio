@@ -24,15 +24,15 @@
 
 ############# subchart values: k8s resources
 k8s:
-  deployment: true
-  service: true
-  configmap: true
-  secret: true
+  deployment: false
+  service: false
+  configmap: false
+  secret: false
   hpa: false
 
 ############# subchart values: deploy env 
 deploy:
-  env: chris-env
+  env: <env>
 
 ############# subchart values: auto scaling
 replicaCount: 1
@@ -42,6 +42,10 @@ hpa:
   targetCPUUtilizationPercentage: 90
   targetMemoryUtilizationPercentage: 80
 
+############# subchart values: auto scaling
+serviceAccount:
+  enabled: false 
+  name: <CHARTNAME>
 
 ############# subchart values: service def
 # server port is service-advertise-port
@@ -53,7 +57,7 @@ service:
   management:
     port: 8081
   healthcheck: 
-    exists: false
+    exists: true
     path: /health
     readinessProbe: 
       initialDelaySeconds: 5
@@ -64,8 +68,8 @@ service:
 
 ############# subchart values: image def
 image:
-  repository: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app
-  tag: 1.0.0-SNAPSHOT
+  repository: <repo>
+  tag: <tag>
   pullPolicy: Always
   
 # pull image from private repo with secret
@@ -76,18 +80,16 @@ fullnameOverride: ""
 
 ############# subchart values: sidecar def
 sidecar: 
-  enabled: true
+  enabled: false
   value: 
-    - image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
-      name: sidecar-db
+    - image: <repo-url>
+      name: <sidecar-name>
       env:
-      - name: MYSQL_ROOT_PASSWORD
-        value: "password"
-      - name: MARIADB_DATABASE
-        value: "crud-api"
+      - name: <key>
+        value: <value>
       ports:
-      - containerPort: 3306
-        protocol: TCP
+      - containerPort: <port>
+        protocol: <protocol>
       resources:
         requests:
           memory: "256Mi"
@@ -129,26 +131,20 @@ affinity: {}
 ############# subchart values: volume def
 volumes:
   enabled: false
-  value: 
-    - name: config-vol
-      configMap:
-        name: db-init
-        defaultMode: 0755
-        items: 
-        - key: "db-init.sql"
-          path: "db-init.sql"
+  # value: 
+  #   - name: <volume-name>
 
 ############# subchart values: init container
 initContainers:
   enabled: false
-  value:
-  - name: <dep service name>
-    image: radial/busyboxplus:curl
-    command: 
-    - sh
-    - -c
-    args:
-    - "until curl http://<service>.chris-service-portfolio.svc.cluster.local:8081/health; do echo waiting for <service-name>...; sleep 5; done"
+  # value:
+  # - name: <dep service name>
+  #   image: radial/busyboxplus:curl
+  #   command: 
+  #   - sh
+  #   - -c
+  #   args:
+  #   - "until curl http://<service>.<namespace>.svc.cluster.local:8081/health; do echo waiting for <service>...; sleep 5; done"
 
 ############# subchart values: pod env
 envFrom:
@@ -157,13 +153,9 @@ envFrom:
 ############# subchart values: configmap def
 configmap:
   data: 
-    APP_SERVER_PORT: "8080"
-    APP_MANAGEMENT_PORT: "8081"
-    DATABASE_URL: "jdbc:mariadb://localhost:3306/crud-api"
-    DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+    <key-name>: <key-value> 
 
 ############# subchart values: secret def
 secret:
   stringData:
-    DATABASE_USER: "chris"
-    DATABASE_PASSWORD: "chris2024"
+    <key-name>: <key-value>

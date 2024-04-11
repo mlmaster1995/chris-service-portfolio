@@ -21,48 +21,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
 # SOFTWARE.                                                                     #
 #################################################################################
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: test-pod
-  namespace: chris-service-portfolio
-  labels:
-    run: test-pod
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      run: test-pod
-  template:
-    metadata:
-      labels:
-        run: test-pod
-      name: test-pod
-    spec:
-      # securityContext: 
-      #   runAsUser: 1010
-      #   runAsGroup: 1010
-      containers:
-      - image: amazonlinux:2
-        name: test-pod
-        command: ["sh", "-c"]
-        args: 
-        - |
-          yum udpate -y
-          yum install -y free java-17 awscli less mysql wget bind-utils nmap-ncat iputils unzip zip tar
-          sleep infinity
-        env: 
-        - name: TEST
-          value: "all good!"
-        readinessProbe:
-          exec:
-            command: ["ls", "/opt"]
-          initialDelaySeconds: 20
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "500m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
+
+### build starter chart
+$ helm env
+# ...
+# HELM_DATA_HOME="/Users/<user>/Library/helm"
+# ...
+
+$ helm lint ./chris-service-starter-chart
+# ==> Linting ./chris-service-starter-chart
+# [INFO] Chart.yaml: icon is recommended
+# 1 chart(s) linted, 0 chart(s) failed
+
+$ export HELM_DATA_HOME="/Users/<user>/Library/helm"
+$ cd $HELM_DATA_HOME
+$ mkdir helm
+$ cd helm
+$ mkdir starters
+$ cp -r ./chris-service-starter-chart $HELM_DATA_HOME/helm/starters/
+
+$ helm create crud-service-db --starter=chris-service-starter-chart

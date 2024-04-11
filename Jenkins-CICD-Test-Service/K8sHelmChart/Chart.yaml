@@ -31,6 +31,9 @@ dependencies:
   - name: simple-rest-crud-service
     version: "1.0.0-SNAPSHOT"
     condition: simple-rest-crud-service.enabled
+  - name: crud-service-db
+    version: "1.0.0"
+    condition: crud-service-db.enabled
 maintainers:
 - email: kyang3@lakeheadu.ca
   name: Chris Yang
@@ -41,4 +44,5 @@ keywords:
 - aws
 - chris-service-portfolio
 - simple-rest-crud-service
+- crud-service-db
 - jenkins-cicd-test-service

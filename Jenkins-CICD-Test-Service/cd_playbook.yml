@@ -24,54 +24,53 @@
 ---
 - name: build and push image to ecr
   hosts: localhost
+  vars_files: 
+  - ./cd_vars_real.yml
   tasks:
   - name: build app image
     community.docker.docker_image:
       build:
-        path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
-      name: simple-rest-crud-service
-      tag: 1.0.0-SNAPHOST
+        path: "{{image.crud_svc_build_path}}"
+      name: "{{image.crud_svc_name}}"
+      tag: "{{image.crud_svc_tag}}"
       push: false
       source: build
 
   - name: aws ecr login
     ansible.builtin.shell: |
-      /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+      "/usr/bin/aws ecr get-login-password --region {{aws.region}} | docker login --username AWS --password-stdin {{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com"
 
   - name: tag the image
-    ansible.builtin.command: /usr/bin/docker tag simple-rest-crud-service:1.0.0-SNAPHOST <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service:1.0.0-SNAPHOST
+    ansible.builtin.command: "/usr/bin/docker tag {{image.crud_svc_name}}:{{image.crud_svc_tag}} {{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com/{{image.crud_svc_name}}:{{image.crud_svc_tag}}"
 
   - name: push to ecr
-    ansible.builtin.command: /usr/bin/docker push <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service:1.0.0-SNAPHOST
+    ansible.builtin.command: "/usr/bin/docker push {{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com/{{image.crud_svc_name}}:{{image.crud_svc_tag}}"
 
-- name: build values.yaml template
-  ??
+
+# - name: build values.yaml template
+  
 
 - name: build helm chart
   host: localhost
   tasks: 
   - name: build helm chart
-    ansible.builtin.command: helm package ./K8sHelmChart --version=1.0.0
+    ansible.builtin.command: "helm package ./K8sHelmChart --version={{helm.chart_version}}"
     args:
-      chdir: /opt/chris-service/Jenkins-CICD-Test-Service
-
-  - name: aws ecr login
-    ansible.builtin.shell: |
-      /usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+      chdir: "{{helm.chart_build_path}}"
 
   - name: push helm chart to ecr
-    ansible.builtin.command: helm push jenkins-cicd-test-service-chart-1.0.0.tgz oci://<aws-account-id>.dkr.ecr.us-east-1.amazonaws.com
+    ansible.builtin.command: "helm push {{chart_package_name}} oci://{{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com"
     args:
-     chdir: /opt/chris-service/Jenkins-CICD-Test-Service
+     chdir: "{{helm.chart_build_path}}"
 
 
 - name: deploy helm chart to eks
   host: eks
   tasks: 
   - name: deploy to eks
-    ansible.builtin.command: helm install batch-rule-engine oci://<aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/jenkins-cicd-test-service-chart --version 1.0.0 --namespace chris-service-portfolio --atomic --timeout 300s --debug
+    ansible.builtin.command: "helm install {{helm.app_name}} oci://{{aws.account_id}}.dkr.ecr.us-east-1.amazonaws.com/{{helm.chart_repo}} --version {{chart_version}} --namespace {{eks.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
     ignore_errors: true
 
   - name: upgrade to eks
-    ansible.builtin.command: helm upgrade batch-rule-engine oci://<aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/jenkins-cicd-test-service-chart --version 1.0.0 --namespace chris-service-portfolio --atomic --timeout 300s --debug
+    ansible.builtin.command: helm upgrade {{helm.app_name}} oci://{{aws.account_id}}.dkr.ecr.us-east-1.amazonaws.com/{{helm.chart_repo}} --version {{chart_version}} --namespace {{eks.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
     ignore_errors: true

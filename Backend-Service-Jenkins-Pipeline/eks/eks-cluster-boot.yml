@@ -42,4 +42,4 @@ vpc:
 nodeGroups:
   - name: test-ng
     instanceType: m3.large
-    desiredCapacity: 3
+    desiredCapacity: 2

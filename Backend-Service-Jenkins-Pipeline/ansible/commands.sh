@@ -111,3 +111,6 @@ $ ansible-galaxy collection list
 $ ansible-galaxy collection install community.docker
 $ python list-collections.py
 # (u'community.docker', u'/home/ansibleadmin/.ansible/collections/ansible_collections/community/docker')
+
+
+###install helm

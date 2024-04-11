@@ -45,23 +45,33 @@ Template Name: {{ .Template.Name }}
 Template Base Path: {{ .Template.BasePath }}
 
 Chart Structure: 
-    ./K8sHelmChart
-    ├── Chart.yaml
-    ├── charts
-    │   └── simple-rest-crud-service
-    │       ├── Chart.yaml
-    │       ├── templates
-    │       │   ├── _helpers.tpl
-    │       │   ├── configmap.yaml
-    │       │   ├── deployment.yaml
-    │       │   ├── hpa.yaml
-    │       │   ├── secret.yaml
-    │       │   └── service.yaml
-    │       └── values.yaml
-    ├── templates
-    │   ├── NOTES.txt
-    │   ├── _helpers.tpl
-    │   └── serviceaccount.yaml
-    └── values.yaml
+                    ./K8sHelmChart
+                    ├── Chart.yaml
+                    ├── charts
+                    │   ├── crud-service-db
+                    │   │   ├── Chart.yaml
+                    │   │   ├── templates
+                    │   │   │   ├── _helpers.tpl
+                    │   │   │   ├── configmap.yaml
+                    │   │   │   ├── deployment.yaml
+                    │   │   │   ├── hpa.yaml
+                    │   │   │   ├── secret.yaml
+                    │   │   │   └── service.yaml
+                    │   │   └── values.yaml
+                    │   └── simple-rest-crud-service
+                    │       ├── Chart.yaml
+                    │       ├── templates
+                    │       │   ├── _helpers.tpl
+                    │       │   ├── configmap.yaml
+                    │       │   ├── deployment.yaml
+                    │       │   ├── hpa.yaml
+                    │       │   ├── secret.yaml
+                    │       │   └── service.yaml
+                    │       └── values.yaml
+                    ├── templates
+                    │   ├── NOTES.txt
+                    │   ├── _helpers.tpl
+                    │   └── serviceaccount.yaml
+                    └── values.yaml
 
 jenkins-cicd-test-service is installed!!!

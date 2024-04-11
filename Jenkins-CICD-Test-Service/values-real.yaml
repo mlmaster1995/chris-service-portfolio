@@ -29,8 +29,8 @@ simple-rest-crud-service:
     servicemonitor: false
     hpa: false
   image: 
-    repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service
-    tag: 0.0.1-SNAPSHOT-1
+    repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app
+    tag: 0.0.1-SNAPSHOT
     pullPolicy: Always
   resources:
     limits:
@@ -39,17 +39,15 @@ simple-rest-crud-service:
     requests:
       cpu: 400m
       memory: 512Mi
-  # true -> enabled a mariadb as a side car of the crud service -> update the configmap:
+
+  # true -> enabled a mariadb as a side car of the crud service
+  # false -> disable the sidecar, but the db dep must be enabled -> update the configmap: 
   #       -> DATABASE_URL: "jdbc:mariadb://localhost:3306/crud-api"
   #       -> db-init.sql: |
   #            CREATE OR REPLACE USER chris@'%' IDENTIFIED BY 'chris2024';
   #            GRANT ALL PRIVILEGES ON * . * TO 'chris'@'%';
   #            SELECT user FROM mysql.user;
   #            DROP USER IF EXISTS chris;
-  # 
-  # false -> disable the sidecar, but the db dep must be enabled or setup aws rds, and update db access in the configmap
-  #       -> disable volumes 
-  #       
   sidecar: 
     enabled: false
     value: 
@@ -74,8 +72,9 @@ simple-rest-crud-service:
         - mountPath: /docker-entrypoint-initdb.d/db-init.sql
           subPath: db-init.sql
           name: config-vol
+
   volumes:
-    enabled: false
+    enabled: true
     value: 
       - name: config-vol
         configMap:
@@ -84,28 +83,33 @@ simple-rest-crud-service:
           items: 
           - key: "db-init.sql"
             path: "db-init.sql"
+
   replicaCount: 1
+
   hpa:
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 90
     targetMemoryUtilizationPercentage: 80
+
   initContainers:
     enabled: false
     value:
-    - name: crud-service-db
+    - name: <dep service name>
       image: radial/busyboxplus:curl
       command: 
       - sh
       - -c
       args:
       - "until nc -vz http://crud-service-db.chris-service-portfolio.svc.cluster.local:3306; do echo waiting for crud-service-db...; sleep 5; done"
+
   configmap:
     data: 
       APP_SERVER_PORT: "8080"
       APP_MANAGEMENT_PORT: "8081"
       DATABASE_URL: "jdbc:mariadb://crud-service-db:3306/crud-api"
       DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+
   secret:
     stringData:
       DATABASE_USER: "chris"
