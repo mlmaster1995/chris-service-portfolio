@@ -47,7 +47,7 @@ import static com.chris.util.AppBeanConstant.APP_AUTH_SERVICE_BEAN;
  * <p>
  * user: user               -> role: user
  * chris: chris2024!        -> role: user, admin
- * admin: chrisAdmin2024!   -> role: user, admin
+ * admin: chrisAdmin2024!   -> role: admin
  */
 @Configuration(value = APP_AUTH_CONFIG_BEAN)
 public class AppAccessAuth {
@@ -81,7 +81,9 @@ public class AppAccessAuth {
                         .requestMatchers(HttpMethod.POST, POST_MEMBER_ENDPOINT).hasRole(RoleType.ADMIN.getVal())
                         .requestMatchers(HttpMethod.PUT, PUT_MEMBER_ENDPOINT).hasRole(RoleType.ADMIN.getVal())
                         .requestMatchers(HttpMethod.DELETE, DELETE_MEMBER_ENDPOINT).hasRole(RoleType.ADMIN.getVal())
-                        .requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).authenticated())
+                        .requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).authenticated()
+                        //.requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).permitAll()
+                )
                 .httpBasic(Customizer.withDefaults())
                 .csrf().disable();
 
