@@ -40,6 +40,7 @@ $ sudo hostnamectl
 #             Kernel: Linux 5.10.210-201.852.amzn2.x86_64
 #       Architecture: x86-64
 
+### install docker
 
 ### add new user as ansibleadmin
 $ sudo useradd ansibleadmin

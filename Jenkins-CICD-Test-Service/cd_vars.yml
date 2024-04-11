@@ -23,8 +23,8 @@
 #################################################################################
 ---
 aws:
-  account: <aws-account-id>
-  region: <aws-region>
+  account_id: <aws-account-id>
+  region:  us-east-1
 
 image:
   crud_svc_build_path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
@@ -33,11 +33,9 @@ image:
 
 helm:
   chart_build_path: /opt/chris-service/Jenkins-CICD-Test-Service
-  chart_verion: 1.0.0
+  chart_version: 1.0.0
   chart_package_name: jenkins-cicd-test-service-chart-1.0.0.tgz
   chart_repo: jenkins-cicd-test-service-chart
-  chart_version: 1.0.0
-  app_deploy_timeout: 300s
+  app_deploy_timeout: 120s
   app_name: jenkins-cicd-test-service
   app_namespace: chris-service-portfolio
-  

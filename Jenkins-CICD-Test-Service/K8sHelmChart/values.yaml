@@ -30,7 +30,7 @@ simple-rest-crud-service:
     hpa: false
   image: 
     repository: 336371013214.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service
-    tag: 0.0.1-SNAPSHOT-1
+    tag: 0.0.1-SNAPSHOT
     pullPolicy: Always
   resources:
     limits:
