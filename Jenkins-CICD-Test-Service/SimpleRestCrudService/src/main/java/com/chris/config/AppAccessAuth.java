@@ -81,8 +81,8 @@ public class AppAccessAuth {
                         .requestMatchers(HttpMethod.POST, POST_MEMBER_ENDPOINT).hasRole(RoleType.ADMIN.getVal())
                         .requestMatchers(HttpMethod.PUT, PUT_MEMBER_ENDPOINT).hasRole(RoleType.ADMIN.getVal())
                         .requestMatchers(HttpMethod.DELETE, DELETE_MEMBER_ENDPOINT).hasRole(RoleType.ADMIN.getVal())
-                        //.requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).authenticated()
-                        .requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).authenticated()
+                        //.requestMatchers(HttpMethod.GET, GET_HEALTH_CHECK_ENDPOINT).permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .csrf().disable();
