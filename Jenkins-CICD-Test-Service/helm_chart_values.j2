@@ -128,7 +128,7 @@ crud-service-db:
   volumes:
     enabled: {{service_db.volumes_enabled}}
     value: 
-      - name: {{service_db.volumes_configmap_name}}
+      - name: {{service_db.volume_mount_name}}
         configMap:
           name: {{service_db.name}}
           defaultMode: {{service_db.volumes_mod}}
