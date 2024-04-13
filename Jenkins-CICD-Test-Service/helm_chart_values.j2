@@ -90,7 +90,7 @@ simple-rest-crud-service:
       - sh
       - -c
       args:
-      - "until nc -vz http://{{service_db.name}}.{{main_service.namespace}}.svc.cluster.local:3306; do echo waiting for {{crud_service.init_container_name}}...; sleep 5; done"
+      - "until nc -vz {{service_db.name}} 3306; do echo waiting for {{crud_service.init_container_name}}...; sleep 5; done"
   configmap:
     data: 
       APP_SERVER_PORT: "{{crud_service.server_port}}"

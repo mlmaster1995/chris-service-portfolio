@@ -41,7 +41,7 @@ helm:
   chart_version: 1.0.0
   chart_package_name: jenkins-cicd-test-service-chart-1.0.0.tgz
   chart_repo: jenkins-cicd-test-service-chart
-  app_deploy_timeout: 300s
+  app_deploy_timeout: 20s
   app_name: jenkins-cicd-test-service
   app_namespace: chris-service-portfolio
 
@@ -49,7 +49,7 @@ main_service:
   name: jenkins-cicd-test-service
   namespace: chris-service-portfolio
   k8s_serviceaccount: "true"
-  global_deploy_env: chris-env
+  global_deploy_env: chris-envs
 
 crud_service:
   name: simple-rest-crud-service
