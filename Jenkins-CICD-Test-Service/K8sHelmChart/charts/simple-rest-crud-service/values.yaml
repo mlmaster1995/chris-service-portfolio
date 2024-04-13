@@ -141,14 +141,14 @@ volumes:
 ############# subchart values: init container
 initContainers:
   enabled: false
-  value:
-  - name: <dep service name>
-    image: radial/busyboxplus:curl
-    command: 
-    - sh
-    - -c
-    args:
-    - "until curl http://<service>.<namespace>.svc.cluster.local:8081/health; do echo waiting for <service-name>...; sleep 5; done"
+  # value:
+  # - name: <dep service name>
+  #   image: busybox
+  #   command: 
+  #   - sh
+  #   - -c
+  #   args:
+  #   - "until nc -vz <dep service name> <dep service port>; do echo waiting for <dep service name>...; sleep 5; donee"
 
 ############# subchart values: pod env
 envFrom:

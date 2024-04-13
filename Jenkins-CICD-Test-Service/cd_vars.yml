@@ -26,7 +26,7 @@
 ---
 # NOTE: control the playbook task flow
 task_flow:
-  image_to_ecr: false
+  image_to_ecr: true
   chart_to_ecr: true
   # NOTE: for 1st time helm chart installation in eks 
   init_install: true

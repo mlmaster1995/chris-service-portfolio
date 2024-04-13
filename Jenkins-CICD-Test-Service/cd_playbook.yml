@@ -92,8 +92,12 @@
     - name: deploy to eks
       ansible.builtin.command: "/usr/local/bin/helm install {{helm.app_name}} oci://{{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{helm.chart_repo}} --version {{helm.chart_version}} --namespace {{helm.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
     when: task_flow.init_install
+    rescue: 
+    - name: upgrade_to_eks
+      ansible.builtin.command: "/usr/local/bin/helm upgrade {{helm.app_name}} oci://{{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{helm.chart_repo}} --version {{helm.chart_version}} --namespace {{helm.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
+      ignore_errors: true
+     
       
-
 - name: upgrade install
   hosts: eks
   vars_files:
