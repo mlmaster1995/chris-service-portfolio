@@ -64,7 +64,7 @@ service:
 
 ############# subchart values: image def
 image:
-  repository: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/cicd-test-app
+  repository: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/simple-rest-crud-service
   tag: 1.0.0-SNAPSHOT
   pullPolicy: Always
   
@@ -76,25 +76,25 @@ fullnameOverride: ""
 
 ############# subchart values: sidecar def
 sidecar: 
-  enabled: true
-  value: 
-    - image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
-      name: sidecar-db
-      env:
-      - name: MYSQL_ROOT_PASSWORD
-        value: "password"
-      - name: MARIADB_DATABASE
-        value: "crud-api"
-      ports:
-      - containerPort: 3306
-        protocol: TCP
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "500m"
-        limits:
-          memory: "256Mi"
-          cpu: "500m"
+  enabled: false
+  # value: 
+  #   - image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
+  #     name: sidecar-db
+  #     env:
+  #     - name: MYSQL_ROOT_PASSWORD
+  #       value: "password"
+  #     - name: MARIADB_DATABASE
+  #       value: "crud-api"
+  #     ports:
+  #     - containerPort: 3306
+  #       protocol: TCP
+  #     resources:
+  #       requests:
+  #         memory: "256Mi"
+  #         cpu: "500m"
+  #       limits:
+  #         memory: "256Mi"
+  #         cpu: "500m"
 
 ############# subchart values: pod resource
 resources:
@@ -148,7 +148,7 @@ initContainers:
     - sh
     - -c
     args:
-    - "until curl http://<service>.chris-service-portfolio.svc.cluster.local:8081/health; do echo waiting for <service-name>...; sleep 5; done"
+    - "until curl http://<service>.<namespace>.svc.cluster.local:8081/health; do echo waiting for <service-name>...; sleep 5; done"
 
 ############# subchart values: pod env
 envFrom:

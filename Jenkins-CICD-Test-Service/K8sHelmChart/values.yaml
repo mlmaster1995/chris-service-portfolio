@@ -124,7 +124,7 @@ simple-rest-crud-service:
 # if the side car is disabled, this dep must be enabled so the crud service have a db
 # if aws rds is used, disable this dep and update the db access in the configmap above for crud service access
 crud-service-db:
-  enabled: true
+  enabled: false
   k8s:
     servicemonitor: false
     hpa: false
