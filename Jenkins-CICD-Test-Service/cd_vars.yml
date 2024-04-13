@@ -81,7 +81,7 @@ crud_service:
   hpa_mem_threshold: 80
   init_container_enabled: "true"
   init_container_name: crud-service-db
-  init_container_image: radial/busyboxplus:curl
+  init_container_image: busybox
   server_port: 8080
   manage_port: 8081
 
