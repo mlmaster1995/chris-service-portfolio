@@ -93,8 +93,8 @@ simple-rest-crud-service:
       - "until nc -vz http://{{service_db.name}}.{{main_service.namespace}}.svc.cluster.local:3306; do echo waiting for {{crud_service.init_container_name}}...; sleep 5; done"
   configmap:
     data: 
-      APP_SERVER_PORT: {{crud_service.server_port}}
-      APP_MANAGEMENT_PORT: {{crud_service.manage_port}}
+      APP_SERVER_PORT: "{{crud_service.server_port}}"
+      APP_MANAGEMENT_PORT: "{{crud_service.manage_port}}"
       DATABASE_URL: jdbc:mariadb://{{service_db.name}}:3306/{{service_db.db_default_name}}
       DATABASE_DRIVER: org.mariadb.jdbc.Driver
   secret:
