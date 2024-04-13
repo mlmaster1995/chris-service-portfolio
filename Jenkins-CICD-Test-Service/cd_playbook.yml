@@ -22,55 +22,68 @@
 # SOFTWARE.                                                                     #
 #################################################################################
 ---
-- name: build and push image to ecr
+- name: build & push image to ecr
   hosts: localhost
-  vars_files: 
-  - ./cd_vars_real.yml
+  vars_files:
+  - ./cd_vars.yml
+  - ./cd_secret.yml
   tasks:
   - name: build app image
     community.docker.docker_image:
       build:
-        path: "{{image.crud_svc_build_path}}"
-      name: "{{image.crud_svc_name}}"
-      tag: "{{image.crud_svc_tag}}"
+        path: "{{image.build_path}}"
+      name: "{{crud_service.name}}"
+      tag: "{{crud_service.image_tag}}"
       push: false
       source: build
 
   - name: aws ecr login
-    ansible.builtin.shell: |
-      "/usr/bin/aws ecr get-login-password --region {{aws.region}} | docker login --username AWS --password-stdin {{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com"
+    ansible.builtin.shell: "/usr/bin/aws ecr get-login-password --region {{aws_region}} | /usr/bin/docker login --username AWS --password-stdin {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com"
 
   - name: tag the image
-    ansible.builtin.command: "/usr/bin/docker tag {{image.crud_svc_name}}:{{image.crud_svc_tag}} {{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com/{{image.crud_svc_name}}:{{image.crud_svc_tag}}"
+    ansible.builtin.command: "/usr/bin/docker tag {{crud_service.name}}:{{crud_service.image_tag}} {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{crud_service.name}}:{{crud_service.image_tag}}"
 
   - name: push to ecr
-    ansible.builtin.command: "/usr/bin/docker push {{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com/{{image.crud_svc_name}}:{{image.crud_svc_tag}}"
+    ansible.builtin.command: "/usr/bin/docker push {{aws_account_id}}.dkr.ecr.{{aw_region}}.amazonaws.com/{{crud_service.name}}:{{crud_service.image_tag}}"
+
+  - name: update helm chart values.yml
+    ansible.builtin.template:
+       src: ./helm_chart_values.j2
+       dest: ./K8sHelmChart/values.yml
+       owner: ansibleadmin
+       group: ansibleadmin
+       mode: 0644
+
+# - name: build & push helm chart
+#   hosts: localhost
+#   vars_files:
+#   - ./cd_vars.yml
+#   - ./cd_secret.yml
+#   tasks:
+#   - name: build helm chart
+#     ansible.builtin.command: "/usr/local/bin/helm package K8sHelmChart --version={{helm.chart_version}}"
+#     args:
+#       chdir: "{{helm.chart_build_path}}"
+
+#   - name: push helm chart to ecr
+#     ansible.builtin.command: "/usr/local/bin/helm push {{helm.chart_package_name}} oci://{{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com"
+#     args:
+#      chdir: "{{helm.chart_build_path}}"
 
 
-# - name: build values.yaml template
-  
+# - name: pull & deploy helm chart to eks
+#   hosts: eks
+#   vars_files:
+#   - ./cd_vars.yml
+#   - ./cd_secret.yml
+#   tasks:
+#   - name: aws ecr login
+#     ansible.builtin.shell: "/usr/bin/aws ecr get-login-password --region {{aws_region}} | /usr/bin/docker login --username AWS --password-stdin {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com"
 
-- name: build helm chart
-  host: localhost
-  tasks: 
-  - name: build helm chart
-    ansible.builtin.command: "helm package ./K8sHelmChart --version={{helm.chart_version}}"
-    args:
-      chdir: "{{helm.chart_build_path}}"
+#   - name: deploy to eks
+#     ansible.builtin.command: "/usr/local/bin/helm install {{helm.app_name}} oci://{{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{helm.chart_repo}} --version {{helm.chart_version}} --namespace {{helm.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
+#     ignore_errors: true
 
-  - name: push helm chart to ecr
-    ansible.builtin.command: "helm push {{chart_package_name}} oci://{{aws.account_id}}.dkr.ecr.{{aws.region}}.amazonaws.com"
-    args:
-     chdir: "{{helm.chart_build_path}}"
-
-
-- name: deploy helm chart to eks
-  host: eks
-  tasks: 
-  - name: deploy to eks
-    ansible.builtin.command: "helm install {{helm.app_name}} oci://{{aws.account_id}}.dkr.ecr.us-east-1.amazonaws.com/{{helm.chart_repo}} --version {{chart_version}} --namespace {{eks.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
-    ignore_errors: true
-
-  - name: upgrade to eks
-    ansible.builtin.command: helm upgrade {{helm.app_name}} oci://{{aws.account_id}}.dkr.ecr.us-east-1.amazonaws.com/{{helm.chart_repo}} --version {{chart_version}} --namespace {{eks.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
-    ignore_errors: true
+#   - name: upgrade to eks
+#     ansible.builtin.command: "/usr/local/bin/helm upgrade {{helm.app_name}} oci://{{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{helm.chart_repo}} --version {{helm.chart_version}} --namespace {{helm.app_namespace}} --atomic --timeout {{helm.app_deploy_timeout}} --debug"
+#     ignore_errors: true

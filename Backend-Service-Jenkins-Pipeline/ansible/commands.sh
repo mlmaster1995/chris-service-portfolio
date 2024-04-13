@@ -89,9 +89,12 @@ $ ansible-inventory --graph
 $ ansible-inventory --list
 $ ansible-doc -l
 
-$ ansible-playbook <playbook>.yml
-$ ansible-playbook --syntax-check <playbook>.yml
-$ ansible-playbook -vv -C <playbook>.yml # dry run with task results and taks config
+$ ansible-playbook playbook.yml
+$ ansible-playbook --syntax-check playbook.yml
+$ ansible-playbook -vv -C playbook.yml # dry run with task results and taks config
+$ ansible-playbook -vv --ask-vault-pass playbook.yml # ansible ask for password intput manually
+$ ansible-playbook --vault-password-file=vault-pass playbook.yml # automate the process
+
 
 ###integrate jenkins to ansible
 #1 update push over ssh to Jenins server
@@ -114,3 +117,11 @@ $ python list-collections.py
 
 
 ###install helm
+
+###ansible vault
+$ ansible-vault create secret.yaml
+$ ansible-vault create --vault-password-file=passfile secret.yaml
+$ ansible-vault encrypt file.yaml
+$ ansible-vault decrypt file.yaml
+$ ansible-vault view file.yaml
+$ ansible-vault rekey file.yaml #change the paswd

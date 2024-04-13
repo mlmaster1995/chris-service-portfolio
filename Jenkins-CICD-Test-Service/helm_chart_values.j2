@@ -1,0 +1,165 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+
+################### {{ ansible_managed }} !!!DO NOT CHANGE!!! ###################
+simple-rest-crud-service:
+  enabled: {{crud_service.enabled}}
+  k8s:
+    servicemonitor: {{crud_service.k8s_servicemonitor}}
+    hpa: {{crud_service.k8s_hpa}}
+  image: 
+    repository: {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{crud_service.name}}
+    tag: {{crud_service.image_tag}}
+    pullPolicy: {{crud_service.image_pull_policy}}
+  resources:
+    limits:
+      cpu: {{crud_service.resource_cpu_limit}}
+      memory: {{crud_service.resource_mem_limit}}
+    requests:
+      cpu: {{crud_service.resource_cpu_request}}
+      memory: {{crud_service.resource_mem_request}}
+  {% if service_db.enabled == 'false' and crud_service.sidecar_enabled == 'true' %}
+  sidecar: 
+    enabled: {{crud_service.sidecar_enabled}}
+    value: 
+      - image: {{service_db.image_repo}}:{{service_db.image_tag}}
+        name: sidecar-db
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{service_db.db_root_password}}
+        - name: MARIADB_DATABASE
+          value: {{service_db.db_default_name}}
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{service_db.resource_cpu_request}}
+            memory: {{service_db.resource_mem_request}}
+          limits:
+            cpu: {{service_db.resource_cpu_limit}}
+            memory: {{service_db.resource_mem_limit}}
+        volumeMounts:
+        - mountPath: {{service_db.volume_mount_path}}
+          subPath: {{service_db.volume_mount_subpath}}
+          name: {{service_db.volume_mount_name}}
+  volumes:
+    enabled: {{crud_service.sidecar_enabled}}
+    value: 
+      - name: {{service_db.name}}
+        configMap:
+          name: {{service_db.volumes_configmap_name}}
+          defaultMode: {{service_db.volumes_mod}}
+          items: 
+          - key: {{service_db.volumes_configmap_key}}
+            path: {{service_db.volumes_configmap_path}}
+  {% endif %}
+  replicaCount: {{crud_service.replica_count}}
+  hpa:
+    minReplicas: {{crud_service.hpa_min}}
+    maxReplicas: {{crud_service.hpa_max}}
+    targetCPUUtilizationPercentage: {{crud_service.hpa_cpu_threshold}}
+    targetMemoryUtilizationPercentage: {{crud_service.hpa_mem_threshold}}
+  initContainers:
+    enabled: {{crud_service.init_container_enabled}}
+    value:
+    - name: {{crud_service.init_container_name}}
+      image: {{crud_service.init_container_image}}
+      command:
+      - sh
+      - -c
+      args:
+      - "until nc -vz http://{{service_db.name}}.{{main_service.namespace}}.svc.cluster.local:3306; do echo waiting for {{crud_service.init_container_name}}...; sleep 5; done"
+  configmap:
+    data: 
+      APP_SERVER_PORT: {{crud_service.server_port}}
+      APP_MANAGEMENT_PORT: {{crud_service.manage_port}}
+      DATABASE_URL: jdbc:mariadb://{{service_db.name}}:3306/{{service_db.db_default_name}}
+      DATABASE_DRIVER: org.mariadb.jdbc.Driver
+  secret:
+    stringData:
+      DATABASE_USER: {{db_user}}
+      DATABASE_PASSWORD: {{db_user_password}}
+
+{% if crud_service.sidecar_enabled == 'false' and service_db.enabled == 'true' %}
+crud-service-db:
+  enabled: {{service_db.enabled}}
+  k8s:
+    servicemonitor: {{service_db.k8s_servicemonitor}}
+    hpa: {{service_db.k8s_hpa}}
+  image: 
+    repository: {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/mariadb
+    tag: {{service_db.image_tag}}
+    pullPolicy: {{service_db.image_pull_policy}}
+  resources:
+    limits:
+      cpu: {{service_db.resource_cpu_limit}}
+      memory: {{service_db.resource_mem_limit}}
+    requests:
+      cpu: {{service_db.resource_cpu_request}}
+      memory: {{service_db.resource_mem_request}}
+  volumeMounts:
+    enabled: {{service_db.volume_mount_enabled}}
+    value: 
+      - mountPath: {{service_db.volume_mount_path}}
+        subPath: {{service_db.volume_mount_subpath}}
+        name: {{service_db.volume_mount_name}}
+  volumes:
+    enabled: {{service_db.volumes_enabled}}
+    value: 
+      - name: {{service_db.volumes_configmap_name}}
+        configMap:
+          name: {{service_db.name}}
+          defaultMode: {{service_db.volumes_mod}}
+          items: 
+          - key: {{service_db.volumes_configmap_key}}
+            path: {{service_db.volumes_configmap_path}}
+  replicaCount: {{service_db.replica_count}}
+  configmap:
+    data: 
+      MYSQL_ROOT_PASSWORD: {{db_root_password}}
+      MARIADB_DATABASE: {{service_db.db_default_name}}
+      {{service_db.volumes_configmap_key}}: |
+        DROP USER IF EXISTS {{db_user}};
+        CREATE OR REPLACE USER {{db_user}}@'%' IDENTIFIED BY '{{db_user_password}}';
+        GRANT ALL PRIVILEGES ON * . * TO '{{db_user}}'@'%';
+        SELECT user FROM mysql.user;
+  {% endif %}
+
+############# parent chart values: k8s resources, status of serviceAccount #############
+k8s:
+  serviceaccount: {{main_service.k8s_serviceaccount}}
+
+############# parent chart values: global values used by sub-chart #############
+global:
+  deploy:
+    env: {{main_service.global_deploy_env}}
+  serviceAccount:
+    enabled: {{main_service.k8s_serviceaccount}}
+    name: {{main_service.name}}
+
+############# parent chart values: service account def #############
+serviceAccount:
+  annotations: {}
+  name: {{main_service.name}}

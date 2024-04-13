@@ -21,21 +21,93 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
 # SOFTWARE.                                                                     #
 #################################################################################
----
-aws:
-  account_id: <aws-account-id>
-  region:  us-east-1
 
+# NOTE: this file is majorly used to config the helm chart and deployment
+---
 image:
-  crud_svc_build_path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
-  crud_svc_name: simple-rest-crud-service
-  crud_svc_tag: 1.0.0-SNAPHOST
+  build_path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
 
 helm:
   chart_build_path: /opt/chris-service/Jenkins-CICD-Test-Service
   chart_version: 1.0.0
   chart_package_name: jenkins-cicd-test-service-chart-1.0.0.tgz
   chart_repo: jenkins-cicd-test-service-chart
-  app_deploy_timeout: 120s
+  app_deploy_timeout: 300s
   app_name: jenkins-cicd-test-service
   app_namespace: chris-service-portfolio
+
+main_service:
+  name: jenkins-cicd-test-service
+  namespace: chris-service-portfolio
+  k8s_serviceaccount: "true"
+  global_deploy_env: chris-env
+
+crud_service:
+  name: simple-rest-crud-service
+  enabled: "true"
+  k8s_servicemonitor: "false"
+  k8s_hpa: "false"
+  image_tag: 0.0.1-SNAPSHOT
+  image_pull_policy: Always
+  resource_cpu_limit: 400m
+  resource_mem_limit: 512Mi
+  resource_cpu_request: 400m
+  resource_mem_request: 512Mi
+# NOTE:                                                                         
+# case 1:                               
+# if crud_service.sidecar_enabled is false, service_db is rendered in the template or it's NOT rendered
+# if service_db is rendered in the template, and service_db.enabled is true, service_db is rendered into the helm chart
+# if service_db is rendered in the template, but service_db.enabled is true, service_db is NOT rendered into the helm chart
+# 
+# case 2: 
+# if crud_service.sidecar_enabled is true, service_db is fully blocked in the tempalte and the helm chart 
+# 
+# case 3:
+# if both crud_service.sidecar_enabled and service_db.enabled are true, both sections are fully blocked in the template and the helm chart 
+  sidecar_enabled: "false"
+  replica_count: 1
+  hpa_min: 1
+  hpa_max: 2
+  hpa_cpu_threshold: 90
+  hpa_mem_threshold: 80
+  init_container_enabled: "true"
+  init_container_name: crud-service-db
+  init_container_image: radial/busyboxplus:curl
+  server_port: 8080
+  manage_port: 8081
+
+
+#  NOTE:                                                                         
+# case 1:                               
+# if crud_service.sidecar_enabled is false, service_db is rendered in the template or it's NOT rendered
+# if service_db is rendered in the template, and service_db.enabled is true, service_db is rendered into the helm chart
+# if service_db is rendered in the template, but service_db.enabled is true, service_db is NOT rendered into the helm chart
+# 
+# case 2: 
+# if crud_service.sidecar_enabled is true, service_db is fully blocked in the tempalte and the helm chart 
+# 
+# case 3:
+# if both crud_service.sidecar_enabled and service_db.enabled are true, both sections are fully blocked in the template and the helm chart 
+service_db: 
+  name: crud-service-db
+  enabled: "true"
+  k8s_servicemonitor: "false"
+  k8s_hpa: "false"
+  image_tag: 11
+  image_pull_policy: Always
+  resource_cpu_limit: 400m
+  resource_mem_limit: 512Mi
+  resource_cpu_request: 400m
+  resource_mem_request: 512Mi
+  volume_mount_enabled: "true"
+  volume_mount_name: config-vol
+  volume_mount_path: /docker-entrypoint-initdb.d/db-init.sql
+  volume_mount_subpath: db-init.sql
+  volumes_enabled: "true"
+  volumes_configmap_name: crud-service-db
+  volumes_mod: 0755
+  volumes_configmap_key: "db-init.sql"
+  volumes_configmap_path: "db-init.sql"
+  replica_count: 1
+  db_root_password: password
+  db_default_name: crud-api
