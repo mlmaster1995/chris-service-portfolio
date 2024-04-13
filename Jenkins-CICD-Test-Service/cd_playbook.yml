@@ -49,7 +49,7 @@
   - name: update helm chart values.yml
     ansible.builtin.template:
        src: ./helm_chart_values.j2
-       dest: ./K8sHelmChart/values.yml
+       dest: ./K8sHelmChart/values.yaml
        owner: ansibleadmin
        group: ansibleadmin
        mode: 0644
