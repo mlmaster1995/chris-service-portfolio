@@ -41,7 +41,7 @@ helm:
   chart_version: 1.0.0
   chart_package_name: jenkins-cicd-test-service-chart-1.0.0.tgz
   chart_repo: jenkins-cicd-test-service-chart
-  app_deploy_timeout: 20s
+  app_deploy_timeout: 300s
   app_name: jenkins-cicd-test-service
   app_namespace: chris-service-portfolio
 
