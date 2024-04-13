@@ -66,7 +66,7 @@ simple-rest-crud-service:
         name: sidecar-db
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: "password"
+          value: <custom-db-root-password>
         - name: MARIADB_DATABASE
           value: "crud-api"
         ports:

@@ -24,6 +24,15 @@
 
 # NOTE: this file is majorly used to config the helm chart and deployment
 ---
+# NOTE: control the playbook task flow
+task_flow:
+  image_to_ecr: false
+  chart_to_ecr: false
+  # NOTE: for 1st time helm chart installation in eks 
+  init_install: false
+  # NOTE: for non-first time helm chart installation
+  upgrade_install: false
+
 image:
   build_path: /opt/chris-service/Jenkins-CICD-Test-Service/SimpleRestCrudService
 
