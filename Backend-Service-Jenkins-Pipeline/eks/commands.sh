@@ -127,3 +127,10 @@ $ helm list -a
 # ...
 
 
+$ vi ~/.bashrc
+# alias k='kubectl'
+$ source ~/.bashrc
+
+$ vi ~/.bash_profile
+# export C=chris-service-portfolio
+$ source ~/.bash_profile
