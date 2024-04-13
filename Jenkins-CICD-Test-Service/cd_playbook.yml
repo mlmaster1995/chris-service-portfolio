@@ -44,7 +44,7 @@
     ansible.builtin.command: "/usr/bin/docker tag {{crud_service.name}}:{{crud_service.image_tag}} {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{crud_service.name}}:{{crud_service.image_tag}}"
 
   - name: push to ecr
-    ansible.builtin.command: "/usr/bin/docker push {{aws_account_id}}.dkr.ecr.{{aw_region}}.amazonaws.com/{{crud_service.name}}:{{crud_service.image_tag}}"
+    ansible.builtin.command: "/usr/bin/docker push {{aws_account_id}}.dkr.ecr.{{aws_region}}.amazonaws.com/{{crud_service.name}}:{{crud_service.image_tag}}"
 
   - name: update helm chart values.yml
     ansible.builtin.template:
