@@ -49,7 +49,7 @@ main_service:
   name: jenkins-cicd-test-service
   namespace: chris-service-portfolio
   k8s_serviceaccount: "true"
-  global_deploy_env: chris-envs
+  global_deploy_env: chris-env
 
 crud_service:
   name: simple-rest-crud-service
