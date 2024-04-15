@@ -15,4 +15,5 @@ This is a Jeknins pipeline setup to automate the process of project test & build
 * [Python](https://www.python.org/)
 
 ## CI/CD Pipeline
+![readme](https://github.com/mlmaster1995/chris-service-portfolio/assets/55723894/7742ddc5-7e87-4cfc-920a-4d5d31e7e68b)
 
