@@ -1,8 +1,10 @@
 # Backend Service Jenkins CI/CD Pipeline
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)         ![Test: Pass](https://img.shields.io/badge/PipelineTest-Pass-green)                  ![Status: Updated](https://img.shields.io/badge/Status-Updated-orange)
 
 ## About The Project
-This project is to build a CI/CD pipeline with ```Jenkins``` deploying to ```AWS EKS``` in my ```free tire AWS account```. This stack is majorly used to deploy & test all the backend services I created in this portfolio. I will continue to update this repo to add more components as this portfolio grows!  
+1. This project is to build a CI/CD pipeline with ```Jenkins``` deploying the backend services to ```AWS EKS``` in my ```free tire AWS account```. This stack is majorly used to deploy & test all the backend services I created in this portfolio. I will continue to update this repo to add more components as this portfolio grows!  
+2. This project is NOT setup as fully automation, but both automation & manual scripts are used to setup the whole pipeline. ```For example, python boto3 cannot rollout a public subnet unless assigning an elastic IP but the static IP will generate cost from my free tire account, so I would enable the public IP on the subnet maunally instead of using the script.```
+3. Typical integration of this pipeline is implemented in the specific backend service repo like [here](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service), and Jenkins will pull the typical repo finishing the whole CI/CD process after seting up a new job.  
 
 ## Built With
 * [Jenkins](https://www.jenkins.io/)
@@ -21,6 +23,7 @@ This project is to build a CI/CD pipeline with ```Jenkins``` deploying to ```AWS
 **NOTE**: 
 1. All aws resources are provisioned on the ```public subnet``` in this statck which is **NOT** a good option as I try to save extra costs in my free tire account. The best practice is all resources in ```private subnet``` and all traffic are routed through the ```NAT gateway``` in the custom VPC and subnet blocks;
 2. This stack is still secured properly via the typical ```Security Group``` settings and ```IAM role & policy``` on each resource; 
+3. This project is to setup the pipeline on AWS with ```shell script``` and ```python boto3```, but the typical playbook to implement ```CD process``` to ```ECR``` and ```EKS``` is in the tpyical project repo like [this test project](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service). All playbooks in this repo are for functional tests NOT related to typical backend service CD process. 
 
 ![readme](https://github.com/mlmaster1995/chris-service-portfolio/assets/55723894/7742ddc5-7e87-4cfc-920a-4d5d31e7e68b)
 
