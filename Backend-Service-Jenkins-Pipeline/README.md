@@ -13,6 +13,8 @@ This project is to build a CI/CD pipeline with ```Jenkins``` deploying to ```AWS
 * [AWS ECR](https://aws.amazon.com/ecr/)
 * [AWS EKS](https://aws.amazon.com/eks/)
 * [Python](https://www.python.org/)
+* [Kubernetes](https://kubernetes.io/)
+* [Helm](https://helm.sh/)
 
 ## CI/CD Pipeline
 
