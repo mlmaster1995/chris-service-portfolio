@@ -1,8 +1,8 @@
-# Backend Service Jenkins CI/CI Pipeline
+# Backend Service Jenkins CI/CD Pipeline
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## About The Project
-This is a Jeknins pipeline setup to automate the process of project test & build & deploy for all the backend service in this portfolio. All the ```backend services``` I created will use this pipeline to run end-to-end test in the personal free-tire aws account, typically in ```AWS EKS```. This is a ```live and ongoing``` project including both ```manual commands``` and ```python script``` for automation. On top of the Jenkins pipline, it also includes all setup for ```k8s``` environment. I will continously contribute to this repo, and demonestrate my skills and capability in backend.  
+This project is to build a CI/CD pipeline with ```Jenkins``` deploying to ```AWS EKS``` in my ```free tire AWS account```. This stack is majorly used to deploy & test all the backend services I created in this portfolio. I will continue to update this repo to add more components as this portfolio grows!  
 
 ## Built With
 * [Jenkins](https://www.jenkins.io/)
@@ -15,5 +15,23 @@ This is a Jeknins pipeline setup to automate the process of project test & build
 * [Python](https://www.python.org/)
 
 ## CI/CD Pipeline
+
+**NOTE**: 
+1. All aws resources are provisioned on the ```public subnet``` in this statck which is **NOT** a good option as I try to save extra costs in my free tire account. The best practice is all resources in ```private subnet``` and all traffic are routed through the ```NAT gateway``` in the custom VPC and subnet blocks;
+2. This stack is still secured properly via the typical ```Security Group``` settings and ```IAM role & policy``` on each resource; 
+
 ![readme](https://github.com/mlmaster1995/chris-service-portfolio/assets/55723894/7742ddc5-7e87-4cfc-920a-4d5d31e7e68b)
 
+## Contents
+
+| Folder        | File             | Status    |
+| ------------- |---------------- |:---------:|
+| ansible       | iam policy for ansible server to access the ecr, and test playbooks    | updated |
+| boto3         | python test scripts, and aws resources setup scripts          |   updated |
+| docker        | test docker file, and docker server setup commands         |    updated |
+| ec2           | ec2 setup commands         |  updated |
+| ecr           | ecr access iam policy, and ecr repo & image push commands          |    updated |
+| eks           | eks access iam policy, and eks setup commands         |    updated |
+| helm          | backend service starter chart, and helm setup commands         |    updated |
+| jenkins       | jenkins server setup commands         | updated  |
+| k8s           | eks test pod & db yaml files, and eks component setup files         |    updated |
