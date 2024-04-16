@@ -2,9 +2,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)         ![Test: Pass](https://img.shields.io/badge/PipelineTest-Pass-green)                  ![Status: Updated](https://img.shields.io/badge/Status-Updated-orange)
 
 ## About The Project
-1. This project is to build a CI/CD pipeline with ```Jenkins``` deploying the backend services to ```AWS EKS``` in my ```free tire AWS account```. This stack is majorly used to deploy & test all the backend services I created in this portfolio. I will continue to update this repo to add more components as this portfolio grows!  
-2. This project is NOT setup as fully automation, but both automation & manual scripts are used to setup the whole pipeline. ```For example, python boto3 cannot rollout a public subnet unless assigning an elastic IP but the static IP will generate cost from my free tire account, so I would enable the public IP on the subnet maunally instead of using the script.```
-3. Typical integration of this pipeline is implemented in the specific backend service repo like [here](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service), and Jenkins will pull the typical repo finishing the whole CI/CD process after seting up a new job.  
+1. This project is to build a CI/CD pipeline with ```Jenkins``` deploying the backend services to ```AWS EKS``` in my ```free tire AWS account```. This stack is majorly used to ```deploy & end-to-end test``` all the backend services I created on ```AWS```. I will continue to update this repo to add more components/new features as this portfolio grows!  
+2. **Typical Integration Between the Pipeline and the Service** is implemented in the specific backend service repo like [this project](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service). Jenkins server will pull the git repo starting the whole CI/CD process once it's triggered.  
+3. This project is NOT setup as fully automation, but both automation & manual scripts are used to setup the whole pipeline. ```For example, python boto3 cannot rollout a public subnet unless assigning an elastic IP but the static IP will generate cost from my free tire account, so I would enable the public IP on the subnet maunally instead of using the script.```
+
 
 ## Built With
 * [Jenkins](https://www.jenkins.io/)
@@ -40,3 +41,6 @@
 | helm          | backend service starter chart, and helm setup commands         |    updated |
 | jenkins       | jenkins server setup commands         | updated  |
 | k8s           | eks test pod & db yaml files, and eks component setup files         |    updated |
+
+## Contact
+Chris Yang: kyang3@lakeheadu.ca
