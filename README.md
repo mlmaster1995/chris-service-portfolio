@@ -17,7 +17,7 @@ Happy Coding! Cheers~~
 | ------------- |---------|
 | [Backend Service Jenkins CI/CD Pipeline](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Backend-Service-Jenkins-Pipeline) | Updated|
 | [Jenkins CI/CD Test Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service) |Done |
-| Chris Auth Entry Service | In Progress |
+| [Chris Auth Entry Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Chris-Auth-Entry-Service) | In Progress |
 
 
 
