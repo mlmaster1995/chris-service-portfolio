@@ -40,23 +40,23 @@
 
 ### REST API Endpiont 
 
-| Method        | API             | Feature |  Auth Role |
-| ------------- |---------------- |---------|------------|
-| GET | /health | service status information from springboot actuator| Authenticated without Role
-| GET | /api/v1/members | get all members under one page |USER, ADMIN
-| GET | /api/v1/members/{member_id} | get gym member by id |USER, ADMIN
-| POST | /api/v1/member/{email} | get gym memeber by email |USER, ADMIN
-| POST  | /api/v1/member| add new gym member to database |ADMIN
-| PUT | /api/v1/member | update existing gym member into database |ADMIN
-| DELETE | /api/v1/members/{memberId}| delete member by id |ADMIN
+| Method | API                         | Feature                                             | Auth Role                  |
+|--------|-----------------------------|-----------------------------------------------------|----------------------------|
+| GET    | /health                     | service status information from springboot actuator | Authenticated without Role |
+| GET    | /api/v1/members             | get all members under one page                      | USER, ADMIN                |
+| GET    | /api/v1/members/{member_id} | get gym member by id                                | USER, ADMIN                |
+| POST   | /api/v1/member/{email}      | get gym memeber by email                            | USER, ADMIN                |
+| POST   | /api/v1/member              | add new gym member to database                      | ADMIN                      |
+| PUT    | /api/v1/member              | update existing gym member into database            | ADMIN                      |
+| DELETE | /api/v1/members/{memberId}  | delete member by id                                 | ADMIN                      |
 
 ### Security Auth
 
-| User | Role | Password Encrypt |  Auth Base64 |
-| ---- |------|------------------|----------------|
-| user | USER | BCrypt | dXNlcjp1c2Vy
-| admin | ADMIN | BCrypt |YWRtaW46Y2hyaXNBZG1pbjIwMjQh
-| chris | USER, ADMIN | BCrypt |Y2hyaXM6Y2hyaXMyMDI0IQ==
+| User  | Role        | Password Encrypt | Auth Base64                  |
+|-------|-------------|------------------|------------------------------|
+| user  | USER        | BCrypt           | dXNlcjp1c2Vy                 |
+| admin | ADMIN       | BCrypt           | YWRtaW46Y2hyaXNBZG1pbjIwMjQh |
+| chris | USER, ADMIN | BCrypt           | Y2hyaXM6Y2hyaXMyMDI0IQ==     |
 
 ## Helm Chart
 

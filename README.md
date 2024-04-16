@@ -13,23 +13,23 @@ I will continue to develop this portfolio to show my latest skill sets, or pract
 Happy Coding! Cheers~~
 
 ## My New Portfolio 
-| Project       | Status |
-| ------------- |---------|
-| [Backend Service Jenkins CI/CD Pipeline](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Backend-Service-Jenkins-Pipeline) | Updated|
-| [Jenkins CI/CD Test Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service) |Done |
-| [Chris Auth Entry Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Chris-Auth-Entry-Service) | In Progress |
+| Project                                                                                                                                      | Status      |
+|----------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| [Backend Service Jenkins CI/CD Pipeline](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Backend-Service-Jenkins-Pipeline) | Updated     |
+| [Jenkins CI/CD Test Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service)                    | Done        |
+| [Chris Auth Entry Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Chris-Auth-Entry-Service)                       | In Progress |
 
 
 
 ## My Old Portfolio ( From School Time )
 
-| Project       | Status |
-| ------------- |---------|
-| [Detection of Alzheimer’s Disease Using Graph-Regularized Convolutional Neural Network Based on Structural Similarity Learning of Brain Magnetic Resonance Images](https://github.com/mlmaster1995/Detection-of-AD-Using-Graph-Regularized-CNN-Based-on-MRIs) | Done|
-| [UrbanSound Classification with CNN and RNN](https://github.com/mlmaster1995/UrbanSound-Classification_CNN_RNN) |Done |
-| [Tweet Topic Tracking Pipeline with Lambda Architecture](https://github.com/mlmaster1995/twitter-with-kafka-stream) | Done |
-| [Basic Data Pipline with Spark Structred Streaming](https://github.com/mlmaster1995/Flume_Kafka_StructureStream_ELT) | Done |
-| [ETL(Extract Transform Load) Data Pipeline Collection OOP](https://github.com/mlmaster1995/Flume_Kafka_StructureStream_ELT_Updated) |Done |
+| Project                                                                                                                                                                                                                                                       | Status |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
+| [Detection of Alzheimer’s Disease Using Graph-Regularized Convolutional Neural Network Based on Structural Similarity Learning of Brain Magnetic Resonance Images](https://github.com/mlmaster1995/Detection-of-AD-Using-Graph-Regularized-CNN-Based-on-MRIs) | Done   |
+| [UrbanSound Classification with CNN and RNN](https://github.com/mlmaster1995/UrbanSound-Classification_CNN_RNN)                                                                                                                                               | Done   |
+| [Tweet Topic Tracking Pipeline with Lambda Architecture](https://github.com/mlmaster1995/twitter-with-kafka-stream)                                                                                                                                           | Done   |
+| [Basic Data Pipline with Spark Structred Streaming](https://github.com/mlmaster1995/Flume_Kafka_StructureStream_ELT)                                                                                                                                          | Done   |
+| [ETL(Extract Transform Load) Data Pipeline Collection OOP](https://github.com/mlmaster1995/Flume_Kafka_StructureStream_ELT_Updated)                                                                                                                           | Done   |
 
 
 ## Contact
