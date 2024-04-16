@@ -11,7 +11,7 @@
 
     <groupId>com.chris</groupId>
     <artifactId>SimpleRestCrudService</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>SimpleRestCrudService</name>
     <description>Simple Rest Crud Service</description>
     <packaging>jar</packaging>

@@ -1,7 +1,7 @@
 # Chris Service Portfolio
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![Status: Updated](https://img.shields.io/badge/Status-In_Progress-red)
 
-## About The Portfolio & Me
+## About The Portfolio
 This is a **FUN** place for [me](https://www.linkedin.com/in/chris-yang-8083942aa) to create, test, present all my passions to explore the world of software engineering. During the school time, I created a portfolio with multiple projects including AI, ML, Big Data Analytics which made a good foundation to bring me into a real career as a software engineer focuing on the backend. 
 
 I took many **BIG** questions when starting this journey (**HOW** come my work could only runs in localhost? **WHAT** a software lifecycle really looks like in the real world? **HOW** to secure the the service? **HOW** to bring my work to the cloud? **HOW** to manage them in the real world properly?....). Fortunately, my career gave me all perfect answers and also kept my vision widely open to this industry especially in the backend from dev, test, ops, cloud, sys admin to prod support.... In the meatime, I just **NEVER** felt enough to learn and practice new knowledge and skills until now...
@@ -11,6 +11,15 @@ Unfortunately, I missed the chance to demonstrate my growth due to the daily bus
 I will continue to develop this portfolio to show my latest skill sets, or practice a new skill/tech aqcuired or share a new idea poping up in my mind. Please check my new projects and feedback to me! 
 
 Happy Coding! Cheers~~
+
+## My New Portfolio 
+| Project       | Status |
+| ------------- |---------|
+| [Backend Service Jenkins CI/CD Pipeline](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Backend-Service-Jenkins-Pipeline) | Updated|
+| [Jenkins CI/CD Test Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service) |Done |
+| Chris Auth Entry Service | In Progress |
+
+
 
 ## My Old Portfolio ( From School Time )
 

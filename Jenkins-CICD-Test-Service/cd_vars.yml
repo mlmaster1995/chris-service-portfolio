@@ -56,7 +56,7 @@ crud_service:
   enabled: "true"
   k8s_servicemonitor: "false"
   k8s_hpa: "false"
-  image_tag: 0.0.1-SNAPSHOT
+  image_tag: 1.0.0
   image_pull_policy: Always
   resource_cpu_limit: 400m
   resource_mem_limit: 512Mi

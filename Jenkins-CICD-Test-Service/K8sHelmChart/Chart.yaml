@@ -29,10 +29,10 @@ type: application
 version: 1.0.0
 dependencies:
   - name: simple-rest-crud-service
-    version: "1.0.0-SNAPSHOT"
+    version: "1.0.0"
     condition: simple-rest-crud-service.enabled
   - name: crud-service-db
-    version: "1.0.0"
+    version: "11"
     condition: crud-service-db.enabled
 maintainers:
 - email: kyang3@lakeheadu.ca
