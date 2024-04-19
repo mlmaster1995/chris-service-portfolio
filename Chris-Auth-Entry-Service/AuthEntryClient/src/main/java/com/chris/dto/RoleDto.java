@@ -1,8 +1,31 @@
+/**
+ * MIT License
+ * <p>
+ * Copyright (c) 2024 Chris Yang
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.chris.dto;
 
+import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
-import com.chris.entity.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +58,7 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     @NonNull
     private String roleType;
 
-    //nullable
+    @NonNull
     private Set<AuthUserDto> users;
 
     public RoleDto(@NonNull String roleType) {
@@ -86,7 +109,7 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
             authUserEntities = users.stream().map(
                             dto -> new AuthUser(dto.getId(), dto.getUsername(),
                                     dto.getPassword(), dto.getEmail(),
-                                    dto.getEnabled(), null))
+                                    dto.getEnabled(), null, null))
                     .collect(Collectors.toList());
         }
 
@@ -95,7 +118,7 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
 
     @Override
     public boolean isValid() {
-        for (RoleType type : RoleType.values()) {
+        for (AuthCommon type : AuthCommon.values()) {
             if (!type.getVal().equals(roleType)) {
                 return false;
             }

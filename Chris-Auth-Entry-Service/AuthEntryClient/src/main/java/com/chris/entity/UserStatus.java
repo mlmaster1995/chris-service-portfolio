@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.chris.entity;
 
 import jakarta.persistence.CascadeType;
@@ -32,60 +31,62 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 /**
- * role entity ¬used by the spring data jpa
+ * user_status entity used for spring-data-jpa
  */
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "role")
-public class Role {
+@Table(name = "user_status")
+public class UserStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "status")
+    private String status;
 
-    /**
-     * list cannot guarantee the uniqueness of users
-     * -> it should be checked on the dto layer
-     */
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<AuthUser> users;
+    @Column(name = "login_timestamp")
+    private Date logInTimestamp;
 
-    public Role(String name) {
-        this.name = name;
-        this.users = new ArrayList<>();
+    @Column(name = "logout_timestamp")
+    private Date logOutTimestamp;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade =
+            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+                    CascadeType.REFRESH})
+    @JoinColumn(name = "user_id")
+    private AuthUser authUser;
+
+    public UserStatus(String status, Date logInTimestamp, Date logOutTimestamp) {
+        this.status = status;
+        this.logInTimestamp = logInTimestamp;
+        this.logOutTimestamp = logOutTimestamp;
     }
 
-    public Role(String name, List<AuthUser> users) {
-        this.name = name;
-        this.users = users;
+    public UserStatus(String status, Date logInTimestamp, Date logOutTimestamp, AuthUser user) {
+        this.status = status;
+        this.logInTimestamp = logInTimestamp;
+        this.logOutTimestamp = logOutTimestamp;
+        this.authUser = user;
     }
 
     @Override
     public String toString() {
-        return String.format("{id:%s, role type:%s}", id, name);
+        return String.format("{id:%s, status:%s, login: %s, logout: %s}",
+                id, status, logInTimestamp.toString(), logOutTimestamp.toString());
     }
 }
