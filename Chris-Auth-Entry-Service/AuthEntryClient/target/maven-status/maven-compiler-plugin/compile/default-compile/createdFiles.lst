@@ -1,0 +1,13 @@
+com/chris/dto/AuthUserDto.class
+com/chris/entity/AuthUser.class
+com/chris/dto/DtoToEntity.class
+com/chris/dto/BaseDtoToEntity.class
+com/chris/entity/UserStatus.class
+com/chris/dto/RoleDto.class
+com/chris/dto/RoleDto$RoleDtoBuilder.class
+com/chris/entity/AuthCommon.class
+com/chris/dto/AuthUserDto$AuthUserDtoBuilder.class
+com/chris/entity/Role.class
+com/chris/dto/UserStatusDto$UserStatusDtoBuilder.class
+com/chris/dto/UserStatusDto.class
+com/chris/entity/AuthUser$AuthUserBuilder.class

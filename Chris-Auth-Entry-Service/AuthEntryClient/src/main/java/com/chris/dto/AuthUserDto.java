@@ -84,7 +84,7 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
                        @NonNull String password,
                        @NonNull String email,
                        @NonNull Boolean enabled,
-                       UserStatusDto userStatus) {
+                       @NonNull UserStatusDto userStatus) {
         this.username = username;
         this.password = password;
         this.email = email;

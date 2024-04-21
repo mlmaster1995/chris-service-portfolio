@@ -59,7 +59,7 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     private String roleType;
 
     @NonNull
-    private Set<AuthUserDto> users;
+    private Set<com.chris.dto.AuthUserDto> users;
 
     public RoleDto(@NonNull String roleType) {
         this.roleType = roleType;
@@ -67,12 +67,12 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     }
 
     public RoleDto(@NonNull String name,
-                   @NonNull Set<AuthUserDto> users) {
+                   @NonNull Set<com.chris.dto.AuthUserDto> users) {
         this.roleType = name;
         this.users = users;
     }
 
-    public void addAuthUserDto(AuthUserDto userDto) {
+    public void addAuthUserDto(com.chris.dto.AuthUserDto userDto) {
         if (users == null) {
             users = new HashSet<>();
         }
