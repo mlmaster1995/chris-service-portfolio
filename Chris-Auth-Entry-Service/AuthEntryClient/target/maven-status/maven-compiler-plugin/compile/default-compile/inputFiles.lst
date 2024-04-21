@@ -1,9 +1,0 @@
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/entity/AuthUser.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/dto/DtoToEntity.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/dto/RoleDto.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/entity/UserStatus.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/dto/AuthUserDto.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/dto/UserStatusDto.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/entity/Role.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/dto/BaseDtoToEntity.java
-/Users/chris.young/TempTechDoc/spring-boot-overall-portfolio_20240304/chris-service-portfolio/Chris-Auth-Entry-Service/AuthEntryClient/src/main/java/com/chris/entity/AuthCommon.java
