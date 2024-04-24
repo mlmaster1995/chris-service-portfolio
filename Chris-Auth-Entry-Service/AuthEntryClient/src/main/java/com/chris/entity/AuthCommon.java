@@ -29,8 +29,8 @@ package com.chris.entity;
 public enum AuthCommon {
     USER("ROLE_USER"),
     ADMIN("ROLE_ADMIN"),
-    LOG_OUT("log_out"),
-    LOG_INT("log_in");
+    LOG_OUT("LOG_OUT"),
+    LOG_IN("LOG_IN");
 
     private String _commonInfo;
 

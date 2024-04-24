@@ -36,17 +36,17 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * auth user entity used for spring-data-jpa
  */
-@Builder
 @Setter
 @Getter
 @AllArgsConstructor
@@ -82,24 +82,37 @@ public class AuthUser {
     )
     private List<Role> roles;
 
+    //used from dto to entity
     public AuthUser(String username, String password, String email, Boolean enabled) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.enabled = enabled;
+        this.roles = new ArrayList<>(Arrays.asList(new Role(AuthCommon.USER.getVal())));
     }
 
-    public AuthUser(String username, String password, String email, Boolean enabled, List<Role> roles) {
+
+    //used by jpa
+    public AuthUser(String username, String password, String email, Boolean enabled, UserStatus status,
+                    List<Role> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.enabled = enabled;
+        this.status = status;
         this.roles = roles;
     }
 
     @Override
     public String toString() {
-        return String.format("{id: %s, username: %s, password:%s, email: %s, enabled: %s}",
-                id, username, password, email, enabled);
+        StringBuilder sb = new StringBuilder();
+
+        roles.stream().forEach(role -> sb.append(role.toString()).append(","));
+        sb.setLength(sb.length() - 1);
+
+        return String.format(
+                "{id: %s, username: %s, password:%s, email: %s, enabled: %s, status: %s, roles: %s}",
+                id, username, password, email, enabled, status == null ? null : status.toString(),
+                sb.toString());
     }
 }

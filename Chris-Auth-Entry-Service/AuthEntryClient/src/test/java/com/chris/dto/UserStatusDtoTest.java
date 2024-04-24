@@ -24,7 +24,6 @@
 package com.chris.dto;
 
 import com.chris.entity.AuthCommon;
-import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -36,11 +35,10 @@ import java.util.Date;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserStatusDtoTest {
 
-
     @Order(1)
     @Test
     public void testUserStatusDto1() {
-        AuthUser userDto = AuthUser.builder()
+        AuthUserDto userDto = AuthUserDto.builder()
                 .username("chris")
                 .password("1234")
                 .email("chris@auth.ca")
@@ -48,10 +46,10 @@ class UserStatusDtoTest {
                 .build();
 
         UserStatusDto dto = UserStatusDto.builder()
-                .status(AuthCommon.LOG_INT.getVal())
+                .status(AuthCommon.LOG_IN.getVal())
                 .logInTimestamp(new Date(new Date().getTime() - 300_000L))
                 .logOutTimestamp(new Date())
-                .authUer(userDto)
+                .authUserDto(userDto)
                 .build();
 
         System.out.println("dto: " + dto.toString());

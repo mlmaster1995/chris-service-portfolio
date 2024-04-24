@@ -1,9 +1,126 @@
 package com.chris.dto;
 
+import com.chris.entity.AuthCommon;
+import com.chris.entity.AuthUser;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthUserDtoTest {
+
+    @Order(1)
+    @Test
+    public void testAuthUserDtoConstructorWithDefaultRoleType() {
+        AuthUserDto userDto = new AuthUserDto("chris", "1234",
+                "chris@chrisauth.ca", true);
+
+        System.out.println("auth user: " + userDto.toString());
+
+        userDto.getRoles().stream()
+                .forEach(x -> assertTrue(x.getRoleType().equals(AuthCommon.USER.getVal())));
+
+        assertNull(userDto.getUserStatus());
+    }
+
+    @Order(2)
+    @Test
+    public void testAuthUserDtoTestDefaultBuilder() {
+        AuthUserDto userDto = AuthUserDto.builder()
+                .username("chris")
+                .password("1234")
+                .email("chris@chrisauth.ca")
+                .enabled(true)
+                .build();
+
+        System.out.println("auth user: " + userDto.toString());
+
+        assertNull(userDto.getUserStatus());
+        assertNull(userDto.getRoles());
+    }
+
+    @Order(3)
+    @Test
+    public void testAuthUserDtoTestWithUserStatusDto() {
+        UserStatusDto userStatusDto = UserStatusDto.builder()
+                .status(AuthCommon.LOG_IN.getVal())
+                .logInTimestamp(new Date())
+                .logOutTimestamp(new Date(new Date().getTime() - 3000L))
+                .authUserDto(new AuthUserDto("chris", "1234",
+                        "chris@chrisauth.ca", true))
+                .build();
+
+        AuthUserDto userDto = AuthUserDto.builder()
+                .username("chris")
+                .password("1234")
+                .email("chris@chrisauth.ca")
+                .enabled(true)
+                .userStatus(userStatusDto)
+                .build();
+
+        System.out.println("auth user: " + userDto.toString());
+    }
+
+    @Order(4)
+    @Test
+    public void testAuthUserDtoTestWithRoleDto() {
+        RoleDto roleDto = RoleDto.builder()
+                .roleType(AuthCommon.LOG_IN.getVal())
+                .users(new HashSet<>(Arrays.asList(
+                        new AuthUserDto("chris", "1234",
+                                "chris@chrisauth.ca", true))))
+                .build();
+
+        AuthUserDto userDto = AuthUserDto.builder()
+                .username("chris")
+                .password("1234")
+                .email("chris@chrisauth.ca")
+                .enabled(true)
+                .roles(new HashSet<>(Arrays.asList(roleDto)))
+                .build();
+
+        System.out.println("auth user: " + userDto.toString());
+    }
+
+    @Order(5)
+    @Test
+    public void testAuthUserDtoTestWithAll() {
+        UserStatusDto userStatusDto = UserStatusDto.builder()
+                .status(AuthCommon.LOG_IN.getVal())
+                .logInTimestamp(new Date())
+                .logOutTimestamp(new Date(new Date().getTime() - 3000L))
+                .authUserDto(new AuthUserDto("chris", "1234",
+                        "chris@chrisauth.ca", true))
+                .build();
+
+        RoleDto roleDto = RoleDto.builder()
+                .roleType(AuthCommon.USER.getVal())
+                .users(new HashSet<>(Arrays.asList(
+                        new AuthUserDto("chris", "1234",
+                                "chris@chrisauth.ca", true))))
+                .build();
+
+        AuthUserDto userDto = AuthUserDto.builder()
+                .username("chris")
+                .password("1234")
+                .email("chris@chrisauth.ca")
+                .enabled(true)
+                .userStatus(userStatusDto)
+                .roles(new HashSet<>(Arrays.asList(roleDto)))
+                .build();
+
+        System.out.println("auth user: " + userDto.toString());
+
+        AuthUser userEntity = userDto.toEntity();
+        System.out.println("auth user entity: " + userEntity.toString());
+    }
 
 }

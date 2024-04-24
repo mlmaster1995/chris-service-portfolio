@@ -59,7 +59,7 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     private String roleType;
 
     @NonNull
-    private Set<com.chris.dto.AuthUserDto> users;
+    private Set<AuthUserDto> users;
 
     public RoleDto(@NonNull String roleType) {
         this.roleType = roleType;
@@ -67,12 +67,12 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     }
 
     public RoleDto(@NonNull String name,
-                   @NonNull Set<com.chris.dto.AuthUserDto> users) {
+                   @NonNull Set<AuthUserDto> users) {
         this.roleType = name;
         this.users = users;
     }
 
-    public void addAuthUserDto(com.chris.dto.AuthUserDto userDto) {
+    public void addAuthUserDto(AuthUserDto userDto) {
         if (users == null) {
             users = new HashSet<>();
         }
@@ -101,15 +101,21 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     }
 
 
+    /**
+     * do not use authUserDto.toEntity -> it will trigger infinite loop
+     *
+     * @return
+     */
     @Override
     public Role toEntity() {
         List<AuthUser> authUserEntities = new ArrayList<>();
 
         if (users != null) {
-            authUserEntities = users.stream().map(
-                            dto -> new AuthUser(dto.getId(), dto.getUsername(),
-                                    dto.getPassword(), dto.getEmail(),
-                                    dto.getEnabled(), null, null))
+            authUserEntities = users.stream()
+                    .map(dto -> new AuthUser(dto.getId(),
+                            dto.getUsername(), dto.getPassword(),
+                            dto.getEmail(), dto.getEnabled(),
+                            null, null))
                     .collect(Collectors.toList());
         }
 
@@ -118,10 +124,9 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
 
     @Override
     public boolean isValid() {
-        for (AuthCommon type : AuthCommon.values()) {
-            if (!type.getVal().equals(roleType)) {
-                return false;
-            }
+        if (!this.roleType.equals(AuthCommon.USER.getVal()) &&
+                !this.roleType.equals(AuthCommon.ADMIN.getVal())) {
+            return false;
         }
 
         return true;

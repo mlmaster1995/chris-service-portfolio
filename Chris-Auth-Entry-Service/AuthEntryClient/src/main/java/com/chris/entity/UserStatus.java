@@ -43,7 +43,6 @@ import java.util.Date;
 /**
  * user_status entity used for spring-data-jpa
  */
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -66,17 +65,18 @@ public class UserStatus {
     private Date logOutTimestamp;
 
     @OneToOne(fetch = FetchType.EAGER, cascade =
-            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
-                    CascadeType.REFRESH})
+            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private AuthUser authUser;
 
+    //used from dto to entity
     public UserStatus(String status, Date logInTimestamp, Date logOutTimestamp) {
         this.status = status;
         this.logInTimestamp = logInTimestamp;
         this.logOutTimestamp = logOutTimestamp;
     }
 
+    //used by jpa
     public UserStatus(String status, Date logInTimestamp, Date logOutTimestamp, AuthUser user) {
         this.status = status;
         this.logInTimestamp = logInTimestamp;

@@ -68,31 +68,39 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
     private Date logOutTimestamp;
 
     @NonNull
-    private AuthUser authUer;
+    private AuthUserDto authUserDto;
 
     public UserStatusDto(@NonNull String status,
                          @NonNull Date logInTimestamp,
                          @NonNull Date logOutTimestamp,
-                         @NonNull AuthUser authUer) {
+                         @NonNull AuthUserDto authUserDto) {
         this.status = status;
         this.logInTimestamp = logInTimestamp;
         this.logOutTimestamp = logOutTimestamp;
-        this.authUer = authUer;
+        this.authUserDto = authUserDto;
     }
 
+    /**
+     * do not use authUserDto.toEntity -> it will trigger infinite loop
+     *
+     * @return
+     */
     @Override
     public UserStatus toEntity() {
-        return new UserStatus(id, status, logInTimestamp, logOutTimestamp, authUer);
+        return new UserStatus(id, status, logInTimestamp, logOutTimestamp,
+                new AuthUser(this.authUserDto.getId(), this.authUserDto.getUsername(),
+                        this.authUserDto.getPassword(), this.authUserDto.getEmail(),
+                        this.authUserDto.getEnabled(), null, null));
     }
 
     @Override
     public boolean isValid() {
-        if ((!status.equals(AuthCommon.LOG_INT.getVal()) &&
+        if ((!status.equals(AuthCommon.LOG_IN.getVal()) &&
                 !status.equals(AuthCommon.LOG_OUT.getVal())) ||
                 id < 0 ||
                 logInTimestamp == null ||
                 logOutTimestamp == null ||
-                authUer == null) {
+                authUserDto == null) {
             return false;
         }
 

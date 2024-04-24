@@ -23,6 +23,7 @@
  */
 package com.chris.dto;
 
+import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
@@ -36,6 +37,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,14 +54,18 @@ import java.util.stream.Collectors;
 @ToString
 public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializable {
     private static final long serialVersionUID = -2338626292552177485L;
+
     private int id;
 
     @NonNull
     private String username;
+
     @NonNull
     private String password;
+
     @NonNull
     private String email;
+
     @NonNull
     private Boolean enabled;
 
@@ -77,7 +83,7 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
         this.password = password;
         this.email = email;
         this.enabled = enabled;
-        this.roles = new HashSet<>();
+        this.roles = new HashSet<>(Arrays.asList(new RoleDto(AuthCommon.USER.getVal())));
     }
 
     public AuthUserDto(@NonNull String username,
@@ -90,6 +96,7 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
         this.email = email;
         this.enabled = enabled;
         this.userStatus = userStatus;
+        this.roles = new HashSet<>(Arrays.asList(new RoleDto(AuthCommon.USER.getVal())));
     }
 
     public AuthUserDto(@NonNull String username,

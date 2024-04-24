@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * role entity ¬used by the spring data jpa
+ * role entity used by the spring data jpa
  */
 @Getter
 @Setter
@@ -62,8 +62,7 @@ public class Role {
     private String name;
 
     /**
-     * list cannot guarantee the uniqueness of users
-     * -> it should be checked on the dto layer
+     * list cannot guarantee the uniqueness of users -> it should be checked on the dto layer
      */
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -74,11 +73,13 @@ public class Role {
     )
     private List<AuthUser> users;
 
+    //used from dto to entity
     public Role(String name) {
         this.name = name;
         this.users = new ArrayList<>();
     }
 
+    //used by jpa
     public Role(String name, List<AuthUser> users) {
         this.name = name;
         this.users = users;
