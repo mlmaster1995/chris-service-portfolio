@@ -10,9 +10,9 @@
     </parent>
 
     <groupId>com.chris</groupId>
-    <artifactId>AuthEntryServiceParent</artifactId>
+    <artifactId>Chris-Auth-Entry-Service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>AuthEntryServiceParent</name>
+    <name>ChrisAuthEntryService</name>
     <description>parent pom for both client and service of the auth entry</description>
     <packaging>pom</packaging>
 

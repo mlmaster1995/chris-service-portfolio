@@ -26,6 +26,7 @@ package com.chris.dto;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -67,10 +68,10 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
     @NonNull
     private Boolean enabled;
 
-    //nullable
-    private UserStatusDto userStatus;
+    @Nullable
+    private UserStatusDto status;
 
-    //nullable
+    @Nullable
     @Builder.Default
     private Set<RoleDto> roles = new HashSet<>();
 
@@ -121,8 +122,8 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
         }
 
         UserStatus userStatusEntity = null;
-        if (this.userStatus != null) {
-            userStatusEntity = userStatus.toEntity();
+        if (this.status != null) {
+            userStatusEntity = status.toEntity();
         }
 
         return new AuthUser(this.id, this.username,

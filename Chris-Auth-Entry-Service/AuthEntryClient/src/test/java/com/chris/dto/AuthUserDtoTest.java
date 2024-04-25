@@ -25,7 +25,7 @@ class AuthUserDtoTest {
 
         System.out.println("auth user: " + userDto.toString());
 
-        assertNull(userDto.getUserStatus());
+        assertNull(userDto.getStatus());
     }
 
     @Order(2)
@@ -40,7 +40,7 @@ class AuthUserDtoTest {
 
         System.out.println("auth user: " + userDto.toString());
 
-        assertNull(userDto.getUserStatus());
+        assertNull(userDto.getStatus());
         assertNotNull(userDto.getRoles());
     }
 
@@ -51,8 +51,9 @@ class AuthUserDtoTest {
                 .status(AuthCommon.LOG_IN.getVal())
                 .logInTimestamp(new Date())
                 .logOutTimestamp(new Date(new Date().getTime() - 3000L))
-                .authUserDto(new AuthUserDto("chris", "1234",
+                .user(new AuthUserDto("chris", "1234",
                         "chris@chrisauth.ca", true))
+                .session(100L)
                 .build();
 
         AuthUserDto userDto = AuthUserDto.builder()
@@ -60,7 +61,7 @@ class AuthUserDtoTest {
                 .password("1234")
                 .email("chris@chrisauth.ca")
                 .enabled(true)
-                .userStatus(userStatusDto)
+                .status(userStatusDto)
                 .build();
 
         System.out.println("auth user: " + userDto.toString());
@@ -94,8 +95,9 @@ class AuthUserDtoTest {
                 .status(AuthCommon.LOG_IN.getVal())
                 .logInTimestamp(new Date())
                 .logOutTimestamp(new Date(new Date().getTime() - 3000L))
-                .authUserDto(new AuthUserDto("chris", "1234",
+                .user(new AuthUserDto("chris", "1234",
                         "chris@chrisauth.ca", true))
+                .session(100L)
                 .build();
 
         RoleDto roleDto = RoleDto.builder()
@@ -110,7 +112,7 @@ class AuthUserDtoTest {
                 .password("1234")
                 .email("chris@chrisauth.ca")
                 .enabled(true)
-                .userStatus(userStatusDto)
+                .status(userStatusDto)
                 .roles(new HashSet<>(Arrays.asList(roleDto)))
                 .build();
 

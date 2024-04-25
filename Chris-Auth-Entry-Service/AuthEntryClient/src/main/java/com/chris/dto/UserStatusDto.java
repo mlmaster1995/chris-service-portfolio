@@ -26,8 +26,8 @@ package com.chris.dto;
 import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +35,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.jackson.Jacksonized;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -44,8 +43,6 @@ import java.util.Date;
  * user status dto transferred between client and server
  */
 @Builder
-@Jacksonized
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Setter
 @Getter
 @AllArgsConstructor
@@ -59,25 +56,29 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
     @NonNull
     private String status;
 
-    @NonNull
-    @JsonProperty("login_timestamp")
+    @Nullable
     private Date logInTimestamp;
 
-    @NonNull
-    @JsonProperty("logout_timestamp")
+    @Nullable
     private Date logOutTimestamp;
 
     @NonNull
-    private AuthUserDto authUserDto;
+    private Long session;
+
+    @NonNull
+    @JsonProperty("user")
+    private AuthUserDto user;
 
     public UserStatusDto(@NonNull String status,
                          @NonNull Date logInTimestamp,
                          @NonNull Date logOutTimestamp,
+                         @NonNull Long session,
                          @NonNull AuthUserDto authUserDto) {
         this.status = status;
         this.logInTimestamp = logInTimestamp;
         this.logOutTimestamp = logOutTimestamp;
-        this.authUserDto = authUserDto;
+        this.session = session;
+        this.user = authUserDto;
     }
 
     /**
@@ -87,10 +88,10 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
      */
     @Override
     public UserStatus toEntity() {
-        return new UserStatus(id, status, logInTimestamp, logOutTimestamp,
-                new AuthUser(this.authUserDto.getId(), this.authUserDto.getUsername(),
-                        this.authUserDto.getPassword(), this.authUserDto.getEmail(),
-                        this.authUserDto.getEnabled(), null, null));
+        return new UserStatus(id, status, logInTimestamp, logOutTimestamp, session,
+                new AuthUser(this.user.getId(), this.user.getUsername(),
+                        this.user.getPassword(), this.user.getEmail(),
+                        this.user.getEnabled(), null, null));
     }
 
     @Override
@@ -100,7 +101,7 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
                 id < 0 ||
                 logInTimestamp == null ||
                 logOutTimestamp == null ||
-                authUserDto == null) {
+                user == null) {
             return false;
         }
 

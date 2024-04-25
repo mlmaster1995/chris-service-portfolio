@@ -64,29 +64,49 @@ public class UserStatus {
     @Column(name = "logout_timestamp")
     private Date logOutTimestamp;
 
+    @Column(name = "session")
+    private Long session;
+
     @OneToOne(fetch = FetchType.EAGER, cascade =
             {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private AuthUser authUser;
 
-    //used from dto to entity
-    public UserStatus(String status, Date logInTimestamp, Date logOutTimestamp) {
+    public UserStatus(String status,
+                      AuthUser authUser) {
         this.status = status;
-        this.logInTimestamp = logInTimestamp;
-        this.logOutTimestamp = logOutTimestamp;
+        this.authUser = authUser;
     }
 
-    //used by jpa
-    public UserStatus(String status, Date logInTimestamp, Date logOutTimestamp, AuthUser user) {
+    //used from dto to entity
+    public UserStatus(String status,
+                      Date logInTimestamp,
+                      Date logOutTimestamp,
+                      Long session) {
         this.status = status;
         this.logInTimestamp = logInTimestamp;
         this.logOutTimestamp = logOutTimestamp;
+        this.session = session;
+    }
+
+    public UserStatus(String status,
+                      Date logInTimestamp,
+                      Date logOutTimestamp,
+                      Long session,
+                      AuthUser user) {
+        this.status = status;
+        this.logInTimestamp = logInTimestamp;
+        this.logOutTimestamp = logOutTimestamp;
+        this.session = session;
         this.authUser = user;
     }
 
     @Override
     public String toString() {
-        return String.format("{id:%s, status:%s, login: %s, logout: %s}",
-                id, status, logInTimestamp.toString(), logOutTimestamp.toString());
+        return String.format("{id:%s, status:%s, login: %s, logout: %s, session: %s}",
+                id, status,
+                logInTimestamp == null ? null : logInTimestamp.toString(),
+                logOutTimestamp == null ? null : logOutTimestamp.toString(),
+                session);
     }
 }

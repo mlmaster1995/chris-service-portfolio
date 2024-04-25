@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ * <p>
+ * Copyright (c) 2024 Chris Yang
+ * <p>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * <p>
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * <p>
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.chris.dao;
 
 
@@ -11,6 +34,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +56,21 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     private final Logger _LOG = LoggerFactory.getLogger(AuthAccessDaoImpl.class);
 
     private final String GET_COUNT_AUTH_USER = "SELECT COUNT(*) FROM AuthUser";
-    private final String GET_COUNT_TYPICAL_USER = "SELECT COUNT(*) FROM AuthUser WHERE email=:data";
     private final String GET_AUTH_USER = "FROM AuthUser";
     private final String GET_AUTH_USER_BY_EMAIL = "FROM AuthUser WHERE email=:data";
     private final String GET_AUTH_USER_BY_NAME = "FROM AuthUser WHERE username=:data";
     private final String GET_USER_ROLE_COUNT = "SELECT COUNT(*) FROM users_roles WHERE user_id=%s AND role_id=%s";
     private final String INSERT_USER_ROLE_MAP = "INSERT INTO users_roles VALUES (%s, %s)";
+    private final String UPDATE_LOGIN_STATUS =
+            "UPDATE user_status SET status='%s',login_timestamp=current_timestamp,session='%s' " +
+                    "WHERE user_id='%s' " +
+                    "AND (UNIX_TIMESTAMP(login_timestamp)*1000+session<UNIX_TIMESTAMP(NOW())*1000)" +
+                    "AND status = 'LOG_OUT' " +
+                    "AND session != null";
+    private final String UPDATE_LOGOUT_STATUS =
+            "UPDATE user_status SET status='%s',logout_timestamp=current_timestamp,session=null " +
+                    "WHERE user_id='%s' " +
+                    "AND status = 'LOG_IN'";
     private final String DEFAULT_DATA = "data";
 
     private Map<String, Integer> _roleCache;
@@ -130,6 +163,12 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
         return authUsers;
     }
 
+    /**
+     * if username not exists, not throw exceptions
+     *
+     * @param username
+     * @return
+     */
     @Override
     public List<AuthUser> findUserByName(String username) {
         List<AuthUser> users = new ArrayList<>();
@@ -157,6 +196,12 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
         return user;
     }
 
+    /**
+     * get single result will throw exception
+     *
+     * @param email
+     * @return
+     */
     @Override
     public AuthUser findUserByEmail(String email) {
         AuthUser user = null;
@@ -185,17 +230,48 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
      */
     @Override
     @Transactional
-    public void saveAuthUser(AuthUser user) {
+    public Integer saveAuthUser(AuthUser user) {
         try {
+            //save user with default status
+            if (user.getStatus() == null) {
+                user.setStatus(
+                        new UserStatus(AuthCommon.LOG_OUT.getVal(), user));
+            }
             _manager.persist(user);
+
+            //sync db with the context
+            _manager.flush();
+
+            //for testing
+            if(_roleCache.isEmpty()){
+                _cacheAllRoles();
+            }
+
+            //link user to role into db
+            Integer userId = user.getId();
+            Integer roleId = _roleCache.get(AuthCommon.USER.getVal());
+            Query userRoleExistQuery =
+                    _manager.createNativeQuery(String.format(GET_USER_ROLE_COUNT, userId, roleId));
+            if ((Long) userRoleExistQuery.getSingleResult() == 0L) {
+                Query insertUserRoleQuery =
+                        _manager.createNativeQuery(String.format(INSERT_USER_ROLE_MAP, userId, roleId));
+                insertUserRoleQuery.executeUpdate();
+                _LOG.warn("auth_user ({}) is assigned with role({}) for auth access...",
+                        user, AuthCommon.USER.getVal());
+            } else {
+                _LOG.warn("auth_user ({}) is assigned with role({}) already...",
+                        user, AuthCommon.USER.getVal());
+            }
             _LOG.warn("auth user entity({}) is persisted", user.toString());
         } catch (Exception exp) {
             throw new AppAuthException("failed to persist the auth user...: " + exp);
         }
+
+        return user.getId();
     }
 
     /**
-     * link a role to a user in the user_role table
+     * link a role to a user in the user_role table manually
      *
      * @param user
      * @param roleType
@@ -204,8 +280,16 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     @Transactional
     public void updateUserRole(AuthUser user, AuthCommon roleType) {
         try {
-            AuthUser entity = findUserByEmail(user.getEmail());
-            Integer userId = entity.getId();
+            if (user.getId() <= 0) {
+                throw new AppAuthException("invalid auth user to update, missing id...");
+            }
+
+            //for testing
+            if(_roleCache.isEmpty()){
+                _cacheAllRoles();
+            }
+
+            Integer userId = user.getId();
             Integer roleId = _roleCache.get(roleType.getVal());
             Query userRoleExistQuery =
                     _manager.createNativeQuery(String.format(GET_USER_ROLE_COUNT, userId, roleId));
@@ -227,13 +311,14 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
      * <p>
      * merging original id to the new auth user should be done in service layer
      *
+     * update login/logout status, role list all here
      * @param user
      */
     @Override
     @Transactional
     public void updateAuthUser(AuthUser user) {
         try {
-            if (user.getId() == 0) {
+            if (user.getId() <= 0) {
                 throw new AppAuthException("invalid auth user to update, missing id...");
             }
 
@@ -243,16 +328,70 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
         }
     }
 
-    //ToDo: add session to the user status for JWT token; add all test cases for login/logout logics
+    /**
+     * update status manually
+     *
+     * @param status
+     */
     @Override
     @Transactional
     public void updateUserStatus(UserStatus status) {
+        try {
+            if (status.getAuthUser().getId() <= 0) {
+                throw new AppAuthException("invalid auth user to update status, missing id...");
+            }
 
+            if (status.getStatus().equals(AuthCommon.LOG_IN.getVal())) {
+                Query loginUpdateQuery = _manager.createNativeQuery(String.format(UPDATE_LOGIN_STATUS,
+                        status.getStatus(), status.getSession(), status.getAuthUser().getId()));
+                loginUpdateQuery.executeUpdate();
+
+                _manager.flush();
+                _LOG.warn("login status is updated as {}", status.toString());
+            } else if (status.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
+                Query logoutUpdateQuery = _manager.createNativeQuery(String.format(UPDATE_LOGOUT_STATUS,
+                        status.getStatus(), status.getSession(), status.getAuthUser().getId()));
+                logoutUpdateQuery.executeUpdate();
+
+                _manager.flush();
+                _LOG.warn("logout status is updated as {}", status.toString());
+            } else {
+                throw new AppAuthException("invalid user status value...");
+            }
+        } catch (Exception exp) {
+            throw new AppAuthException("fails to update the user status: " + exp);
+        }
     }
 
     @Override
     @Transactional
-    public void deleteAuthUser(AuthUser user) {
+    public void deleteAuthUserById(Integer userId) {
+        try {
+            if (userId == null) {
+                throw new AppAuthException("user id is null...");
+            }
 
+            AuthUser user = findUserById(userId);
+            _manager.remove(user);
+            _LOG.warn("auth user({}) is removed...", user.toString());
+        } catch (Exception exp) {
+            throw new AppAuthException("fails to delete auth user by id: " + exp);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteAuthUserByEmail(String email) {
+        try {
+            if (email == null || email.isEmpty()) {
+                throw new AppAuthException("invalid email...");
+            }
+
+            AuthUser user = findUserByEmail(email);
+            _manager.remove(user);
+            _LOG.warn("auth user({}) is removed...", user.toString());
+        } catch (Exception exp) {
+            throw new AppAuthException("fails to delete auth user by id: " + exp);
+        }
     }
 }

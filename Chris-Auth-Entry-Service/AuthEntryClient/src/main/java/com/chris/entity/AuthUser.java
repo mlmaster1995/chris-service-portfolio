@@ -41,7 +41,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,9 +88,8 @@ public class AuthUser {
         this.password = password;
         this.email = email;
         this.enabled = enabled;
-        this.roles = new ArrayList<>(Arrays.asList(new Role(AuthCommon.USER.getVal())));
+        this.roles = new ArrayList<>();
     }
-
 
     //used by jpa
     public AuthUser(String username, String password, String email, Boolean enabled, UserStatus status,
@@ -106,16 +104,15 @@ public class AuthUser {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
+        StringBuilder roleSb = new StringBuilder();
         if (this.roles != null && !this.roles.isEmpty()) {
-            roles.stream().forEach(role -> sb.append(role.toString()).append(","));
-            sb.setLength(sb.length() - 1);
+            roles.stream().forEach(role -> roleSb.append(role.toString()).append(","));
+            roleSb.setLength(roleSb.length() - 1);
         }
 
         return String.format(
                 "{id: %s, username: %s, password:%s, email: %s, enabled: %s, status: %s, roles: %s}",
                 id, username, password, email, enabled, status == null ? null : status.toString(),
-                sb.toString());
+                roleSb.toString());
     }
 }

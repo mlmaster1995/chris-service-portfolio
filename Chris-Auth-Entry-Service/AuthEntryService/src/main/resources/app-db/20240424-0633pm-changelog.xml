@@ -10,87 +10,24 @@
 
         <sql endDelimiter=";" splitStatements="true">
             <![CDATA[
-               START TRANSACTION;
+                START TRANSACTION;
 
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('johnnyshields','$2a$10$bTb7TDmUQifQHHQQv3sp0uyLoRiDGRk2whp/ikPHyaeKafTpb.JwW','johnny2024shields@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('gilbertovonrueden','$2a$10$MZkMsFqqMA9Yl0h2sM6mxOoyb21NjeYkd4PvKLYyK7mhxnUlJvAC6','gilberto2024vonrueden@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('jerryhettinger','$2a$10$/pLXcTV2ievJBeScIsDrsujeCXwvk/FqPqmqUty7wzvl5gmc7fPKK','jerry2024hettinger@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('raymondterry','$2a$10$87jRsooz7S4HTWgVuGzyg.nTMdKut1t4pvRmERYxhslM3bR97W3Hq','raymond2024terry@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('clayschaefer','$2a$10$Cad8IARhcHileyRAq4hN1uskUIZsJ6BsSsE2Y0rMiTls5Fbve6Y7W','clay2024schaefer@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('juliusmoen','$2a$10$ejD74pqZtkLX6.wOKn0Rku035bg0PI5lTW3MLb7zLsFWqt.C1XwNy','julius2024moen@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('isaacdietrich','$2a$10$lveq1OKSb3kZs.Bs1inKEeFJKFgh5WYxu8K7C14g11TbNTamewZmq','isaac2024dietrich@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('carycasper','$2a$10$XmdYz0HPQjGybUBxWEE5WOGpdooIf.HfbaJHYBG8bI7Z2SOzAezSq','cary2024casper@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('vincentcrooks','$2a$10$lhqRSmap9QxhUVa0MgFuc.05gYk2GmgyGKk6zmKFPZ4XNp/Hj2XYe','vincent2024crooks@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('leroymetz','$2a$10$Ht/LufpWBnSLuRF9X8TiDONmAnNOqUEAOu/Hhaqg6tNDa1BD.zARq','leroy2024metz@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('thomasbahringer','$2a$10$j4DeNQ6r5B1DuJPDGKV/We2BOrpM/X1aPSR7dPWE1zfPIvVFEpC7W','thomas2024bahringer@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('marcodibbert','$2a$10$2ZfyExlpoUP0UeKhT.D2AuFian9tNAD3aZG1TdQr8nZ.TXl5Sf07W','marco2024dibbert@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ernestbechtelar','$2a$10$PZIt0/pbJdFuBDERLjgQ3e0kBApnHuHqeT5ovtlj8gkBpYfkI6zwe','ernest2024bechtelar@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('davehickle','$2a$10$GClU6HXPK7BRWNuLHKyMiusxik1NRemF/4aSovYrGmddcPncPscv.','dave2024hickle@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('bertgorczany','$2a$10$hhzM9jDmvqFq15rXSahyeeMixv8avNaBfwNH9a2WQTdUOFklVbcDy','bert2024gorczany@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('nelsonrohan','$2a$10$tM5Y9QRm3I5yQCxZi7Ys9ua9vitDHuFxKxlWA1APm9Sq5Nt5oymKu','nelson2024rohan@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('woodrowroberts','$2a$10$yoG0mL07KUv.7og9ZHGeLev3319gK9KBBCX1vEfVR6bE5mU/Aea2a','woodrow2024roberts@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('amoslittle','$2a$10$1qzmILcleJlK045mBdwYWubFK7wRF55zzFF1tNbOHEqHjfqon8S5a','amos2024little@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('brianbotsford','$2a$10$bMjKeU1FD2j56xOgSWnm/u1L431xuyzBLR3s.dCaloV6Glmjf/AuG','brian2024botsford@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ernestshields','$2a$10$.mOTsvOOoyDMzP1H97SZQ.TMlut9d7.YUbkrFOf49Ua.a5qF5zvFG','ernest2024shields@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('amoshalvorson','$2a$10$njsqOqKJDdPtloNCukyfnuDg3iJdfPxA/PCsPrqHZRmcSbuqRzejO','amos2024halvorson@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('carltonmann','$2a$10$zzB1JTZMmjMhsd.Q5v7zY.1IHxqmFF0COt0a46vSp5B.n536bfsGm','carlton2024mann@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ryanokuneva','$2a$10$RsKPlv.nwtZVCB0NWu/X5O5B6j8dExOJHMyCp1bUuO2WjNz/1pUHi','ryan2024okuneva@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('bradleyspencer','$2a$10$C4UzevJnDxLODG3R0ydrP.TfMqIqnuMPuPyzzCCtokjkW4aIycFcO','bradley2024spencer@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('jamielebsack','$2a$10$oU8g9Uw9z5ku9kbujb6dGejphR5FlfRlNye3TZ5ijEpZmnBycpQd6','jamie2024lebsack@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('timothykoch','$2a$10$tFeYFmCFxGRupqXKsImoc..SqvLDEcIV3t0AfyYjoICKkmQCvPPne','timothy2024koch@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('percymurray','$2a$10$9e7Wdq1VKsluFgbrOe9I0e0raz9t786q2iPTRcwofWOzm1MVuBdM2','percy2024murray@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('horacedenesik','$2a$10$gga2pqXbbNoaF8NrDkA7.eKSXfVahFss8qp4PBUBF/kLw77nU5ShK','horace2024denesik@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ryanhoeger','$2a$10$yNyWfjE3QRUQ0poJflmjxu1F1okoNa8ddwoC5q2.x92JN0Tez4Qv6','ryan2024hoeger@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('lynncross','$2a$10$txf2xprKVcreLP3JkmFf0ecD.OaIwHpQTW3P1BmddFxga4eRBFHzG','lynn2024cross@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('debblanchard','$2a$10$PySQxRdt5LevTyfCRO7p4eEg42QpW6MLiD9jMTMbFRCNrnc7gHQ3K','deb2024blanchard@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ahmedcarpenter','$2a$10$LnthLhu0ZvIW4yOG.YMxgu/jo0uCGnMJ0.aH/FnntWWPnchcKW1RW','ahmed2024carpenter@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('coryyeung','$2a$10$JMX7QcFCXQy1ptq4r6E1X.VgFiX8Xi.3xI7xaHUTzea/rmLHrKCdm','cory2024yeung@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('simoneleclair','$2a$10$K/BrQXrP72Sw610I47QJh.tugex6.PH038885yxe14wThfw6fJeR.','simone2024leclair@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('veronicamcconnell','$2a$10$j1wv8lthIYslhskf4kDT1.x4X1aOWy3rQckqHc5g9Ws6JLW0YEaim','veronica2024mcconnell@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('gastonryan','$2a$10$wgeIbTO8NU10ZTxpnmWIo.ITMtlM0lpajFayepRYHGskeDSkZ03mW','gaston2024ryan@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('marilyndubois','$2a$10$6R4EjMCsd0RgUoHbKd9VRuq0xmlpf1Rw.qAjOyEumPosYpdgcdFWq','marilyn2024dubois@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('doreenmckee','$2a$10$pJewgcx/vKFBFCrDRVv8duvnR9OTZo1ELCCU/0EA868NYLlOkhgdO','doreen2024mckee@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('sallyallard','$2a$10$mWl9T8rdZ2NFU1obdi7dhuJY05mwoAqQukh8suJI98TfiVZQ7I0Wy','sally2024allard@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('margaretlittle','$2a$10$aaBdOvfvveAwZAS5WKrs4OXp0hEIe1k/u1SwgVYOnyHHOTdYAbSaG','margaret2024little@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ghislainehan','$2a$10$9kWELyiFvpM7QTuaZw/ve..Lryn9sMkuIbGKoT0QttDFn9IVsxgVO','ghislaine2024han@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('susiebelisle','$2a$10$2Jjtl9v.ci9nmjrylMQBe.ez3KJ2rHJW.lb29Mg3jr.1Ancmzv.a.','susie2024belisle@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('adeleporter','$2a$10$x/B/wki.gyhZoTCEU228yeICA12Ph03ie9UYo/0B0FMVjKqorf5/m','adele2024porter@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('debbiedowney','$2a$10$8wck3vl4Ofp716DzeKg9c.1BylC2IhyfAwzsm18BBAQHkGmEHVmFe','debbie2024downey@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('elainehynes','$2a$10$YamTrtXWq4m36A3ePGJrR.J/zr5getIctSoqTEeBTt9AaVUJYsVKO','elaine2024hynes@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('jean-guywalton','$2a$10$W2RkjXgbfC29yBwSRmYouuJDLiHKpZC3sFFpQo9IfLOTpZlLL6bUW','jean-guy2024walton@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('rosairekaur','$2a$10$VzI.XK3CUQwZOwKXncB9ouKN6NqQ8JfxfqGjY//A9Bznt3kUG3jDe','rosaire2024kaur@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('warrenfitzpatrick','$2a$10$TXCKLSInN1SiVyz23fbbWOeeT8AzrYmsDitZ14IQnDeStercu0rn.','warren2024fitzpatrick@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('stephaniesabourin','$2a$10$7XfU97csTcCLAVpquVa4.eshR59B8lndVCBdpGLdGqyTOM3UycsAm','stephanie2024sabourin@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('danyberger','$2a$10$DMu3SY6OpLW7xqi0r0MgHuiGqSKOevWCKb43XDPaUXjTR87sFwBXy','dany2024berger@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('stephenlabrie','$2a$10$aoQg4aKO92.UMrRaAQW8ieSKmsbS3ToMHnhfL58NdGNC9hfd1ajOW','stephen2024labrie@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('jocelynforest','$2a$10$RtQPPnpDgplEjgqVLlEZKu3Nbnhtlx.mMbs5LpDSJ/lJQo38KC1k6','jocelyn2024forest@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('éricadugas','$2a$10$VtdMvyTqfBJ7p4.H0c5t6.Lr7qv29SnJtrTxEsBxUVwnp6dd4HwB6','érica2024dugas@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('melchristie','$2a$10$rswVHFmNN06hDFEAsRdtmeXY829L2S7plqK17rFfvD8nVCznDcRmm','mel2024christie@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('linequinn','$2a$10$gotz3FsgEo02OxJbjsCZv..dNN96f4zQEHMR4mhiRhNMx5HddyBI.','line2024quinn@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('arlenelabbe','$2a$10$uyOzQXMYfAX2qhy2kSrUNu8.hMVLT2op0qtXtXdf/bYq3ljkvRkpi','arlene2024labbe@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('vernpelletier','$2a$10$4OpZz5U.G5K.CoOcTKpig.ximc.kfz5P/SEQ4Kx7eLd5WDypwCLN6','vern2024pelletier@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('emmanuelbaker','$2a$10$ZACnjdi/MaS9ufJoUB7Lge1K8jFfcJHpDPDPh0rWpfDS5xlFAygK2','emmanuel2024baker@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('irinafraser','$2a$10$b.vDtEzflC/7dzR/8vRYm.vb67Uik0MIiEv6/0XlQVLkkD989SIzK','irina2024fraser@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('mariejacobs','$2a$10$FWt/9NTP3j7yRgmMEFf77edDZTUdtvKOrNQCS3iHOw9ymx2J62/tm','marie2024jacobs@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('susannejean','$2a$10$pFsq0ArPD86QgFFlmcu9fu4zxgqbMbY/3aZrCHS1.Tt0Mfv4ZT.vi','susanne2024jean@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('angelajones','$2a$10$cPwk8Ez13NDG632cMNxziu4OGd8lHvw01jeLJPbLHsl0wYCw34lke','angela2024jones@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('eileendennis','$2a$10$stkjQHkPCZ4ALM3BGyHr1.ti4f56vW9ZaGjg1C42GpZFS46xlluoi','eileen2024dennis@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('lindseyhuynh','$2a$10$9Q3zY4x9laV3CstSdFXse.h2qKTWLN0uQoth3WIJU42cpg9K0x2wa','lindsey2024huynh@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('philsidhu','$2a$10$Ve9pMML/HJmokLxS4EiROuHaePMuKGlR/9ZpFmkfTXybVDkTI7972','phil2024sidhu@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('harveymailloux','$2a$10$xrw5URZ77iAjDYNa29Vr0OmvLe/FJmN5AqaepGyghk/Mz23K5jmt2','harvey2024mailloux@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('clarecarriere','$2a$10$B5NDTSyh7nhoiXNoOwQVh.KK/UCCHo.kJq.HBoU24GmfTol8kCury','clare2024carriere@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('deannast','$2a$10$sC4egZIj2wVzkzjncthYAOQhfwzBuZ749/bDJbpbKMsx7M4hYX5.G','deanna2024st@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('stuartjordan','$2a$10$Z/ugg/UNmMgaBHuhJJX5BOREAILT8rMlfEZaCihYx5aumFv9vE.om','stuart2024jordan@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('ruthrobinson','$2a$10$tANewNv8KrPyG79xA1RFAuAHvS.rNA0uZVZxFXYUiaqhcWxD3hEru','ruth2024robinson@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('larrypatterson','$2a$10$yU/1BS3Ml7qjNL6Oze5yWOvrIFqTdXpgfe.JplRzrCmf9bgUybSfW','larry2024patterson@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('annathomas','$2a$10$OP.A5NS1D6YMu7lzesvtDuHDTikOoqZxqmpmUFTMhJl/dW5JYqBom','anna2024thomas@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('emilelariviere','$2a$10$SPce5aNE1ABocmeEb.K8O.Dh7vAeRs7xTOoy6JAZqRPX5BYXW0pX.','emile2024lariviere@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('christinegelinas','$2a$10$8F4FtOdG6yywNvskR1aKH.7Nd3O80H7aBjLME/EGurmn7RomSvz3.','christine2024gelinas@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('lawrencebarr','$2a$10$oz9PASXnJO96GQqpDev38.WFpHpgAqfxRsVLQeZcowxeq1LeF6uV6','lawrence2024barr@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('nadiawang','$2a$10$z/py.y2ZHq2BmoYg2HExPOuUj3VfWSFyjI47l9pjRboMZuPbCdHve','nadia2024wang@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('emmabarber','$2a$10$BvbiTExiTloLOiZG6z25o.GfVpor/xMA2OLuDgNWPmSSD1Av9dygK','emma2024barber@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('lisecarter','$2a$10$ZQLES2mqiAHWUaYj2eeENOYNKxNi0O5JzM2qP689N4uevlu4d39Ce','lise2024carter@chrismember.ca', 1);
-                INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('pearlguimond','$2a$10$LcJlpwXppPbOVbcG4fVTFuxqdJW8xSq/217vPP1isKRkiysfVeebi','pearl2024guimond@chrismember.ca', 1);
+                    INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES
+                    ('chris','$2a$10$5nWhdCQH0J6KZh/X3hn1lOkFaJbg3bdJHI5XeXzLvr7qbOSsyWDna','kyang3@lakeheadu.ca',1);
+
+                    INSERT INTO `role` (name) VALUES ('ROLE_USER'),('ROLE_ADMIN');
+
+                    SET @user_id=0;
+                    SELECT @user_id:=id FROM auth_user WHERE username = 'chris';
+                    SET @user_role_id=0;
+                    SET @admin_role_id=0;
+                    SELECT @user_role_id:=id FROM role WHERE name ='ROLE_USER';
+                    SELECT @admin_role_id:=id FROM role WHERE name = 'ROLE_ADMIN';
+                    INSERT INTO `users_roles` (user_id,role_id) VALUES
+                    (@user_id, @user_role_id),
+                    (@user_id, @admin_role_id);
+
+                    INSERT INTO `user_status` (user_id) VALUES (@user_id);
 
                COMMIT;
             ]]>

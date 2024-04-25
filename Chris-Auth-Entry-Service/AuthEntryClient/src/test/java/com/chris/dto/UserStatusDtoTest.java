@@ -49,7 +49,8 @@ class UserStatusDtoTest {
                 .status(AuthCommon.LOG_IN.getVal())
                 .logInTimestamp(new Date(new Date().getTime() - 300_000L))
                 .logOutTimestamp(new Date())
-                .authUserDto(userDto)
+                .session(12*60*60*1000L)
+                .user(userDto)
                 .build();
 
         System.out.println("dto: " + dto.toString());
