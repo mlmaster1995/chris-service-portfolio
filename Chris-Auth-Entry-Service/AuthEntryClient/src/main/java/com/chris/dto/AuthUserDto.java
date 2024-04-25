@@ -23,7 +23,6 @@
  */
 package com.chris.dto;
 
-import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
@@ -37,7 +36,6 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -73,7 +71,8 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
     private UserStatusDto userStatus;
 
     //nullable
-    private Set<RoleDto> roles;
+    @Builder.Default
+    private Set<RoleDto> roles = new HashSet<>();
 
     public AuthUserDto(@NonNull String username,
                        @NonNull String password,
@@ -83,46 +82,7 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
         this.password = password;
         this.email = email;
         this.enabled = enabled;
-        this.roles = new HashSet<>(Arrays.asList(new RoleDto(AuthCommon.USER.getVal())));
-    }
-
-    public AuthUserDto(@NonNull String username,
-                       @NonNull String password,
-                       @NonNull String email,
-                       @NonNull Boolean enabled,
-                       @NonNull UserStatusDto userStatus) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.enabled = enabled;
-        this.userStatus = userStatus;
-        this.roles = new HashSet<>(Arrays.asList(new RoleDto(AuthCommon.USER.getVal())));
-    }
-
-    public AuthUserDto(@NonNull String username,
-                       @NonNull String password,
-                       @NonNull String email,
-                       @NonNull Boolean enabled,
-                       @NonNull Set<RoleDto> roles) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.enabled = enabled;
-        this.roles = roles;
-    }
-
-    public AuthUserDto(@NonNull String username,
-                       @NonNull String password,
-                       @NonNull String email,
-                       @NonNull Boolean enabled,
-                       @NonNull UserStatusDto userStatus,
-                       @NonNull Set<RoleDto> roles) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.enabled = enabled;
-        this.userStatus = userStatus;
-        this.roles = roles;
+        this.roles = new HashSet<>();
     }
 
     @Override
@@ -172,10 +132,9 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
 
     @Override
     public boolean isValid() {
-        return this.username != null ||
-                this.password != null ||
-                this.email != null ||
-                this.enabled != null ||
-                (this.roles == null ? false : !this.roles.isEmpty());
+        return this.username != null &&
+                this.password != null &&
+                this.email != null &&
+                this.enabled != null;
     }
 }

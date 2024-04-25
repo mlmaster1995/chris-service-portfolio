@@ -74,7 +74,8 @@ public class AuthUser {
     @OneToOne(fetch = FetchType.EAGER, mappedBy = "authUser", cascade = CascadeType.ALL)
     private UserStatus status;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -107,8 +108,10 @@ public class AuthUser {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        roles.stream().forEach(role -> sb.append(role.toString()).append(","));
-        sb.setLength(sb.length() - 1);
+        if (this.roles != null && !this.roles.isEmpty()) {
+            roles.stream().forEach(role -> sb.append(role.toString()).append(","));
+            sb.setLength(sb.length() - 1);
+        }
 
         return String.format(
                 "{id: %s, username: %s, password:%s, email: %s, enabled: %s, status: %s, roles: %s}",

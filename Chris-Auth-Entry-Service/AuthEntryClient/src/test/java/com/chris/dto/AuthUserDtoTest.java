@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthUserDtoTest {
@@ -24,9 +24,6 @@ class AuthUserDtoTest {
                 "chris@chrisauth.ca", true);
 
         System.out.println("auth user: " + userDto.toString());
-
-        userDto.getRoles().stream()
-                .forEach(x -> assertTrue(x.getRoleType().equals(AuthCommon.USER.getVal())));
 
         assertNull(userDto.getUserStatus());
     }
@@ -44,7 +41,7 @@ class AuthUserDtoTest {
         System.out.println("auth user: " + userDto.toString());
 
         assertNull(userDto.getUserStatus());
-        assertNull(userDto.getRoles());
+        assertNotNull(userDto.getRoles());
     }
 
     @Order(3)
