@@ -62,11 +62,10 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
     @Nullable
     private Date logOutTimestamp;
 
-    @NonNull
+    @Nullable
     private Long session;
 
     @NonNull
-    @JsonProperty("user")
     private AuthUserDto user;
 
     public UserStatusDto(@NonNull String status,

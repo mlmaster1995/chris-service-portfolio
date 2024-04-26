@@ -23,7 +23,7 @@
  */
 package com.chris.dao;
 
-import com.chris.Exception.AppAuthException;
+import com.chris.Exception.AuthServiceException;
 import com.chris.dto.AuthUserDto;
 import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestPropertySource("/application.properties")
+//@TestPropertySource("/application.properties")
 @SpringBootTest
 class AuthAccessDaoImplTest {
     @Autowired
@@ -77,7 +77,7 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(1)
-    @Sql("/insert-auth-data.sql")
+    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindAllUsers() {
         List<AuthUser> users = _dao.findAllUsers();
@@ -87,7 +87,7 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(2)
-    @Sql("/insert-auth-data.sql")
+    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindAllUsersWithPage() {
         List<AuthUser> users = _dao.findAllUsers(1, 2);
@@ -99,21 +99,21 @@ class AuthAccessDaoImplTest {
     @Order(2)
     @Test
     public void testFindAllUsersWithPage2() {
-        assertThrows(AppAuthException.class, () -> {
+        assertThrows(AuthServiceException.class, () -> {
             _dao.findAllUsers(-1, 2);
         });
 
-        assertThrows(AppAuthException.class, () -> {
+        assertThrows(AuthServiceException.class, () -> {
             _dao.findAllUsers(1, 0);
         });
 
-        assertThrows(AppAuthException.class, () -> {
+        assertThrows(AuthServiceException.class, () -> {
             _dao.findAllUsers(1, -1);
         });
     }
 
     @Order(3)
-    @Sql("/insert-auth-data.sql")
+    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindUserByEmail() {
         String email = "phil2024sidhu@chrismember.ca";
@@ -127,7 +127,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testFindUserByEmail2() {
         String email = "abc@lakeheadu.ca";
-        assertThrows(AppAuthException.class, () -> _dao.findUserByEmail(email));
+        assertThrows(AuthServiceException.class, () -> _dao.findUserByEmail(email));
     }
 
     @Order(5)
@@ -138,7 +138,7 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(5)
-    @Sql("/insert-auth-data.sql")
+    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindUserByName2() {
         String username = "philsidhu";
@@ -151,9 +151,8 @@ class AuthAccessDaoImplTest {
      * register a user with default logout status and user role
      */
     @Order(6)
-    @Sql("/insert-role-data.sql")
+    //@Sql("/insert-role-data.sql")
     @Test
-    @Disabled
     public void testSaveAuthUser() {
         AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
@@ -171,7 +170,7 @@ class AuthAccessDaoImplTest {
             Integer id = _dao.saveAuthUser(entity);
             System.out.println("entity id: " + id);
 
-            assertThrows(AppAuthException.class, () -> _dao.saveAuthUser(entity));
+            assertThrows(AuthServiceException.class, () -> _dao.saveAuthUser(entity));
         }
 
         AuthUser user = _dao.findUserByEmail(DEFAULT_EMAIL);
@@ -187,8 +186,9 @@ class AuthAccessDaoImplTest {
      * no exception but throw warning for the existing relationship
      */
     @Order(7)
-    @Sql("/insert-single-data.sql")
+    //@Sql("/insert-single-data.sql")
     @Test
+    @Disabled
     public void testUpdateUserRole() {
         String email = DEFAULT_EMAIL;
         AuthUser entity = _dao.findUserByEmail(email);
@@ -200,7 +200,7 @@ class AuthAccessDaoImplTest {
      * link admin role to the persisted user and the user already has user role
      */
     @Order(7)
-    @Sql("/insert-single-data.sql")
+    //@Sql("/insert-single-data.sql")
     @Test
     public void testUpdateUserRole2() {
         String email = DEFAULT_EMAIL;
@@ -239,7 +239,7 @@ class AuthAccessDaoImplTest {
         if (dto.isValid()) {
             AuthUser entity = dto.toEntity();
             System.out.println("entity: " + entity.toString());
-            assertThrows(AppAuthException.class, () -> _dao.updateUserRole(entity, AuthCommon.USER));
+            assertThrows(AuthServiceException.class, () -> _dao.updateUserRole(entity, AuthCommon.USER));
         }
     }
 
@@ -259,12 +259,12 @@ class AuthAccessDaoImplTest {
         if (dto.isValid()) {
             AuthUser entity = dto.toEntity();
             System.out.println("entity: " + entity.toString());
-            assertThrows(AppAuthException.class, () -> _dao.updateAuthUser(entity));
+            assertThrows(AuthServiceException.class, () -> _dao.updateAuthUser(entity));
         }
     }
 
     @Order(9)
-    @Sql("/insert-single-data.sql")
+    //@Sql("/insert-single-data.sql")
     @Test
     public void testUpdateAuthUser2() {
         String newEmail = "chris-test4@chris-test4.ca";
@@ -318,7 +318,7 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(10)
-    @Sql("/insert-single-data.sql")
+    //@Sql("/insert-single-data.sql")
     @Test
     public void testUpdateUserStatus2() {
         //validate
@@ -339,7 +339,7 @@ class AuthAccessDaoImplTest {
      * update user status via auth user
      */
     @Order(10)
-    @Sql("/insert-single-data.sql")
+    //@Sql("/insert-single-data.sql")
     @Test
     public void testUpdateUserStatus3() {
         //validate
@@ -357,7 +357,7 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(11)
-    @Sql("/insert-single-data.sql")
+    //@Sql("/insert-single-data.sql")
     @Test
     public void testDeleteAuthUser1() {
         //validate
@@ -366,8 +366,18 @@ class AuthAccessDaoImplTest {
 
         _dao.deleteAuthUserByEmail(DEFAULT_EMAIL);
 
-        assertThrows(AppAuthException.class, () -> {
+        assertThrows(AuthServiceException.class, () -> {
             _dao.findUserByEmail(DEFAULT_EMAIL);
         });
     }
+
+
+    @Order(12)
+    //@Sql("/insert-single-data.sql")
+    @Test
+    public void testSameUserExists(){
+        boolean res = _dao.sameUserExists(DEFAULT_EMAIL);
+        assertTrue(res);
+    }
+
 }

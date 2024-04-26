@@ -24,7 +24,7 @@
 package com.chris.dao;
 
 
-import com.chris.Exception.AppAuthException;
+import com.chris.Exception.AuthServiceException;
 import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
@@ -34,7 +34,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +107,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                 }
             });
         } catch (Exception exp) {
-            throw new AppAuthException("fails to load all roles from db: " + exp);
+            throw new AuthServiceException("fails to load all roles from db: " + exp);
         }
     }
 
@@ -128,7 +128,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                         _defaultPageSize);
             }
         } catch (Exception exp) {
-            throw new AppAuthException("fails to get all members...: " + exp);
+            throw new AuthServiceException("fails to get all members...: " + exp);
         }
 
         return authUsers;
@@ -147,7 +147,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
 
         try {
             if (startPage < 0 || pageCount <= 0) {
-                throw new AppAuthException(String.format("invalid page number(%s) & count(%s)...",
+                throw new AuthServiceException(String.format("invalid page number(%s) & count(%s)...",
                         startPage, pageCount));
             }
 
@@ -157,7 +157,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
 
             authUsers = query.getResultList();
         } catch (Exception exp) {
-            throw new AppAuthException("fails to get all users...: " + exp);
+            throw new AuthServiceException("fails to get all users...: " + exp);
         }
 
         return authUsers;
@@ -179,7 +179,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
 
             users = theQuery.getResultList();
         } catch (Exception exp) {
-            throw new AppAuthException("fails to find the auth user by username:" + exp);
+            throw new AuthServiceException("fails to find the auth user by username:" + exp);
         }
         return users;
     }
@@ -190,7 +190,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
         try {
             user = _manager.find(AuthUser.class, id);
         } catch (Exception exp) {
-            throw new AppAuthException("fails to find the auth user with id: " + exp);
+            throw new AuthServiceException("fails to find the auth user with id: " + exp);
         }
 
         return user;
@@ -213,13 +213,33 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             user = query.getSingleResult();
 
             if (user == null) {
-                throw new AppAuthException(String.format("auth user with email(%s) not exists...", email));
+                throw new AuthServiceException(String.format("auth user with email(%s) not exists...", email));
             }
         } catch (Exception exp) {
-            throw new AppAuthException("fails to find the member with email...: " + exp);
+            throw new AuthServiceException("fails to find the member with email: " + exp);
         }
 
         return user;
+    }
+
+    /**
+     * check if the user with same email exists
+     *
+     * @param email
+     * @return
+     */
+    @Override
+    public boolean sameUserExists(String email) {
+        long count = 0L;
+        try {
+            Query userCountQuery =
+                    _manager.createNativeQuery(String.format("SELECT count(*) FROM auth_user WHERE email='%s'", email));
+
+            count = (Long) userCountQuery.getSingleResult();
+        } catch (Exception exp) {
+            throw new AuthServiceException("fails to find the user count by email: " + exp);
+        }
+        return count == 1L;
     }
 
     /**
@@ -243,7 +263,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             _manager.flush();
 
             //for testing
-            if(_roleCache.isEmpty()){
+            if (_roleCache.size()==0) {
                 _cacheAllRoles();
             }
 
@@ -256,15 +276,14 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                 Query insertUserRoleQuery =
                         _manager.createNativeQuery(String.format(INSERT_USER_ROLE_MAP, userId, roleId));
                 insertUserRoleQuery.executeUpdate();
-                _LOG.warn("auth_user ({}) is assigned with role({}) for auth access...",
-                        user, AuthCommon.USER.getVal());
+                _LOG.warn("auth_user with email ({}) is assigned with role({}) for auth access...",
+                        user.getEmail(), AuthCommon.USER.getVal());
             } else {
-                _LOG.warn("auth_user ({}) is assigned with role({}) already...",
-                        user, AuthCommon.USER.getVal());
+                _LOG.warn("auth_user with email ({}) is assigned with role({}) already...",
+                        user.getEmail(), AuthCommon.USER.getVal());
             }
-            _LOG.warn("auth user entity({}) is persisted", user.toString());
         } catch (Exception exp) {
-            throw new AppAuthException("failed to persist the auth user...: " + exp);
+            throw new AuthServiceException("failed to persist the auth user: " + exp);
         }
 
         return user.getId();
@@ -281,14 +300,15 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     public void updateUserRole(AuthUser user, AuthCommon roleType) {
         try {
             if (user.getId() <= 0) {
-                throw new AppAuthException("invalid auth user to update, missing id...");
+                throw new AuthServiceException("invalid auth user to update, missing id...");
             }
 
             //for testing
-            if(_roleCache.isEmpty()){
+            if (_roleCache.size()==0) {
                 _cacheAllRoles();
             }
 
+            //link user with the role
             Integer userId = user.getId();
             Integer roleId = _roleCache.get(roleType.getVal());
             Query userRoleExistQuery =
@@ -297,12 +317,12 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                 Query insertUserRoleQuery =
                         _manager.createNativeQuery(String.format(INSERT_USER_ROLE_MAP, userId, roleId));
                 insertUserRoleQuery.executeUpdate();
-                _LOG.warn("auth_user ({}) is assigned with role({}) for auth access...", user, roleType.getVal());
+                _LOG.warn("auth_user with email ({}) is assigned with role({}) for auth access...", user.getEmail(), roleType.getVal());
             } else {
-                _LOG.warn("auth_user ({}) is assigned with role({}) already...", user, roleType.getVal());
+                _LOG.warn("auth_user with email ({}) is assigned with role({}) already...", user.getEmail(), roleType.getVal());
             }
         } catch (Exception exp) {
-            throw new AppAuthException("fails to update user-role: " + exp);
+            throw new AuthServiceException("fails to update user-role: " + exp);
         }
     }
 
@@ -310,8 +330,9 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
      * to update an auth_user, the original id must be given
      * <p>
      * merging original id to the new auth user should be done in service layer
-     *
+     * <p>
      * update login/logout status, role list all here
+     *
      * @param user
      */
     @Override
@@ -319,12 +340,12 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     public void updateAuthUser(AuthUser user) {
         try {
             if (user.getId() <= 0) {
-                throw new AppAuthException("invalid auth user to update, missing id...");
+                throw new AuthServiceException("invalid auth user to update, missing id...");
             }
 
             _manager.merge(user);
         } catch (Exception exp) {
-            throw new AppAuthException("fails to update the auth user: " + exp);
+            throw new AuthServiceException("fails to update the auth user: " + exp);
         }
     }
 
@@ -338,7 +359,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     public void updateUserStatus(UserStatus status) {
         try {
             if (status.getAuthUser().getId() <= 0) {
-                throw new AppAuthException("invalid auth user to update status, missing id...");
+                throw new AuthServiceException("invalid auth user to update status, missing id...");
             }
 
             if (status.getStatus().equals(AuthCommon.LOG_IN.getVal())) {
@@ -356,10 +377,10 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                 _manager.flush();
                 _LOG.warn("logout status is updated as {}", status.toString());
             } else {
-                throw new AppAuthException("invalid user status value...");
+                throw new AuthServiceException("invalid user status value...");
             }
         } catch (Exception exp) {
-            throw new AppAuthException("fails to update the user status: " + exp);
+            throw new AuthServiceException("fails to update the user status: " + exp);
         }
     }
 
@@ -368,14 +389,14 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     public void deleteAuthUserById(Integer userId) {
         try {
             if (userId == null) {
-                throw new AppAuthException("user id is null...");
+                throw new AuthServiceException("user id is null...");
             }
 
             AuthUser user = findUserById(userId);
             _manager.remove(user);
             _LOG.warn("auth user({}) is removed...", user.toString());
         } catch (Exception exp) {
-            throw new AppAuthException("fails to delete auth user by id: " + exp);
+            throw new AuthServiceException("fails to delete auth user by id: " + exp);
         }
     }
 
@@ -384,14 +405,14 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     public void deleteAuthUserByEmail(String email) {
         try {
             if (email == null || email.isEmpty()) {
-                throw new AppAuthException("invalid email...");
+                throw new AuthServiceException("invalid email...");
             }
 
             AuthUser user = findUserByEmail(email);
             _manager.remove(user);
             _LOG.warn("auth user({}) is removed...", user.toString());
         } catch (Exception exp) {
-            throw new AppAuthException("fails to delete auth user by id: " + exp);
+            throw new AuthServiceException("fails to delete auth user by id: " + exp);
         }
     }
 }

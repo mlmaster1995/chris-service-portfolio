@@ -40,6 +40,8 @@ public interface AuthAccessDao {
 
     AuthUser findUserByEmail(String email);
 
+    boolean sameUserExists(String email);
+
     Integer saveAuthUser(AuthUser user);
 
     void updateUserRole(AuthUser user, AuthCommon roleType);

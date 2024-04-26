@@ -23,6 +23,7 @@
  */
 package com.chris.dto;
 
+import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
@@ -54,6 +55,8 @@ import java.util.stream.Collectors;
 public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializable {
     private static final long serialVersionUID = -2338626292552177485L;
 
+    private final Integer DEFAULT_USER_NAME_LEN = 128;
+
     private int id;
 
     @NonNull
@@ -65,8 +68,9 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
     @NonNull
     private String email;
 
-    @NonNull
-    private Boolean enabled;
+    @Nullable
+    @Builder.Default
+    private Boolean enabled = true;
 
     @Nullable
     private UserStatusDto status;
@@ -77,13 +81,25 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
 
     public AuthUserDto(@NonNull String username,
                        @NonNull String password,
+                       @NonNull String email) {
+        this.username = username.length() > DEFAULT_USER_NAME_LEN ?
+                username.substring(0, DEFAULT_USER_NAME_LEN) : username;
+        this.password = password;
+        this.email = email;
+        this.enabled = true;
+        this.roles = new HashSet<>();
+    }
+
+    public AuthUserDto(@NonNull String username,
+                       @NonNull String password,
                        @NonNull String email,
                        @NonNull Boolean enabled) {
-        this.username = username;
+        this.username = username.length() > DEFAULT_USER_NAME_LEN ?
+                username.substring(0, DEFAULT_USER_NAME_LEN) : username;
         this.password = password;
         this.email = email;
         this.enabled = enabled;
-        this.roles = new HashSet<>();
+        this.roles = new HashSet<>();;
     }
 
     @Override
@@ -133,9 +149,12 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
 
     @Override
     public boolean isValid() {
-        return this.username != null &&
-                this.password != null &&
-                this.email != null &&
-                this.enabled != null;
+        if (this.username == null || this.username.isEmpty() ||
+                this.password == null || this.password.isEmpty() ||
+                this.email == null || this.email.isEmpty()) {
+            return false;
+        }
+
+        return true;
     }
 }

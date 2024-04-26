@@ -47,12 +47,14 @@ class AuthUserDtoTest {
     @Order(3)
     @Test
     public void testAuthUserDtoTestWithUserStatusDto() {
+
+
         UserStatusDto userStatusDto = UserStatusDto.builder()
                 .status(AuthCommon.LOG_IN.getVal())
                 .logInTimestamp(new Date())
                 .logOutTimestamp(new Date(new Date().getTime() - 3000L))
                 .user(new AuthUserDto("chris", "1234",
-                        "chris@chrisauth.ca", true))
+                        "chris@chrisauth.ca"))
                 .session(100L)
                 .build();
 
