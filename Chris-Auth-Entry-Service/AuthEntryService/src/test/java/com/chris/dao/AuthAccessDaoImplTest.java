@@ -23,12 +23,12 @@
  */
 package com.chris.dao;
 
-import com.chris.Exception.AuthServiceException;
 import com.chris.dto.AuthUserDto;
 import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
+import com.chris.exception.AuthServiceException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
@@ -39,8 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Date;
 import java.util.List;
@@ -53,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+//ToDo: update h2 test to integration test with docker during maven build
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //@TestPropertySource("/application.properties")
 @SpringBootTest
@@ -375,7 +374,7 @@ class AuthAccessDaoImplTest {
     @Order(12)
     //@Sql("/insert-single-data.sql")
     @Test
-    public void testSameUserExists(){
+    public void testSameUserExists() {
         boolean res = _dao.sameUserExists(DEFAULT_EMAIL);
         assertTrue(res);
     }

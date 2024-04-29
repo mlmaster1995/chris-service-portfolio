@@ -24,7 +24,7 @@
 package com.chris.dao;
 
 
-import com.chris.Exception.AuthServiceException;
+import com.chris.exception.AuthServiceException;
 import com.chris.entity.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,12 +269,15 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             //link user to role into db
             Integer userId = user.getId();
             Integer roleId = _roleCache.get(AuthCommon.USER.getVal());
+
             Query userRoleExistQuery =
                     _manager.createNativeQuery(String.format(GET_USER_ROLE_COUNT, userId, roleId));
             if ((Long) userRoleExistQuery.getSingleResult() == 0L) {
                 Query insertUserRoleQuery =
                         _manager.createNativeQuery(String.format(INSERT_USER_ROLE_MAP, userId, roleId));
+
                 insertUserRoleQuery.executeUpdate();
+
                 _LOG.warn("auth_user with email ({}) is assigned with role({}) for auth access...",
                         user.getEmail(), AuthCommon.USER.getVal());
             } else {

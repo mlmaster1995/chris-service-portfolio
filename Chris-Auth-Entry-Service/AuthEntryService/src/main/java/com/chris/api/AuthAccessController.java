@@ -32,7 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +68,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
     @PostMapping("/register")
     public ResponseEntity<Object> registerNewUser(@RequestBody AuthUserDto userDto) {
         ResponseEntity<Object> responseEntity = null;
+
         try {
             _processor.register(userDto);
 
@@ -86,7 +89,17 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
         return responseEntity;
     }
 
-    //ToDo: add login & logout api
+    @GetMapping("/login")
+    public ResponseEntity<Object> userLogin(Authentication authentication) {
+        //update db -> pull data into cache -> return jtw token
+        return null;
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Object> userLogout(Authentication authentication) {
+        //update db -> clear cache -> return logout status
+        return null;
+    }
 
 
 }

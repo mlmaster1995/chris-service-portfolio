@@ -1,4 +1,4 @@
-package com.chris.Exception;
+package com.chris.exception;
 
 /**
  * exception used for the chris auth service

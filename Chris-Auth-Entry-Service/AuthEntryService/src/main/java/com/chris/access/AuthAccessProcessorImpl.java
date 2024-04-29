@@ -23,10 +23,11 @@
  */
 package com.chris.access;
 
-import com.chris.Exception.AuthServiceException;
+import com.chris.exception.AuthServiceException;
 import com.chris.dao.AuthAccessDao;
 import com.chris.dto.AuthUserDto;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,12 +63,14 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _LOG.warn("{} is constructed...", AUTH_ACCESS_PROCESS_BEAN);
     }
 
+    //ToDo: add the encoder switch as the env
     /**
      * persist new user into db
      *
      * @param userDto
      */
     @Override
+    @Transactional
     public void register(AuthUserDto userDto) {
         try {
             if (!userDto.isValid()) {
