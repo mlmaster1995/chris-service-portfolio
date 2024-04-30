@@ -21,14 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.util;
+package com.chris.provider;
 
-public class AuthAccessConstants {
-    public static final String AUTH_ACCESS_DAO_BEAN = "auth_access_dao_bean";
-    public static final String AUTH_ACCESS_CONTROL_BEAN = "auth_access_control_bean";
-    public static final String AUTH_ACCESS_PROCESS_BEAN = "auth_access_process_bean";
-    public static final String AUTH_ACCESS_CONFIG_BEAN = "auth_access_config_bean";
-    public static final String BCRYPT_ENCODER_BEAN = "bcrypt_encoder_bean";
-    public static final String AUTH_ACCESS_FILTER_BEAN = "auth_access_filter_bean";
-    public static final String AUTH_DATA_PROVIDER = "auth_data_provider";
+import org.springframework.security.authentication.AuthenticationProvider;
+
+/**
+ * top level for the authentication provider
+ */
+public interface AuthDataProvider extends AuthenticationProvider {
 }

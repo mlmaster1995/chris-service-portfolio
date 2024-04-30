@@ -23,15 +23,16 @@
  */
 package com.chris.access;
 
-import com.chris.exception.AuthServiceException;
 import com.chris.dao.AuthAccessDao;
 import com.chris.dto.AuthUserDto;
+import com.chris.exception.AuthServiceException;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +51,9 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     private final AuthAccessDao _accessDao;
     private final PasswordEncoder _encoder;
 
+    @Value("${app.auth.encoder.enabled:true}")
+    private boolean _encoderEnabled;
+
     @Autowired
     public AuthAccessProcessorImpl(
             @Qualifier(value = AUTH_ACCESS_DAO_BEAN) AuthAccessDao accessDao,
@@ -61,11 +65,11 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     @PostConstruct
     public void postConstruct() {
         _LOG.warn("{} is constructed...", AUTH_ACCESS_PROCESS_BEAN);
+        _LOG.warn("password encoder enabled: {}", _encoderEnabled);
     }
 
-    //ToDo: add the encoder switch as the env
     /**
-     * persist new user into db
+     * persist new user into db without any authentication
      *
      * @param userDto
      */
@@ -80,8 +84,11 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
             validateEmailAddress(userDto.getEmail());
 
             if (!_userExists(userDto)) {
-                String encryptedPassword = _encoder.encode(userDto.getPassword());
-                userDto.setPassword(encryptedPassword);
+                //encode the password
+                if (_encoderEnabled) {
+                    String encryptedPassword = _encoder.encode(userDto.getPassword());
+                    userDto.setPassword(encryptedPassword);
+                }
                 _accessDao.saveAuthUser(userDto.toEntity());
             } else {
                 throw new AuthServiceException("auth user with same email exists already...");

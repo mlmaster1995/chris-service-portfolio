@@ -65,6 +65,12 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
     }
 
 
+    /**
+     * without any authentication
+     *
+     * @param userDto
+     * @return
+     */
     @PostMapping("/register")
     public ResponseEntity<Object> registerNewUser(@RequestBody AuthUserDto userDto) {
         ResponseEntity<Object> responseEntity = null;
@@ -89,12 +95,24 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
         return responseEntity;
     }
 
+    /**
+     * with authentication and authorization
+     *
+     * @param authentication
+     * @return
+     */
     @GetMapping("/login")
     public ResponseEntity<Object> userLogin(Authentication authentication) {
-        //update db -> pull data into cache -> return jtw token
+        //auth -> update db -> pull data into cache -> return jtw token
         return null;
     }
 
+    /**
+     * with authentication and authorization
+     *
+     * @param authentication
+     * @return
+     */
     @GetMapping("/logout")
     public ResponseEntity<Object> userLogout(Authentication authentication) {
         //update db -> clear cache -> return logout status

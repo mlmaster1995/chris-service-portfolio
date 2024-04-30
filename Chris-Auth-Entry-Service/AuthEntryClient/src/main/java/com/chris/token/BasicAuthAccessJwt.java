@@ -21,14 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.util;
+package com.chris.token;
 
-public class AuthAccessConstants {
-    public static final String AUTH_ACCESS_DAO_BEAN = "auth_access_dao_bean";
-    public static final String AUTH_ACCESS_CONTROL_BEAN = "auth_access_control_bean";
-    public static final String AUTH_ACCESS_PROCESS_BEAN = "auth_access_process_bean";
-    public static final String AUTH_ACCESS_CONFIG_BEAN = "auth_access_config_bean";
-    public static final String BCRYPT_ENCODER_BEAN = "bcrypt_encoder_bean";
-    public static final String AUTH_ACCESS_FILTER_BEAN = "auth_access_filter_bean";
-    public static final String AUTH_DATA_PROVIDER = "auth_data_provider";
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+/**
+ * JWT token could be generated with different algo and payloads.
+ * <p>
+ * This is the basic version of JWT token for chris backend service auth.
+ * <p>
+ * more specific token will be added as the portfolio grows up
+ */
+@Component(value = "basic_auth_access_jwt_bean")
+public class BasicAuthAccessJwt implements JwtGenerator<String> {
+    private Logger _LOG = LoggerFactory.getLogger(BasicAuthAccessJwt.class);
+
+    @Override
+    public String generate() {
+        return null;
+    }
 }
