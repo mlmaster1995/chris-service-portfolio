@@ -24,9 +24,7 @@
 package com.chris.dto;
 
 import com.chris.entity.AuthCommon;
-import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -88,7 +86,7 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
     @Override
     public UserStatus toEntity() {
         return new UserStatus(id, status, logInTimestamp, logOutTimestamp, session,
-                new AuthUser(this.user.getId(), this.user.getUsername(),
+                new com.chris.entity.AuthUser(this.user.getId(), this.user.getUsername(),
                         this.user.getPassword(), this.user.getEmail(),
                         this.user.getEnabled(), null, null));
     }

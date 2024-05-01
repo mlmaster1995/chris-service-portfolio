@@ -30,5 +30,5 @@ public class AuthAccessConstants {
     public static final String AUTH_ACCESS_CONFIG_BEAN = "auth_access_config_bean";
     public static final String BCRYPT_ENCODER_BEAN = "bcrypt_encoder_bean";
     public static final String AUTH_ACCESS_FILTER_BEAN = "auth_access_filter_bean";
-    public static final String AUTH_DATA_PROVIDER = "auth_data_provider";
+    public static final String AUTH_DATA_PROVIDER_BEAN = "auth_data_provider_bean";
 }

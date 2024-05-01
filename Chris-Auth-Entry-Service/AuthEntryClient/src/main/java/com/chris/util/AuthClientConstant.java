@@ -21,16 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.token;
+package com.chris.util;
 
-
-import com.chris.entity.AuthUser;
-
-/**
- * top level of all Json Web Token generation
- */
-public interface JwtGenerator<T, V> {
-    T generate(AuthUser user);
-
-    V validate(T token);
+public class AuthClientConstant {
+    public final static String BASIC_AUTH_ACCESS_JWT_BEAN = "basic_auth_access_jwt_bean";
 }

@@ -24,7 +24,7 @@
 package com.chris.access;
 
 import com.chris.dao.AuthAccessDao;
-import com.chris.dto.AuthUserDto;
+import com.chris.dto.AuthUser;
 import com.chris.exception.AuthServiceException;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -75,7 +75,7 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
      */
     @Override
     @Transactional
-    public void register(AuthUserDto userDto) {
+    public void register(AuthUser userDto) {
         try {
             if (!userDto.isValid()) {
                 throw new AuthServiceException("auth user has invalid data...");
@@ -105,7 +105,7 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
      * @param userDto
      * @return
      */
-    private boolean _userExists(AuthUserDto userDto) {
+    private boolean _userExists(AuthUser userDto) {
         return _accessDao.sameUserExists(userDto.getEmail());
     }
 

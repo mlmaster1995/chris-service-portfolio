@@ -23,11 +23,11 @@
  */
 package com.chris.access;
 
-import com.chris.dto.AuthUserDto;
+import com.chris.dto.AuthUser;
 
 /**
  * top level of the auth access processor
  */
 public interface AuthAccessProcessor {
-    void register(AuthUserDto userDto);
+    void register(AuthUser userDto);
 }

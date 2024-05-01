@@ -45,13 +45,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_DAO_BEAN;
-import static com.chris.util.AuthAccessConstants.AUTH_DATA_PROVIDER;
+import static com.chris.util.AuthAccessConstants.AUTH_DATA_PROVIDER_BEAN;
 import static com.chris.util.AuthAccessConstants.BCRYPT_ENCODER_BEAN;
 
 /**
  * called by authentication manager to load the auth data for validation
  */
-@Component(value = AUTH_DATA_PROVIDER)
+@Component(value = AUTH_DATA_PROVIDER_BEAN)
 public class AuthDataProviderImpl implements AuthDataProvider {
     private Logger _LOG = LoggerFactory.getLogger(AuthDataProviderImpl.class);
 
@@ -68,7 +68,7 @@ public class AuthDataProviderImpl implements AuthDataProvider {
 
     @PostConstruct
     public void postConstruct() {
-        _LOG.warn("{} is constructed for authentication manager...", AUTH_DATA_PROVIDER);
+        _LOG.warn("{} is constructed for authentication manager...", AUTH_DATA_PROVIDER_BEAN);
         _LOG.warn("password encoder enabled: {}", _encoderEnabled);
     }
 

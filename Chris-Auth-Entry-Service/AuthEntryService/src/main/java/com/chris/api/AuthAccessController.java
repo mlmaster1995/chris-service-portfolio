@@ -24,7 +24,7 @@
 package com.chris.api;
 
 import com.chris.access.AuthAccessProcessor;
-import com.chris.dto.AuthUserDto;
+import com.chris.dto.AuthUser;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<Object> registerNewUser(@RequestBody AuthUserDto userDto) {
+    public ResponseEntity<Object> registerNewUser(@RequestBody AuthUser userDto) {
         ResponseEntity<Object> responseEntity = null;
 
         try {

@@ -23,14 +23,7 @@
  */
 package com.chris.token;
 
+class BasicAuthAccessJwtTest {
 
-import com.chris.entity.AuthUser;
 
-/**
- * top level of all Json Web Token generation
- */
-public interface JwtGenerator<T, V> {
-    T generate(AuthUser user);
-
-    V validate(T token);
 }

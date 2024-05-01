@@ -24,7 +24,6 @@
 package com.chris.dto;
 
 import com.chris.entity.AuthCommon;
-import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -108,11 +107,11 @@ public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
      */
     @Override
     public Role toEntity() {
-        List<AuthUser> authUserEntities = new ArrayList<>();
+        List<com.chris.entity.AuthUser> authUserEntities = new ArrayList<>();
 
         if (users != null) {
             authUserEntities = users.stream()
-                    .map(dto -> new AuthUser(dto.getId(),
+                    .map(dto -> new com.chris.entity.AuthUser(dto.getId(),
                             dto.getUsername(), dto.getPassword(),
                             dto.getEmail(), dto.getEnabled(),
                             null, null))
