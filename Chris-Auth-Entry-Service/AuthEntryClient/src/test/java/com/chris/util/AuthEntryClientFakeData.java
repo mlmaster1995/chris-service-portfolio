@@ -21,13 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.access;
+package com.chris.util;
 
-import com.chris.dto.AuthUserDto;
+import io.jsonwebtoken.Jwts;
+import org.junit.jupiter.api.Test;
+
+import javax.crypto.SecretKey;
+import java.util.Base64;
 
 /**
- * top level of the auth access processor
+ * used for generating fake testing data
  */
-public interface AuthAccessProcessor {
-    void register(AuthUserDto userDto);
+public class AuthEntryClientFakeData {
+    @Test
+    public void testGenerateKeyString() {
+        SecretKey key = Jwts.SIG.HS512.key().build();
+        String encodedKey = Base64.getEncoder().encodeToString(key.getEncoded());
+        System.out.println("key: " + encodedKey);
+    }
 }

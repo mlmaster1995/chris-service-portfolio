@@ -24,14 +24,16 @@
 package com.chris.token;
 
 import com.chris.entity.AuthUser;
+import com.chris.entity.Role;
+import com.chris.exception.AuthClientException;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +41,9 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 
@@ -51,52 +55,50 @@ import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
  * more specific token should be designed and generated upon the target backend service.
  */
 @Component(value = BASIC_AUTH_ACCESS_JWT_BEAN)
-public class BasicAuthAccessJwt implements JwtGenerator<String, Claims> {
+public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
     private Logger _LOG = LoggerFactory.getLogger(BasicAuthAccessJwt.class);
 
-    private final String HEADER_KEY_AUTHOR = "author";
-    private final String HEADER_KEY_USER = "use";
-    private final String HEADER_KEY_YEAR = "year";
-
-    private final String HEADER_VALUE_AUTHOR = "chris-yang";
-    private final String HEADER_VALUE_USER = "backend-service-portfolio";
-    private final String HEADER_VALUE_YEAR = "2024-2025";
-
-    private final String JWT_TOKEN_ISSUER = "chris-auth-entry-service";
-    private final String JWT_TOKEN_SUBJECT = "backend-service-jwt-service";
-
+    //payload for basic auth jwt token
     public static final String JWT_PAYLOAD_USERNAME = "username";
     public static final String JWT_PAYLOAD_EMAIL = "email";
     public static final String JWT_PAYLOAD_AUTH = "authorities";
 
-    //ToDo: insert the token in liquibase changelogs and load it from db when bean is constructed -> put it in abstract level
-    @Value("${app.auth.jwt.basic.secret.key}")
-    private String _jwtKeyStr;
+    //pre-load value into db by Dev/Ops
+    private final String AUTH_PROP_SECRET_KEY = "app.auth.jwt.basic.secret.key";
+    //pre-load value into db by Dev/Ops
+    private final String AUTH_PROP_DURATION_KEY = "app.auth.jwt.basic.duration.sec";
 
-    @Value("${app.auth.jwt.basic.duration.sec}")
+    private String _jwtKeyStr;
+    private SecretKey _secretKey;
     private Long _jwtDurationSec;
 
-    private Header _jwtCommonHeaders;
-
-    private SecretKey _secretKey;
-
-    public BasicAuthAccessJwt() {
-        _jwtCommonHeaders = Jwts.header()
-                .add(HEADER_KEY_AUTHOR, HEADER_VALUE_AUTHOR)
-                .add(HEADER_KEY_USER, HEADER_VALUE_USER)
-                .add(HEADER_KEY_YEAR, HEADER_VALUE_YEAR)
-                .build();
+    @Autowired
+    public BasicAuthAccessJwt(JdbcTemplate template) {
+        super(template);
     }
 
     @PostConstruct
     public void postConstruct() {
-        //ToDo: load it from db when bean is constructed
-        if (_jwtKeyStr == null) {
-            _LOG.error("jwt secret key string is null...");
-        } else {
+        try {
+            _jwtDurationSec = Long.valueOf(_getServiceProp(AUTH_PROP_DURATION_KEY));
+            _LOG.warn("jwt session duration: {}-sec", _jwtDurationSec);
+
+            _jwtKeyStr = _getServiceProp(AUTH_PROP_SECRET_KEY);
             _secretKey = Keys.hmacShaKeyFor(_jwtKeyStr.getBytes(StandardCharsets.UTF_8));
             _LOG.warn("jwt secret key is generated for token generation and validation...");
+        } catch (Exception exp) {
+            throw new AuthClientException("fails to fetch the jwt key string from db: " + exp);
         }
+
+        _LOG.warn("{} is constructed...", BASIC_AUTH_ACCESS_JWT_BEAN);
+    }
+
+    public String getJwtKeyStr() {
+        return _jwtKeyStr;
+    }
+
+    public Long getJwtDurationSec() {
+        return _jwtDurationSec;
     }
 
     /**
@@ -123,7 +125,7 @@ public class BasicAuthAccessJwt implements JwtGenerator<String, Claims> {
                 .and()
                 .claim(JWT_PAYLOAD_USERNAME, user.getUsername())
                 .claim(JWT_PAYLOAD_EMAIL, user.getEmail())
-                .claim(JWT_PAYLOAD_AUTH, user.getRoles())
+                .claim(JWT_PAYLOAD_AUTH, _getAuthorityList(user.getRoles()))
                 .expiration(expiration)
                 .notBefore(now)
                 .issuedAt(now)
@@ -135,25 +137,35 @@ public class BasicAuthAccessJwt implements JwtGenerator<String, Claims> {
         return jwt;
     }
 
+    /**
+     * role to string in list
+     *
+     * @param role
+     * @return
+     */
+    private List<String> _getAuthorityList(List<Role> role) {
+        return role.stream().map(x -> x.getName()).collect(Collectors.toList());
+    }
+
     @Override
     public Claims validate(String jwtToken) {
         if (jwtToken == null || jwtToken.isEmpty()) {
             throw new BadCredentialsException("Invalid(null/empty) Token received..");
         }
 
-        Claims claims = null;
+        Claims payload = null;
         try {
-            claims = Jwts.parser()
+            payload = Jwts.parser()
                     .verifyWith(_secretKey)
                     .build()
                     .parseSignedClaims(jwtToken)
                     .getPayload();
 
-            _LOG.warn("jwt token is parsed as: " + claims.toString());
+            _LOG.warn("jwt token is parsed as: " + payload.toString());
         } catch (Exception exp) {
             throw new BadCredentialsException("Invalid Token received: " + exp);
         }
 
-        return claims;
+        return payload;
     }
 }

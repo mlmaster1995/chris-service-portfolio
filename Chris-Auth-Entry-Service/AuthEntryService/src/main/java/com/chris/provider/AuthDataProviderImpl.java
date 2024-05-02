@@ -57,11 +57,14 @@ public class AuthDataProviderImpl implements AuthDataProvider {
 
     private final AuthAccessDao _accessDao;
     private final PasswordEncoder _encoder;
+
     @Value("${app.auth.encoder.enabled:true}")
     private boolean _encoderEnabled;
 
     @Autowired
-    public AuthDataProviderImpl(@Qualifier(value = AUTH_ACCESS_DAO_BEAN) AuthAccessDao accessDao, @Qualifier(value = BCRYPT_ENCODER_BEAN) PasswordEncoder encoder) {
+    public AuthDataProviderImpl(
+            @Qualifier(value = AUTH_ACCESS_DAO_BEAN) AuthAccessDao accessDao,
+            @Qualifier(value = BCRYPT_ENCODER_BEAN) PasswordEncoder encoder) {
         _accessDao = accessDao;
         _encoder = encoder;
     }

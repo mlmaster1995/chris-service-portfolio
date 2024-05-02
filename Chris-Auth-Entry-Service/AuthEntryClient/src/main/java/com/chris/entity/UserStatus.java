@@ -34,6 +34,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,8 +44,7 @@ import java.util.Date;
 /**
  * user_status entity used for spring-data-jpa
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -71,6 +71,10 @@ public class UserStatus {
             {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "user_id")
     private AuthUser authUser;
+
+    public UserStatus(String status) {
+        this.status = status;
+    }
 
     public UserStatus(String status,
                       AuthUser authUser) {

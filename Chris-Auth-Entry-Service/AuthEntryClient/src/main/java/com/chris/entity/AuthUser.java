@@ -36,9 +36,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +45,7 @@ import java.util.List;
 /**
  * auth user entity used for spring-data-jpa
  */
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -74,7 +72,8 @@ public class AuthUser {
     private UserStatus status;
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+            cascade = {CascadeType.DETACH, CascadeType.MERGE,
+                    CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -83,7 +82,10 @@ public class AuthUser {
     private List<Role> roles;
 
     //used from dto to entity
-    public AuthUser(String username, String password, String email, Boolean enabled) {
+    public AuthUser(String username,
+                    String password,
+                    String email,
+                    Boolean enabled) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -91,8 +93,25 @@ public class AuthUser {
         this.roles = new ArrayList<>();
     }
 
+    //used by testing
+    public AuthUser(String username,
+                    String password,
+                    String email,
+                    Boolean enabled,
+                    List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.enabled = enabled;
+        this.roles = roles;
+    }
+
     //used by jpa
-    public AuthUser(String username, String password, String email, Boolean enabled, UserStatus status,
+    public AuthUser(String username,
+                    String password,
+                    String email,
+                    Boolean enabled,
+                    UserStatus status,
                     List<Role> roles) {
         this.username = username;
         this.password = password;

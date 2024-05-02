@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="chris.yang" id="20240501-0358pm">
+        <validCheckSum>ANY</validCheckSum>
+
+        <sql endDelimiter=";" splitStatements="true">
+            <![CDATA[
+                START TRANSACTION;
+
+                   CREATE TABLE IF NOT EXISTS `service-common`.`service_vars` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                      `service` varchar(256) NOT NULL,
+                      `property` varchar(1024) NOT NULL UNIQUE,
+                      `value` VARCHAR(2048) NOT NULL,
+                      `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                      `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                   ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+                    INSERT INTO `service-common`.`service_vars` (`service`,`property`,`value`) VALUES
+                    ('chris-auth-entry-service','app.auth.jwt.basic.secret.key','90a/eGwdGTrOyt+69NZXVdz/bB+nFmR0flUAsrqM4/G+T1GNJDiltOX4nOkBJxq/m4yjEpPYbWl3aZwC6q1ehA=='),
+                    ('chris-auth-entry-service','app.auth.jwt.basic.duration.sec',600);
+
+               COMMIT;
+            ]]>
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

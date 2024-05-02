@@ -23,8 +23,9 @@
  */
 package com.chris.dao;
 
-import com.chris.dto.AuthUser;
+import com.chris.dto.AuthUserDto;
 import com.chris.entity.AuthCommon;
+import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
 import com.chris.exception.AuthServiceException;
@@ -78,7 +79,7 @@ class AuthAccessDaoImplTest {
     //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindAllUsers() {
-        List<com.chris.entity.AuthUser> users = _dao.findAllUsers();
+        List<AuthUser> users = _dao.findAllUsers();
         assertTrue(users.size() == 10);
         users.stream().forEach(x -> System.out.println(x.toString()));
         users.stream().forEach(x -> assertNull(x.getStatus()));
@@ -88,7 +89,7 @@ class AuthAccessDaoImplTest {
     //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindAllUsersWithPage() {
-        List<com.chris.entity.AuthUser> users = _dao.findAllUsers(1, 2);
+        List<AuthUser> users = _dao.findAllUsers(1, 2);
         assertTrue(users.size() == 20);
         users.stream().forEach(x -> System.out.println(x.toString()));
         users.stream().forEach(x -> assertNull(x.getStatus()));
@@ -115,7 +116,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testFindUserByEmail() {
         String email = "phil2024sidhu@chrismember.ca";
-        com.chris.entity.AuthUser user = _dao.findUserByEmail(email);
+        AuthUser user = _dao.findUserByEmail(email);
         assertNotNull(user);
         assertTrue(user.getEmail().equals(email));
         assertNull(user.getStatus());
@@ -140,7 +141,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testFindUserByName2() {
         String username = "philsidhu";
-        List<com.chris.entity.AuthUser> users = _dao.findUserByName(username);
+        List<AuthUser> users = _dao.findUserByName(username);
         assertEquals(users.size(), 1);
         System.out.println("user: " + users.get(0).toString());
     }
@@ -152,7 +153,7 @@ class AuthAccessDaoImplTest {
     //@Sql("/insert-role-data.sql")
     @Test
     public void testSaveAuthUser() {
-        AuthUser dto = AuthUser.builder()
+        AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
                 .email(DEFAULT_EMAIL)
                 .password(DEFAULT_PASSWORD)
@@ -161,7 +162,7 @@ class AuthAccessDaoImplTest {
         System.out.println("dto: " + dto.toString());
 
         if (dto.isValid()) {
-            com.chris.entity.AuthUser entity = dto.toEntity();
+            AuthUser entity = dto.toEntity();
 
             System.out.println("entity: " + entity.toString());
 
@@ -171,7 +172,7 @@ class AuthAccessDaoImplTest {
             assertThrows(AuthServiceException.class, () -> _dao.saveAuthUser(entity));
         }
 
-        com.chris.entity.AuthUser user = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser user = _dao.findUserByEmail(DEFAULT_EMAIL);
         System.out.println("user: " + user.toString());
         assertTrue(user.getEmail().equals(DEFAULT_EMAIL));
         assertTrue(user.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal()));
@@ -189,7 +190,7 @@ class AuthAccessDaoImplTest {
     @Disabled
     public void testUpdateUserRole() {
         String email = DEFAULT_EMAIL;
-        com.chris.entity.AuthUser entity = _dao.findUserByEmail(email);
+        AuthUser entity = _dao.findUserByEmail(email);
         System.out.println("entity: " + entity.toString());
         _dao.updateUserRole(entity, AuthCommon.USER);
     }
@@ -202,7 +203,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testUpdateUserRole2() {
         String email = DEFAULT_EMAIL;
-        com.chris.entity.AuthUser entity = _dao.findUserByEmail(email);
+        AuthUser entity = _dao.findUserByEmail(email);
         System.out.println("old entity: " + entity.toString());
 
         //add admin role
@@ -225,7 +226,7 @@ class AuthAccessDaoImplTest {
     @Order(7)
     @Test
     public void testUpdateUserRole3() {
-        AuthUser dto = AuthUser.builder()
+        AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
                 .email(DEFAULT_EMAIL)
                 .password(DEFAULT_PASSWORD)
@@ -235,7 +236,7 @@ class AuthAccessDaoImplTest {
         System.out.println("dto: " + dto.toString());
 
         if (dto.isValid()) {
-            com.chris.entity.AuthUser entity = dto.toEntity();
+            AuthUser entity = dto.toEntity();
             System.out.println("entity: " + entity.toString());
             assertThrows(AuthServiceException.class, () -> _dao.updateUserRole(entity, AuthCommon.USER));
         }
@@ -247,7 +248,7 @@ class AuthAccessDaoImplTest {
     @Order(8)
     @Test
     public void testUpdateAuthUser() {
-        AuthUser dto = AuthUser.builder()
+        AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
                 .email(DEFAULT_EMAIL)
                 .password(DEFAULT_PASSWORD)
@@ -255,7 +256,7 @@ class AuthAccessDaoImplTest {
                 .build();
 
         if (dto.isValid()) {
-            com.chris.entity.AuthUser entity = dto.toEntity();
+            AuthUser entity = dto.toEntity();
             System.out.println("entity: " + entity.toString());
             assertThrows(AuthServiceException.class, () -> _dao.updateAuthUser(entity));
         }
@@ -267,7 +268,7 @@ class AuthAccessDaoImplTest {
     public void testUpdateAuthUser2() {
         String newEmail = "chris-test4@chris-test4.ca";
 
-        com.chris.entity.AuthUser entity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser entity = _dao.findUserByEmail(DEFAULT_EMAIL);
         entity.setEmail(newEmail);
         _dao.updateAuthUser(entity);
 
@@ -290,7 +291,7 @@ class AuthAccessDaoImplTest {
         String password = "1234";
         String email = "chris-test9@chris-test9.ca";
 
-        AuthUser dto = AuthUser.builder()
+        AuthUserDto dto = AuthUserDto.builder()
                 .username(username)
                 .email(email)
                 .password(password)
@@ -298,12 +299,12 @@ class AuthAccessDaoImplTest {
                 .build();
 
         if (dto.isValid()) {
-            com.chris.entity.AuthUser entity = dto.toEntity();
+            AuthUser entity = dto.toEntity();
             _dao.saveAuthUser(entity);
         }
 
         //validate & pull out
-        com.chris.entity.AuthUser userEntity = _dao.findUserByEmail(email);
+        AuthUser userEntity = _dao.findUserByEmail(email);
         System.out.println("user entity: " + userEntity);
 
         //update login
@@ -320,7 +321,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testUpdateUserStatus2() {
         //validate
-        com.chris.entity.AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
         System.out.println("user entity: " + userEntity);
 
         //logout
@@ -341,7 +342,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testUpdateUserStatus3() {
         //validate
-        com.chris.entity.AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
         System.out.println("user entity: " + userEntity);
 
         //login
@@ -359,7 +360,7 @@ class AuthAccessDaoImplTest {
     @Test
     public void testDeleteAuthUser1() {
         //validate
-        com.chris.entity.AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
         System.out.println("user entity: " + userEntity);
 
         _dao.deleteAuthUserByEmail(DEFAULT_EMAIL);

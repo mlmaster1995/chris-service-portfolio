@@ -24,7 +24,8 @@
 package com.chris.api;
 
 import com.chris.access.AuthAccessProcessor;
-import com.chris.dto.AuthUser;
+import com.chris.dto.AuthUserDto;
+import com.chris.token.JwtGenerator;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_CONTROL_BEAN;
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_PROCESS_BEAN;
-import static com.chris.util.AuthAccessConstants.BCRYPT_ENCODER_BEAN;
+import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 
 @RestController(value = AUTH_ACCESS_CONTROL_BEAN)
 @RequestMapping("/api/v1/auth")
@@ -50,13 +50,14 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
     private Logger _LOG = LoggerFactory.getLogger(AuthAccessController.class);
 
     private final AuthAccessProcessor _processor;
-
+    private final JwtGenerator _basicAuthAccessJwt;
 
     @Autowired
     public AuthAccessController(
             @Qualifier(value = AUTH_ACCESS_PROCESS_BEAN) AuthAccessProcessor processor,
-            @Qualifier(value = BCRYPT_ENCODER_BEAN) PasswordEncoder encoder) {
+            @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN) JwtGenerator basicAuthAccessJwt) {
         _processor = processor;
+        _basicAuthAccessJwt = basicAuthAccessJwt;
     }
 
     @PostConstruct
@@ -72,7 +73,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<Object> registerNewUser(@RequestBody AuthUser userDto) {
+    public ResponseEntity<Object> registerNewUser(@RequestBody AuthUserDto userDto) {
         ResponseEntity<Object> responseEntity = null;
 
         try {
@@ -103,7 +104,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      */
     @GetMapping("/login")
     public ResponseEntity<Object> userLogin(Authentication authentication) {
-        //auth -> update db -> pull data into cache -> return jtw token
+        //ToDo: auth provider -> update db -> pull data into cache -> return jtw token
         return null;
     }
 

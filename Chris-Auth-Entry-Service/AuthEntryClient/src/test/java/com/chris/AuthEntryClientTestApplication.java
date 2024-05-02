@@ -21,13 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.access;
+package com.chris;
 
-import com.chris.dto.AuthUserDto;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * top level of the auth access processor
- */
-public interface AuthAccessProcessor {
-    void register(AuthUserDto userDto);
+@SpringBootApplication
+public class AuthEntryClientTestApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AuthEntryClientTestApplication.class, args);
+    }
+
 }
