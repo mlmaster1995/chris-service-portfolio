@@ -25,4 +25,5 @@ package com.chris.util;
 
 public class AuthClientConstant {
     public final static String BASIC_AUTH_ACCESS_JWT_BEAN = "basic_auth_access_jwt_bean";
+    public final static String AUTH_DATA_PROVIDER_CLIENT_BEAN = "auth_data_provider_client_bean";
 }

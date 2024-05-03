@@ -25,7 +25,6 @@ package com.chris.api;
 
 import com.chris.access.AuthAccessProcessor;
 import com.chris.dto.AuthUserDto;
-import com.chris.token.JwtGenerator;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_CONTROL_BEAN;
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_PROCESS_BEAN;
-import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 
 @RestController(value = AUTH_ACCESS_CONTROL_BEAN)
 @RequestMapping("/api/v1/auth")
@@ -50,14 +48,12 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
     private Logger _LOG = LoggerFactory.getLogger(AuthAccessController.class);
 
     private final AuthAccessProcessor _processor;
-    private final JwtGenerator _basicAuthAccessJwt;
+
 
     @Autowired
     public AuthAccessController(
-            @Qualifier(value = AUTH_ACCESS_PROCESS_BEAN) AuthAccessProcessor processor,
-            @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN) JwtGenerator basicAuthAccessJwt) {
+            @Qualifier(value = AUTH_ACCESS_PROCESS_BEAN) AuthAccessProcessor processor) {
         _processor = processor;
-        _basicAuthAccessJwt = basicAuthAccessJwt;
     }
 
     @PostConstruct
@@ -73,8 +69,8 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<Object> registerNewUser(@RequestBody AuthUserDto userDto) {
-        ResponseEntity<Object> responseEntity = null;
+    public ResponseEntity<String> registerNewUser(@RequestBody AuthUserDto userDto) {
+        ResponseEntity<String> responseEntity = null;
 
         try {
             _processor.register(userDto);
@@ -103,9 +99,27 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      * @return
      */
     @GetMapping("/login")
-    public ResponseEntity<Object> userLogin(Authentication authentication) {
-        //ToDo: auth provider -> update db -> pull data into cache -> return jtw token
-        return null;
+    public ResponseEntity<String> userLogin(Authentication authentication) {
+        ResponseEntity<String> responseEntity = null;
+
+        try {
+            String jwtToken = _processor.login(authentication.getName());
+            _LOG.warn("basic jwt token is generated for user with email({})", authentication.getName());
+
+            responseEntity = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(jwtToken);
+        } catch (Exception exp) {
+            String errMsg = String.format("fails to log in user: %s", exp);
+
+            _LOG.error(errMsg);
+
+            responseEntity = ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errMsg);
+        }
+
+        return responseEntity;
     }
 
     /**
@@ -115,8 +129,42 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      * @return
      */
     @GetMapping("/logout")
-    public ResponseEntity<Object> userLogout(Authentication authentication) {
+    public ResponseEntity<String> userLogout(Authentication authentication) {
         //update db -> clear cache -> return logout status
+        ResponseEntity<String> responseEntity = null;
+
+        try {
+            _processor.logout(authentication.getName());
+
+            String repMsg = String.format("user with email (%s) log out successfully",
+                    authentication.getName());
+
+            _LOG.warn(repMsg);
+            responseEntity = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(repMsg);
+
+        } catch (Exception exp) {
+            String errMsg = String.format("fails to log out user: %s", exp);
+
+            _LOG.error(errMsg);
+
+            responseEntity = ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(errMsg);
+        }
+
+        return responseEntity;
+    }
+
+    /**
+     * simple endpoint to test jwt token
+     *
+     * @param authentication
+     * @return
+     */
+    @PostMapping("/token")
+    public ResponseEntity<String> validJWT(Authentication authentication) {
         return null;
     }
 

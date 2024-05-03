@@ -26,7 +26,7 @@ package com.chris.provider;
 import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
- * top level for the authentication provider
+ * top level for the authentication provider on client side
  */
 public interface AuthDataProvider extends AuthenticationProvider {
 }

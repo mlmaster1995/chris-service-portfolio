@@ -23,6 +23,8 @@
  */
 package com.chris.auth;
 
+import com.chris.entity.AuthCommon;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,6 +44,8 @@ import static com.chris.util.AuthAccessConstants.BCRYPT_ENCODER_BEAN;
 @Configuration(value = AUTH_ACCESS_CONFIG_BEAN)
 public class AuthAccessConfig {
     private final String AUTH_REGISTER_ENDPOINT = "/api/v1/auth/register";
+    private final String AUTH_LOGIN_ENDPOINT = "/api/v1/auth/login";
+    private final String AUTH_LOGOUT_ENDPOINT = "/api/v1/auth/logout";
     private final String HEALTH_CHECK_ENDPOINT = "/health";
 
     @Bean(value = BCRYPT_ENCODER_BEAN)
@@ -54,6 +58,8 @@ public class AuthAccessConfig {
         security.authorizeHttpRequests(request -> {
                     request.requestMatchers(HttpMethod.POST, AUTH_REGISTER_ENDPOINT).permitAll();
                     request.requestMatchers(HttpMethod.GET, HEALTH_CHECK_ENDPOINT).permitAll();
+                    request.requestMatchers(HttpMethod.GET, AUTH_LOGIN_ENDPOINT).hasAnyRole("USER", "ADMIN");
+                    request.requestMatchers(HttpMethod.GET, AUTH_LOGOUT_ENDPOINT).hasAnyRole("USER", "ADMIN");
                 })
                 .httpBasic(Customizer.withDefaults())
                 .csrf()

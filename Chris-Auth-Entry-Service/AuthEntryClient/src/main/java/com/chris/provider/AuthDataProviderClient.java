@@ -21,17 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.access;
+package com.chris.provider;
 
-import com.chris.dto.AuthUserDto;
-import com.chris.entity.AuthUser;
+import org.springframework.security.authentication.AuthenticationProvider;
 
 /**
- * top level of the auth access processor
+ * top level of auth data provider on the client side
  */
-public interface AuthAccessProcessor {
-    void register(AuthUserDto userDto);
-
-    String login(String email);
-    void logout(String email);
+public interface AuthDataProviderClient extends AuthenticationProvider {
 }

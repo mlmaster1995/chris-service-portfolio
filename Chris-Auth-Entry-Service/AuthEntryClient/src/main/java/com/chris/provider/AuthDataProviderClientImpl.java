@@ -21,17 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.access;
+package com.chris.provider;
 
-import com.chris.dto.AuthUserDto;
-import com.chris.entity.AuthUser;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+import static com.chris.util.AuthClientConstant.AUTH_DATA_PROVIDER_CLIENT_BEAN;
 
 /**
- * top level of the auth access processor
+ * auth data provider on the client side to validate the auth in cache quickly
  */
-public interface AuthAccessProcessor {
-    void register(AuthUserDto userDto);
+//@Component(value = AUTH_DATA_PROVIDER_CLIENT_BEAN)
+public class AuthDataProviderClientImpl implements AuthDataProviderClient {
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        return null;
+    }
 
-    String login(String email);
-    void logout(String email);
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return false;
+    }
 }

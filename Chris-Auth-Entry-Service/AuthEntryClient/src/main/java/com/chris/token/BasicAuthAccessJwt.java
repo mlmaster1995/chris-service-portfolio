@@ -111,6 +111,12 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
     public String generate(AuthUser user) {
         UUID uuid = UUID.randomUUID();
         Date now = new Date();
+
+        //user defined session time or use default session time
+        if (user.getStatus().getSession() != null) {
+            _jwtDurationSec = user.getStatus().getSession();
+        }
+
         Date expiration = new Date(now.getTime() + Duration.ofSeconds(_jwtDurationSec).toMillis());
 
         String jwt = Jwts.builder()

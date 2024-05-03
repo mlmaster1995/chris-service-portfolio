@@ -25,7 +25,8 @@
                 CREATE TABLE IF NOT EXISTS `user_status`(
                 `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `user_id` INT NOT NULL UNIQUE,
-                `status` char(10) NOT NULL DEFAULT 'log_out',
+                `status` char(10) NOT NULL DEFAULT 'LOG_OUT',
+                `session` INT default null,
                 `login_timestamp` timestamp default null,
                 `logout_timestamp` timestamp default null,
 
