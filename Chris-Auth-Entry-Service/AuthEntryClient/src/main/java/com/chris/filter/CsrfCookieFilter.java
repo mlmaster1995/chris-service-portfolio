@@ -21,12 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.provider;
+package com.chris.filter;
 
-import org.springframework.security.authentication.AuthenticationProvider;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * top level of auth data provider on the client side
- */
-public interface AuthDataProviderClient extends AuthenticationProvider {
+import java.io.IOException;
+
+public class CsrfCookieFilter extends OncePerRequestFilter {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        //set up the header with the csfr token value
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
+        if (null != csrfToken.getHeaderName()) {
+            response.setHeader(csrfToken.getHeaderName(), csrfToken.getToken());
+        }
+
+        //physical cookie is taken care by the spring security framework saved into the browser
+        filterChain.doFilter(request, response);
+    }
 }

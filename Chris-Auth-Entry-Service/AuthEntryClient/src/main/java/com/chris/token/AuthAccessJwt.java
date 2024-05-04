@@ -48,7 +48,7 @@ public abstract class AuthAccessJwt<T, V> implements JwtGenerator<T, V> {
     public static final String JWT_PAYLOAD_IAT = "iat";
 
     public static final String JWT_TOKEN_ISSUER = "chris-auth-entry-service";
-    public static final String JWT_TOKEN_SUBJECT = "backend-service-jwt-service";
+    public static final String JWT_TOKEN_SUBJECT = "backend-service-jwt";
 
     protected final String HEADER_KEY_AUTHOR = "author";
     protected final String HEADER_KEY_USER = "use";

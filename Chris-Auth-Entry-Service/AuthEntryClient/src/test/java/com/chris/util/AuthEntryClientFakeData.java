@@ -33,7 +33,7 @@ import java.util.Base64;
  * used for generating fake testing data
  */
 public class AuthEntryClientFakeData {
-    @Test
+    //@Test
     public void testGenerateKeyString() {
         SecretKey key = Jwts.SIG.HS512.key().build();
         String encodedKey = Base64.getEncoder().encodeToString(key.getEncoded());

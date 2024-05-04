@@ -23,8 +23,13 @@
  */
 package com.chris.provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import static com.chris.util.AuthClientConstant.AUTH_DATA_PROVIDER_CLIENT_BEAN;
@@ -32,15 +37,27 @@ import static com.chris.util.AuthClientConstant.AUTH_DATA_PROVIDER_CLIENT_BEAN;
 /**
  * auth data provider on the client side to validate the auth in cache quickly
  */
-//@Component(value = AUTH_DATA_PROVIDER_CLIENT_BEAN)
-public class AuthDataProviderClientImpl implements AuthDataProviderClient {
+@Component(value = AUTH_DATA_PROVIDER_CLIENT_BEAN)
+public class AuthDataProviderClientImpl implements AuthDataProvider {
+    private Logger _LOG = LoggerFactory.getLogger(AuthDataProviderClientImpl.class);
+
+    private final PasswordEncoder _encoder;
+
+    @Autowired
+    public AuthDataProviderClientImpl(PasswordEncoder encoder) {
+        _encoder = encoder;
+    }
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        return null;
+        System.out.println("here");
+
+        return new UsernamePasswordAuthenticationToken(
+                "chris", "123");
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return false;
+        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 }

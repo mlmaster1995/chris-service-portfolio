@@ -113,7 +113,8 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
         Date now = new Date();
 
         //user defined session time or use default session time
-        if (user.getStatus().getSession() != null) {
+        if (user.getStatus() != null &&
+                user.getStatus().getSession() != null) {
             _jwtDurationSec = user.getStatus().getSession();
         }
 
