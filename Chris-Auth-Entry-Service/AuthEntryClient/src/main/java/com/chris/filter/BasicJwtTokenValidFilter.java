@@ -23,6 +23,8 @@
  */
 package com.chris.filter;
 
+import com.chris.cao.AuthAccessCao;
+import com.chris.entity.AuthUser;
 import com.chris.exception.AuthClientException;
 import com.chris.token.BasicAuthAccessJwt;
 import io.jsonwebtoken.Claims;
@@ -49,6 +51,7 @@ import java.util.List;
 
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_AUTH;
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_USERNAME;
+import static com.chris.util.AuthClientConstant.AUTH_ACCESS_CAO_BEAN;
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 import static com.chris.util.AuthClientConstant.BASIC_JWT_TOKEN_VALID_FILTER;
 import static com.chris.util.AuthClientConstant.JWT_TOKEN_HEADER;
@@ -62,16 +65,21 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
 
     private final BasicAuthAccessJwt _basicAuthAccessJwt;
 
+    private final AuthAccessCao _authUserCao;
+
     @Autowired
     public BasicJwtTokenValidFilter(
-            @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN) BasicAuthAccessJwt basicAuthAccessJwt) {
+            @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN) BasicAuthAccessJwt basicAuthAccessJwt,
+            @Qualifier(value = AUTH_ACCESS_CAO_BEAN) AuthAccessCao authUserCao) {
         _basicAuthAccessJwt = basicAuthAccessJwt;
+        _authUserCao = authUserCao;
     }
 
     @PostConstruct
     public void postConstruct() {
-        _LOG.warn("{} is injected", BASIC_AUTH_ACCESS_JWT_BEAN);
-        _LOG.warn("{} is constructed", BASIC_JWT_TOKEN_VALID_FILTER);
+        _LOG.warn("{} is injected into {}...", BASIC_AUTH_ACCESS_JWT_BEAN, BASIC_JWT_TOKEN_VALID_FILTER);
+        _LOG.warn("{} is injected into {}...", AUTH_ACCESS_CAO_BEAN, BASIC_JWT_TOKEN_VALID_FILTER);
+        _LOG.warn("{} is constructed...", BASIC_JWT_TOKEN_VALID_FILTER);
     }
 
     @Override
@@ -93,13 +101,14 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
                     .getPayload();
             _LOG.warn("basic jwt payload: {}", claims);
 
-            //ToDo: check validation on username, email, auth, audience, session expire via cache
+
+            //ToDo: !!!fetch user from the cache -> validate the session expiration!!!
+            String email = String.valueOf(claims.get(JWT_PAYLOAD_USERNAME));
+            AuthUser user = _authUserCao.fetchAuthUserByEmail(email);
 
 
-            //construct non-basic token for next http-basicl filter
-            String username = String.valueOf(claims.get(JWT_PAYLOAD_USERNAME));
             List<String> authorities = (List<String>) claims.get(JWT_PAYLOAD_AUTH);
-            Authentication auth = new UsernamePasswordAuthenticationToken(username, null,
+            Authentication auth = new UsernamePasswordAuthenticationToken(email, null,
                     AuthorityUtils.commaSeparatedStringToAuthorityList(String.join(",", authorities)));
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (Exception exp) {
