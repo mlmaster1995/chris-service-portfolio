@@ -21,10 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.util;
+package com.chris.filter;
 
-public class AuthClientConstant {
-    public final static String BASIC_AUTH_ACCESS_JWT_BEAN = "basic_auth_access_jwt_bean";
-    public final static String BASIC_JWT_TOKEN_VALID_FILTER = "basic_jwt_token_valid_filter";
-    public final static String JWT_TOKEN_HEADER = "Authorization";
+import org.springframework.web.filter.OncePerRequestFilter;
+
+/**
+ * top level for all filters in the auth service client
+ */
+public abstract class AuthServiceFilter extends OncePerRequestFilter {
 }

@@ -23,7 +23,7 @@
  */
 package com.chris.dto;
 
-import com.chris.entity.AuthCommon;
+import com.chris.util.AuthCommon;
 import com.chris.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -69,6 +69,7 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
     private final String AUTH_PROP_DURATION_KEY = "app.auth.jwt.basic.duration.sec";
 
     private String _jwtKeyStr;
+
     private SecretKey _secretKey;
     private Long _jwtDurationSec;
 
@@ -144,16 +145,6 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
         return jwt;
     }
 
-    /**
-     * role to string in list
-     *
-     * @param role
-     * @return
-     */
-    private List<String> _getAuthorityList(List<Role> role) {
-        return role.stream().map(x -> x.getName()).collect(Collectors.toList());
-    }
-
     @Override
     public Claims validate(String jwtToken) {
         if (jwtToken == null || jwtToken.isEmpty()) {
@@ -174,5 +165,24 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
         }
 
         return payload;
+    }
+
+    /**
+     * get the secret key
+     *
+     * @return
+     */
+    public SecretKey getSecretKey() {
+        return _secretKey;
+    }
+
+    /**
+     * role to string in list
+     *
+     * @param role
+     * @return
+     */
+    private List<String> _getAuthorityList(List<Role> role) {
+        return role.stream().map(x -> x.getName()).collect(Collectors.toList());
     }
 }

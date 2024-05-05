@@ -85,6 +85,8 @@ public abstract class AuthAccessJwt<T, V> implements JwtGenerator<T, V> {
         try {
             String keyQuery = String.format(GET_JWT_KEY_STR, AUTH_SERVICE_NAME, properName);
 
+            _LOG.warn("query prop({}):{}", properName, keyQuery);
+
             return _template.queryForObject(keyQuery, String.class);
         } catch (Exception exp) {
             throw new AuthClientException("fails to fetch the jwt key string from db: " + exp);

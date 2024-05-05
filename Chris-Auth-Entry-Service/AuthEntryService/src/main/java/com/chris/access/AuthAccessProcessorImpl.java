@@ -25,7 +25,7 @@ package com.chris.access;
 
 import com.chris.dao.AuthAccessDao;
 import com.chris.dto.AuthUserDto;
-import com.chris.entity.AuthCommon;
+import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
 import com.chris.exception.AuthServiceException;
@@ -82,7 +82,7 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _LOG.warn("login user session timeout: {}-s", _userLoginSession);
     }
 
-    //add the lock
+    //ToDo: add the lock
     /**
      * persist new user into db without any authentication
      *
@@ -114,7 +114,7 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
 
     }
 
-    //add the lock
+    //ToDo: add the lock
     /**
      * user login -> generate jwt token
      *
@@ -159,7 +159,7 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         return token;
     }
 
-    //add the lock
+    //ToDo: add the lock
     @Override
     @Transactional
     public void logout(String email) {

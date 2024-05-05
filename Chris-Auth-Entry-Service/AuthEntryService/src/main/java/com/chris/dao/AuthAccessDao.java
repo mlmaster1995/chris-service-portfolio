@@ -23,7 +23,7 @@
  */
 package com.chris.dao;
 
-import com.chris.entity.AuthCommon;
+import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
 

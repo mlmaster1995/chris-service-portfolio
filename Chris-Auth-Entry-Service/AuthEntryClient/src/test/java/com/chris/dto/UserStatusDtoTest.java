@@ -23,7 +23,7 @@
  */
 package com.chris.dto;
 
-import com.chris.entity.AuthCommon;
+import com.chris.util.AuthCommon;
 import com.chris.entity.UserStatus;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;

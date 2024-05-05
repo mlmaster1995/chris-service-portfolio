@@ -27,20 +27,38 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-public class CsrfCookieFilter extends OncePerRequestFilter {
+/**
+ * csrf token filter
+ */
+public class CsrfCookieFilter extends AuthServiceFilter {
+    private Logger _LOG = LoggerFactory.getLogger(CsrfCookieFilter.class);
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        //set up the header with the csfr token value
-        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        try {
+            //ToDo: get more details, and add to the log
+            HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletResponse res = (HttpServletResponse) response;
 
-        if (null != csrfToken.getHeaderName()) {
-            response.setHeader(csrfToken.getHeaderName(), csrfToken.getToken());
+            //set up the header with the csfr token value
+            CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
+            String csrf = csrfToken.getToken();
+            _LOG.warn("csrf token: {}", csrf);
+
+            if (null != csrfToken.getHeaderName()) {
+                response.setHeader(csrfToken.getHeaderName(), csrfToken.getToken());
+            }
+        } catch (Exception exp) {
+            throw new BadCredentialsException("fails to get the csfr token: " + exp);
         }
 
         //physical cookie is taken care by the spring security framework saved into the browser

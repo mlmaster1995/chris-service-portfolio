@@ -24,7 +24,7 @@
 package com.chris.token;
 
 import com.chris.AuthEntryClientTestApplication;
-import com.chris.entity.AuthCommon;
+import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import io.jsonwebtoken.Claims;
