@@ -25,11 +25,14 @@ package com.chris.token;
 
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
+import com.chris.entity.UserStatus;
 import com.chris.exception.AuthClientException;
+import com.chris.util.AuthCommon;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +51,11 @@ import java.util.stream.Collectors;
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 
 /**
- * JWT token could be generated with different algo and payloads.
+ * JWT token could be generated with different algo and payloads
  * <p>
- * This is the generic version of JWT token for this auth service testing.
+ * This is the generic version of JWT token for this auth service testing without typical target backend service
  * <p>
- * more specific token should be designed and generated upon the target backend service.
+ * more specific token should be designed and generated upon the target backend service
  */
 @Component(value = BASIC_AUTH_ACCESS_JWT_BEAN)
 public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
@@ -62,20 +65,24 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
     public static final String JWT_PAYLOAD_USERNAME = "username";
     public static final String JWT_PAYLOAD_EMAIL = "email";
     public static final String JWT_PAYLOAD_AUTH = "authorities";
+    public static final String JWT_PAYLOAD_USER_ID = "id";
 
     //pre-load value into db by Dev/Ops
     private final String AUTH_PROP_SECRET_KEY = "app.auth.jwt.basic.secret.key";
     //pre-load value into db by Dev/Ops
     private final String AUTH_PROP_DURATION_KEY = "app.auth.jwt.basic.duration.sec";
 
+    private final EntityManager _manager;
     private String _jwtKeyStr;
-
     private SecretKey _secretKey;
     private Long _jwtDurationSec;
 
     @Autowired
-    public BasicAuthAccessJwt(JdbcTemplate template) {
+    public BasicAuthAccessJwt(JdbcTemplate template,
+                              EntityManager manager) {
         super(template);
+
+        _manager = manager;
     }
 
     @PostConstruct
@@ -87,15 +94,13 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
             _jwtKeyStr = _getServiceProp(AUTH_PROP_SECRET_KEY);
             _secretKey = Keys.hmacShaKeyFor(_jwtKeyStr.getBytes(StandardCharsets.UTF_8));
             _LOG.warn("jwt secret key is generated for token generation and validation...");
+
+            _LOG.warn("{} is constructed..", BASIC_AUTH_ACCESS_JWT_BEAN);
         } catch (Exception exp) {
             throw new AuthClientException("fails to fetch the jwt key string from db: " + exp);
         }
 
         _LOG.warn("{} is constructed...", BASIC_AUTH_ACCESS_JWT_BEAN);
-    }
-
-    public String getJwtKeyStr() {
-        return _jwtKeyStr;
     }
 
     public Long getJwtDurationSec() {
@@ -113,7 +118,7 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
         UUID uuid = UUID.randomUUID();
         Date now = new Date();
 
-        //user defined session time or use default session time
+        //user defined session time overload default session time (from db)
         if (user.getStatus() != null &&
                 user.getStatus().getSession() != null) {
             _jwtDurationSec = user.getStatus().getSession();
@@ -131,6 +136,7 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
                 .audience()
                 .add(user.getEmail())
                 .and()
+                .claim(JWT_PAYLOAD_USER_ID, user.getId())
                 .claim(JWT_PAYLOAD_USERNAME, user.getUsername())
                 .claim(JWT_PAYLOAD_EMAIL, user.getEmail())
                 .claim(JWT_PAYLOAD_AUTH, _getAuthorityList(user.getRoles()))
@@ -145,6 +151,12 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
         return jwt;
     }
 
+    /**
+     * validate the token is not tampered, not expired, and user not logout
+     *
+     * @param jwtToken
+     * @return
+     */
     @Override
     public Claims validate(String jwtToken) {
         if (jwtToken == null || jwtToken.isEmpty()) {
@@ -153,13 +165,23 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
 
         Claims payload = null;
         try {
+            //get payload
             payload = Jwts.parser()
                     .verifyWith(_secretKey)
                     .build()
                     .parseSignedClaims(jwtToken)
                     .getPayload();
 
-            _LOG.warn("jwt token is parsed as: " + payload.toString());
+            //check user status
+            String email = String.valueOf(payload.get(JWT_PAYLOAD_USERNAME));
+            Integer userId = (int) payload.get(JWT_PAYLOAD_USER_ID);
+            UserStatus status = _findStatusByUserId(userId);
+            if (status.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
+                throw new BadCredentialsException(String.format("user with email ({}) logout already, " +
+                        "token is revoked...", email));
+            }
+
+            _LOG.warn("jwt token payload: " + payload.toString());
         } catch (Exception exp) {
             throw new BadCredentialsException("Invalid Token received: " + exp);
         }
@@ -168,12 +190,21 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
     }
 
     /**
-     * get the secret key
+     * fetch auth user from db with ID
      *
+     * @param id
      * @return
      */
-    public SecretKey getSecretKey() {
-        return _secretKey;
+    private UserStatus _findStatusByUserId(Integer id) {
+        AuthUser user = null;
+
+        try {
+            user = _manager.find(AuthUser.class, id);
+        } catch (Exception exp) {
+            throw new AuthClientException("fails to find the auth user with id: " + exp);
+        }
+
+        return user.getStatus();
     }
 
     /**

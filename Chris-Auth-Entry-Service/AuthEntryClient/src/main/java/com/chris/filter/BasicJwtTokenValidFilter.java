@@ -23,21 +23,21 @@
  */
 package com.chris.filter;
 
-import com.chris.cao.AuthAccessCao;
-import com.chris.entity.AuthUser;
+
 import com.chris.exception.AuthClientException;
 import com.chris.token.BasicAuthAccessJwt;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -45,8 +45,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_AUTH;
@@ -65,20 +65,20 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
 
     private final BasicAuthAccessJwt _basicAuthAccessJwt;
 
-    private final AuthAccessCao _authUserCao;
+    @Value("${app.auth.jwt.valid.filter.skip:n/a}")
+    private String _skipEndpoints;
 
     @Autowired
     public BasicJwtTokenValidFilter(
-            @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN) BasicAuthAccessJwt basicAuthAccessJwt,
-            @Qualifier(value = AUTH_ACCESS_CAO_BEAN) AuthAccessCao authUserCao) {
+            @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN) BasicAuthAccessJwt basicAuthAccessJwt) {
         _basicAuthAccessJwt = basicAuthAccessJwt;
-        _authUserCao = authUserCao;
     }
 
     @PostConstruct
     public void postConstruct() {
         _LOG.warn("{} is injected into {}...", BASIC_AUTH_ACCESS_JWT_BEAN, BASIC_JWT_TOKEN_VALID_FILTER);
         _LOG.warn("{} is injected into {}...", AUTH_ACCESS_CAO_BEAN, BASIC_JWT_TOKEN_VALID_FILTER);
+        _LOG.warn("filter skip endpoints: " + _skipEndpoints);
         _LOG.warn("{} is constructed...", BASIC_JWT_TOKEN_VALID_FILTER);
     }
 
@@ -88,28 +88,19 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
         //if jtw header not exists, move forward to http basic check
         String jwt = request.getHeader(JWT_TOKEN_HEADER);
         try {
+            //request without 'Authorization' header
             if (jwt == null || jwt.isEmpty()) {
                 throw new AuthClientException("basic jwt token is null or empty...");
             }
 
-            SecretKey key = _basicAuthAccessJwt.getSecretKey();
+            //validate token and return payloads
+            Claims payload = _basicAuthAccessJwt.validate(jwt);
+            _LOG.warn("basic jwt payload: {}", payload);
 
-            Claims claims = Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(jwt)//compare the signature in case of the data is tempered in the mid
-                    .getPayload();
-            _LOG.warn("basic jwt payload: {}", claims);
+            //make non-basic http auth for next filter
+            Authentication auth = _getNonBasicHttpUserToken(payload);
 
 
-            //ToDo: !!!fetch user from the cache -> validate the session expiration!!!
-            String email = String.valueOf(claims.get(JWT_PAYLOAD_USERNAME));
-            AuthUser user = _authUserCao.fetchAuthUserByEmail(email);
-
-
-            List<String> authorities = (List<String>) claims.get(JWT_PAYLOAD_AUTH);
-            Authentication auth = new UsernamePasswordAuthenticationToken(email, null,
-                    AuthorityUtils.commaSeparatedStringToAuthorityList(String.join(",", authorities)));
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (Exception exp) {
             throw new BadCredentialsException("fails to get the basic jwt token from the request header: " + exp);
@@ -118,9 +109,40 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
         filterChain.doFilter(request, response);
     }
 
-    //ToDo: add the variable to skip typical endpoints from filtering
+    /**
+     * generate non-basic http token for user auth
+     *
+     * @param claims
+     * @return
+     */
+    private static Authentication _getNonBasicHttpUserToken(Claims claims) {
+        String email = String.valueOf(claims.get(JWT_PAYLOAD_USERNAME));
+
+        List<String> authorities = (List<String>) claims.get(JWT_PAYLOAD_AUTH);
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(email, null,
+                AuthorityUtils.commaSeparatedStringToAuthorityList(String.join(",", authorities)));
+
+        return auth;
+    }
+
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return false;
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        try {
+            String[] endpoints = _skipEndpoints.split(",");
+
+            if (Arrays.stream(endpoints).anyMatch(x -> request.getServletPath().equals(x))) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception exp) {
+            throw new AuthClientException("fails to get endpoints that basic jwt token should skip...");
+        }
+    }
+
+    @VisibleForTesting
+    public String getSkipEndpoints() {
+        return _skipEndpoints;
     }
 }

@@ -59,6 +59,9 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     private final PasswordEncoder _encoder;
     private final JwtGenerator _basicAuthAccessJwt;
 
+    //ToDo: add one scheduled thread to check the user status if expired or not async
+
+
     @Value("${app.auth.encoder.enabled:true}")
     private boolean _encoderEnabled;
 
@@ -138,9 +141,6 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
                 _accessDao.updateAuthUser(user);
 
                 _LOG.warn("user with email({}) status is updated as {}", email, user.getStatus());
-
-                //ToDo: pull data into cache
-
             } else {
                 UserStatus status = user.getStatus();
                 Date logInTime = status.getLogInTimestamp();
@@ -178,9 +178,6 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
                 throw new AuthServiceException(
                         String.format("user with email(%s) logout already", email));
             }
-
-            //ToDo: clear cache
-
         } catch (Exception exp) {
             throw new AuthServiceException("fails to log out user: " + exp);
         }

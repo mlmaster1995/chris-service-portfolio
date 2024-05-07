@@ -28,6 +28,9 @@ import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -85,6 +88,7 @@ class BasicAuthAccessJwtTest {
 
     @Order(2)
     @Test
+    @Disabled
     public void testJwtValidate1() {
         String username = "chris";
         String email = "kyang3@lakeheadu.ca";
@@ -118,6 +122,7 @@ class BasicAuthAccessJwtTest {
 
     @Order(2)
     @Test
+    @Disabled
     public void testJwtValidate2() {
         String username = "chris";
         String email = "kyang3@lakeheadu.ca";

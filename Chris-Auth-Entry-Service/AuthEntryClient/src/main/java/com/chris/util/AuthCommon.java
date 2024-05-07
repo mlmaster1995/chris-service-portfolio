@@ -30,7 +30,9 @@ public enum AuthCommon {
     USER("ROLE_USER"),
     ADMIN("ROLE_ADMIN"),
     LOG_OUT("LOG_OUT"),
-    LOG_IN("LOG_IN");
+    LOG_IN("LOG_IN"),
+    ROLE_USER("USER"),
+    ROLE_ADMIN("ADMIN");
 
     private String _commonInfo;
 

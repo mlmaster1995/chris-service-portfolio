@@ -44,10 +44,6 @@ public class CsrfCookieFilter extends AuthServiceFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            //ToDo: get more details, and add to the log
-            HttpServletRequest req = (HttpServletRequest) request;
-            HttpServletResponse res = (HttpServletResponse) response;
-
             //set up the header with the csfr token value
             CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 

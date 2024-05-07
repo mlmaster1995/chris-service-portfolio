@@ -7,8 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @SpringBootApplication
 @EnableWebSecurity(debug = true)
 public class AuthEntryServiceApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(AuthEntryServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AuthEntryServiceApplication.class, args);
+    }
 
 }

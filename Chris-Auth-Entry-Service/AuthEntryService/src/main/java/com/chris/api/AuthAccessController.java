@@ -130,7 +130,6 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      */
     @GetMapping("/logout")
     public ResponseEntity<String> userLogout(Authentication authentication) {
-        //update db -> clear cache -> return logout status
         ResponseEntity<String> responseEntity = null;
 
         try {
@@ -160,12 +159,13 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
     /**
      * simple endpoint to test jwt token
      *
-     * @param authentication
      * @return
      */
-    @PostMapping("/token")
-    public ResponseEntity<String> validJWT(Authentication authentication) {
-        return null;
+    @GetMapping("/token")
+    public ResponseEntity<String> validJWT() {
+        return   ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("token is valid and here is DATA!");
     }
 
 

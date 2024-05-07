@@ -29,4 +29,5 @@ public class AuthClientConstant {
     public final static String JWT_TOKEN_HEADER = "Authorization";
     public static final String APP_CACHE_CONFIG_BEAN = "app_cache_config_bean";
     public static final String AUTH_ACCESS_CAO_BEAN = "auth_access_cao_bean";
+    public static final String AUTH_CACHE_TEMPLATE_BEAN = "redisTemplate";
 }
