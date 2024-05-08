@@ -50,6 +50,8 @@ public interface AuthAccessDao {
 
     void updateUserStatus(UserStatus status);
 
+    void flipLoginUserStatus();
+
     void deleteAuthUserById(Integer userId);
 
     void deleteAuthUserByEmail(String email);

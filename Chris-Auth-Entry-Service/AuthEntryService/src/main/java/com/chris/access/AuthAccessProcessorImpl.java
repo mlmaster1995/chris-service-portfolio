@@ -25,11 +25,11 @@ package com.chris.access;
 
 import com.chris.dao.AuthAccessDao;
 import com.chris.dto.AuthUserDto;
-import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
 import com.chris.exception.AuthServiceException;
 import com.chris.token.JwtGenerator;
+import com.chris.util.AuthCommon;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -41,6 +41,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_DAO_BEAN;
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_PROCESS_BEAN;
@@ -55,12 +58,15 @@ import static com.chris.util.AuthClientUtil.validateEmailAddress;
 public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     private Logger _LOG = LoggerFactory.getLogger(AuthAccessProcessorImpl.class);
 
+    private final Long DEFAULT_CHECK_PERIOD = 300L; //default check period is 5-min
+
     private final AuthAccessDao _accessDao;
     private final PasswordEncoder _encoder;
     private final JwtGenerator _basicAuthAccessJwt;
+    private ScheduledExecutorService _executor;
 
-    //ToDo: add one scheduled thread to check the user status if expired or not async
-
+    @Value("${app.auth.user.status.check.sec:300}")
+    private Long _userStatusCheckPeriodSec;
 
     @Value("${app.auth.encoder.enabled:true}")
     private boolean _encoderEnabled;
@@ -76,6 +82,15 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _accessDao = accessDao;
         _encoder = encoder;
         _basicAuthAccessJwt = basicAuthAccessJwt;
+
+        if (_userStatusCheckPeriodSec < DEFAULT_CHECK_PERIOD) {
+            _userStatusCheckPeriodSec = DEFAULT_CHECK_PERIOD;
+            _LOG.warn("user status check period is lower than the min value at {}-sec", DEFAULT_CHECK_PERIOD);
+        }
+
+        _executor = Executors.newScheduledThreadPool(1);
+        _executor.scheduleAtFixedRate(new CheckUserStatus(), 0, _userStatusCheckPeriodSec, TimeUnit.SECONDS);
+        _LOG.warn("user status check is scheduled with {}-sec/time", _userStatusCheckPeriodSec);
     }
 
     @PostConstruct
@@ -85,7 +100,9 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _LOG.warn("login user session timeout: {}-s", _userLoginSession);
     }
 
+
     //ToDo: add the lock
+
     /**
      * persist new user into db without any authentication
      *
@@ -191,6 +208,22 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
      */
     private boolean _userExists(AuthUserDto userDto) {
         return _accessDao.sameUserExists(userDto.getEmail());
+    }
+
+
+    /**
+     * concurrent tasks to check if the user status is expired and the flip
+     */
+    private class CheckUserStatus implements Runnable {
+        @Override
+        public void run() {
+            try {
+                _accessDao.flipLoginUserStatus();
+                _LOG.warn("user status is checked for flipping at {}", new Date());
+            } catch (Exception exp) {
+                _LOG.error("fails to check user status task: " + exp);
+            }
+        }
     }
 
 }

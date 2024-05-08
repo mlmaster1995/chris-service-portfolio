@@ -24,11 +24,11 @@
 package com.chris.dao;
 
 
-import com.chris.exception.AuthServiceException;
-import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
+import com.chris.exception.AuthServiceException;
+import com.chris.util.AuthCommon;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -63,13 +63,18 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     private final String UPDATE_LOGIN_STATUS =
             "UPDATE user_status SET status='%s',login_timestamp=current_timestamp,session='%s' " +
                     "WHERE user_id='%s' " +
-                    "AND (UNIX_TIMESTAMP(login_timestamp)*1000+session<UNIX_TIMESTAMP(NOW())*1000)" +
+                    "AND (UNIX_TIMESTAMP(login_timestamp)+session<UNIX_TIMESTAMP(NOW()))" +
                     "AND status = 'LOG_OUT' " +
                     "AND session != null";
     private final String UPDATE_LOGOUT_STATUS =
             "UPDATE user_status SET status='%s',logout_timestamp=current_timestamp,session=null " +
                     "WHERE user_id='%s' " +
                     "AND status = 'LOG_IN'";
+
+    private final String FLIP_USER_STATUS_TO_LOGOUT =
+            "UPDATE user_status SET status = 'LOG_OUT', session = null, logout_timestamp=now() " +
+                    "WHERE status = 'LOG_IN' AND UNIX_TIMESTAMP(login_timestamp) + session < UNIX_TIMESTAMP(NOW());";
+
     private final String DEFAULT_DATA = "data";
 
     private Map<String, Integer> _roleCache;
@@ -262,7 +267,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             _manager.flush();
 
             //for testing
-            if (_roleCache.size()==0) {
+            if (_roleCache.size() == 0) {
                 _cacheAllRoles();
             }
 
@@ -306,7 +311,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             }
 
             //for testing
-            if (_roleCache.size()==0) {
+            if (_roleCache.size() == 0) {
                 _cacheAllRoles();
             }
 
@@ -383,6 +388,17 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             }
         } catch (Exception exp) {
             throw new AuthServiceException("fails to update the user status: " + exp);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void flipLoginUserStatus() {
+        try {
+            Query flipLoginStatusQuery = _manager.createNativeQuery(FLIP_USER_STATUS_TO_LOGOUT);
+            flipLoginStatusQuery.executeUpdate();
+        } catch (Exception exp) {
+            throw new AuthServiceException("fails to flip user status: " + exp);
         }
     }
 
