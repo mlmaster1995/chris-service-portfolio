@@ -100,9 +100,6 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _LOG.warn("login user session timeout: {}-s", _userLoginSession);
     }
 
-
-    //ToDo: add the lock
-
     /**
      * persist new user into db without any authentication
      *
@@ -134,7 +131,6 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
 
     }
 
-    //ToDo: add the lock
     /**
      * user login -> generate jwt token
      *
@@ -144,18 +140,15 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     @Override
     @Transactional
     public String login(String email) {
-        String token = null;
+        String jwt = null;
         try {
             //fetch user
-            AuthUser user = _accessDao.findUserByEmail(email);
+            AuthUser user = _accessDao.findUserByEmail(email, true);
 
             //update status
             if (user.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
-                user.getStatus().setStatus(AuthCommon.LOG_IN.getVal());
-                user.getStatus().setSession(_userLoginSession);
-                user.getStatus().setLogInTimestamp(new Date());
 
-                _accessDao.updateAuthUser(user);
+                _accessDao.updateUserStatusAtomic(email, AuthCommon.LOG_IN, _userLoginSession);
 
                 _LOG.warn("user with email({}) status is updated as {}", email, user.getStatus());
             } else {
@@ -168,28 +161,27 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
 
 
             //generate token
-            token = String.valueOf(_basicAuthAccessJwt.generate(user));
+            jwt = String.valueOf(_basicAuthAccessJwt.generate(user));
         } catch (Exception exp) {
             throw new AuthServiceException("fails to login user: " + exp);
         }
 
-        return token;
+        return jwt;
     }
 
-    //ToDo: add the lock
+
     @Override
     @Transactional
     public void logout(String email) {
         try {
             //fetch user
-            AuthUser user = _accessDao.findUserByEmail(email);
+            AuthUser user = _accessDao.findUserByEmail(email, true);
 
             //update status
             if (user.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal())) {
-                user.getStatus().setStatus(AuthCommon.LOG_OUT.getVal());
-                user.getStatus().setSession(null);
-                user.getStatus().setLogOutTimestamp(new Date());
-                _accessDao.updateAuthUser(user);
+
+                _accessDao.updateUserStatusAtomic(email, AuthCommon.LOG_OUT, null);
+
                 _LOG.warn("user with email({}) status is updated as {}", email, user.getStatus());
             } else {
                 throw new AuthServiceException(

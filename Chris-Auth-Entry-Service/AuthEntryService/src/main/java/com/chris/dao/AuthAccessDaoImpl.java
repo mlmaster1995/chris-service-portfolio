@@ -31,6 +31,7 @@ import com.chris.exception.AuthServiceException;
 import com.chris.util.AuthCommon;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
@@ -70,10 +71,14 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             "UPDATE user_status SET status='%s',logout_timestamp=current_timestamp,session=null " +
                     "WHERE user_id='%s' " +
                     "AND status = 'LOG_IN'";
-
     private final String FLIP_USER_STATUS_TO_LOGOUT =
             "UPDATE user_status SET status = 'LOG_OUT', session = null, logout_timestamp=now() " +
                     "WHERE status = 'LOG_IN' AND UNIX_TIMESTAMP(login_timestamp) + session < UNIX_TIMESTAMP(NOW());";
+    private final String UPDATE_USER_STATUS_ATOMIC =
+            "UPDATE user_status SET status='%s', session=%s, login_timestamp=%s, " +
+                    "logout_timestamp=%s WHERE user_id=(SELECT id FROM auth_user WHERE email= %s);";
+
+    private final String GET_USER_COUNT = "SELECT count(*) FROM auth_user WHERE email='%s'";
 
     private final String DEFAULT_DATA = "data";
 
@@ -208,11 +213,20 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
      */
     @Override
     public AuthUser findUserByEmail(String email) {
+        return findUserByEmail(email, false);
+    }
+
+    @Override
+    public AuthUser findUserByEmail(String email, boolean lock) {
         AuthUser user = null;
         try {
             TypedQuery<AuthUser> query = _manager.createQuery(GET_AUTH_USER_BY_EMAIL, AuthUser.class);
 
             query.setParameter(DEFAULT_DATA, email);
+
+            if (lock) {
+                query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+            }
 
             user = query.getSingleResult();
 
@@ -226,6 +240,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
         return user;
     }
 
+
     /**
      * check if the user with same email exists
      *
@@ -237,7 +252,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
         long count = 0L;
         try {
             Query userCountQuery =
-                    _manager.createNativeQuery(String.format("SELECT count(*) FROM auth_user WHERE email='%s'", email));
+                    _manager.createNativeQuery(String.format(GET_USER_COUNT, email));
 
             count = (Long) userCountQuery.getSingleResult();
         } catch (Exception exp) {
@@ -399,6 +414,32 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             flipLoginStatusQuery.executeUpdate();
         } catch (Exception exp) {
             throw new AuthServiceException("fails to flip user status: " + exp);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateUserStatusAtomic(String email, AuthCommon status, Long session) {
+        try {
+            String updateQuery = null;
+
+            if (status.equals(AuthCommon.LOG_IN)) {
+                updateQuery = String.format(UPDATE_LOGOUT_STATUS, status.getVal(), session,
+                        "NOW()", null, email);
+            } else if (status.equals(AuthCommon.LOG_OUT)) {
+                updateQuery = String.format(UPDATE_LOGOUT_STATUS, status.getVal(), session,
+                        null, "NOW()", email);
+            } else {
+                throw new AuthServiceException(String.format("invalid user status: %s", status.getVal()));
+            }
+
+
+            Query flipLoginStatusQuery = _manager.createNativeQuery(UPDATE_USER_STATUS_ATOMIC);
+            flipLoginStatusQuery.executeUpdate();
+
+            _LOG.warn("user status update query: {}", updateQuery);
+        } catch (Exception exp) {
+            throw new AuthServiceException("fails to update user status: " + exp);
         }
     }
 

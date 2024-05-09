@@ -31,12 +31,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * common abstract for all types of JWT tokens in the portfolio
+ * common abstract for all types of JWT tokens in the auth service
  *
  * @param <T>
  * @param <V>
  */
-public abstract class AuthAccessJwt<T, V> implements JwtGenerator<T, V> {
+public abstract class AuthAccessJwt<T, V, U> implements JwtGenerator<T, V, U> {
     private Logger _LOG = LoggerFactory.getLogger(AuthAccessJwt.class);
 
     //common payload keys

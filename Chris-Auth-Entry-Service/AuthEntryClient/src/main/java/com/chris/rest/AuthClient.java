@@ -21,16 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.chris.token;
-
+package com.chris.rest;
 
 /**
- * top level of all Json Web Token generation in auth service
+ * top level of the auth client
  */
-public interface JwtGenerator<T, V, U> {
-    //generate token
-    T generate(U u);
-
-    //validate token
-    V validate(T t);
+public interface AuthClient <T,V> {
+    //validate token component via remote call
+    T validate(V[] v);
 }

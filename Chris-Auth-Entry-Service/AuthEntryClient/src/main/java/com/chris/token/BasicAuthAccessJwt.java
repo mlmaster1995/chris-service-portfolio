@@ -23,19 +23,20 @@
  */
 package com.chris.token;
 
+import com.chris.rest.BasicAuthRestClient;
+import com.chris.dto.UserStatusDto;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
-import com.chris.entity.UserStatus;
 import com.chris.exception.AuthClientException;
 import com.chris.util.AuthCommon;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.chris.util.AuthClientConstant.AUTH_REST_CLIENT_BEAN;
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 
 /**
@@ -58,7 +60,7 @@ import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
  * more specific token should be designed and generated upon the target backend service
  */
 @Component(value = BASIC_AUTH_ACCESS_JWT_BEAN)
-public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
+public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> {
     private Logger _LOG = LoggerFactory.getLogger(BasicAuthAccessJwt.class);
 
     //payload for basic auth jwt token
@@ -72,17 +74,17 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
     //pre-load value into db by Dev/Ops
     private final String AUTH_PROP_DURATION_KEY = "app.auth.jwt.basic.duration.sec";
 
-    private final EntityManager _manager;
+    private final BasicAuthRestClient _client;
     private String _jwtKeyStr;
     private SecretKey _secretKey;
     private Long _jwtDurationSec;
 
     @Autowired
     public BasicAuthAccessJwt(JdbcTemplate template,
-                              EntityManager manager) {
+                              @Qualifier(value = AUTH_REST_CLIENT_BEAN) BasicAuthRestClient client) {
         super(template);
 
-        _manager = manager;
+        _client = client;
     }
 
     @PostConstruct
@@ -172,10 +174,10 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
                     .parseSignedClaims(jwtToken)
                     .getPayload();
 
-            //check user status
             String email = String.valueOf(payload.get(JWT_PAYLOAD_USERNAME));
-            Integer userId = (int) payload.get(JWT_PAYLOAD_USER_ID);
-            UserStatus status = _findStatusByUserId(userId);
+
+            //check user status from remote auth service
+            UserStatusDto status = _client.validate(new String[]{email, jwtToken}).getBody();
             if (status.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
                 throw new BadCredentialsException(String.format("user with email ({}) logout already, " +
                         "token is revoked...", email));
@@ -187,24 +189,6 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims> {
         }
 
         return payload;
-    }
-
-    /**
-     * fetch auth user from db with ID
-     *
-     * @param id
-     * @return
-     */
-    private UserStatus _findStatusByUserId(Integer id) {
-        AuthUser user = null;
-
-        try {
-            user = _manager.find(AuthUser.class, id);
-        } catch (Exception exp) {
-            throw new AuthClientException("fails to find the auth user with id: " + exp);
-        }
-
-        return user.getStatus();
     }
 
     /**

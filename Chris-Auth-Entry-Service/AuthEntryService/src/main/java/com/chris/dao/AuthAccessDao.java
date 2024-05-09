@@ -39,6 +39,7 @@ public interface AuthAccessDao {
     AuthUser findUserById(Integer id);
 
     AuthUser findUserByEmail(String email);
+    AuthUser findUserByEmail(String email, boolean lock);
 
     boolean sameUserExists(String email);
 
@@ -51,6 +52,8 @@ public interface AuthAccessDao {
     void updateUserStatus(UserStatus status);
 
     void flipLoginUserStatus();
+
+    void updateUserStatusAtomic(String email, AuthCommon status, Long session);
 
     void deleteAuthUserById(Integer userId);
 
