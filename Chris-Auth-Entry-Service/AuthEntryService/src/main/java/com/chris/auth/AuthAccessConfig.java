@@ -60,6 +60,7 @@ public class AuthAccessConfig {
     private final String AUTH_LOGIN_ENDPOINT = "/api/v1/auth/login";
     private final String AUTH_LOGOUT_ENDPOINT = "/api/v1/auth/logout";
     private final String AUTH_JWT_TEST_ENDPOINT = "/api/v1/auth/token";
+    private final String AUTH_JWT_VALID_ENDPOINT = "/api/v1/auth/status";
     private final String HEALTH_CHECK_ENDPOINT = "/health";
 
     private final BasicJwtTokenValidFilter _basicJwtTokenFilter;
@@ -107,6 +108,8 @@ public class AuthAccessConfig {
                     request.requestMatchers(HttpMethod.GET, AUTH_LOGOUT_ENDPOINT)
                             .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
                     request.requestMatchers(HttpMethod.GET, AUTH_JWT_TEST_ENDPOINT)
+                            .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
+                    request.requestMatchers(HttpMethod.POST, AUTH_JWT_VALID_ENDPOINT)
                             .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
                 })
                 .httpBasic(Customizer.withDefaults());

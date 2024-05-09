@@ -25,6 +25,7 @@ package com.chris.api;
 
 import com.chris.access.AuthAccessProcessor;
 import com.chris.dto.AuthUserDto;
+import com.chris.dto.UserStatusDto;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,5 +169,10 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
                 .body("token is valid and here is DATA!");
     }
 
+    //ToDo: add the user status validation endpoint
+    @PostMapping("/status")
+    public ResponseEntity<UserStatusDto> validateUserStatus(){
+        return null;
+    }
 
 }
