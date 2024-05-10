@@ -24,7 +24,7 @@
 * [Docker](https://www.docker.com/?utm_source=google&utm_medium=cpc&utm_campaign=BRAND_SEARCH_BRAND_AMER_NORAM&utm_term=docker&gad_source=1&gclid=CjwKCAjwoPOwBhAeEiwAJuXRh0Ergcpu4AssaQTXGnlbGeWHNNyzurXBeXPpV5ILTsrweBjwpMD1GRoC_BgQAvD_BwE)
 * [Helm](https://helm.sh/)
 * [Ansible](https://www.ansible.com/)
-* [Jinjia Template](https://jinja.palletsprojects.com/en/3.1.x/)
+* [Jinja Template](https://jinja.palletsprojects.com/en/3.1.x/)
 
 ## Diagram
 ![cicd-test](https://github.com/mlmaster1995/chris-service-portfolio/assets/55723894/d3e2f2fa-3451-47b5-b13e-7978e75107b9)
