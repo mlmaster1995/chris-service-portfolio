@@ -24,11 +24,11 @@
 package com.chris.dao;
 
 import com.chris.dto.AuthUserDto;
-import com.chris.util.AuthCommon;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
 import com.chris.exception.AuthServiceException;
+import com.chris.util.AuthCommon;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
@@ -37,8 +37,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.Date;
 import java.util.List;
@@ -50,12 +52,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
-//ToDo: update h2 test to integration test with docker during maven build
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-//@TestPropertySource("/application.properties")
+@TestPropertySource("/application.properties")
 @SpringBootTest
 class AuthAccessDaoImplTest {
+    @Value("${app.find.users.page.size}")
+    private Integer _pageSize;
+
     @Autowired
     private JdbcTemplate _template;
 
@@ -71,28 +74,50 @@ class AuthAccessDaoImplTest {
     public void afterEachTest() {
         _template.execute("delete from users_roles");
         _template.execute("delete from user_status");
-        _template.execute("delete from role");
         _template.execute("delete from auth_user");
     }
 
+    private void _insertAuthUsers() {
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-1','1234','chris-test-1@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-2','1234','chris-test-2@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-3','1234','chris-test-3@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-4','1234','chris-test-4@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-5','1234','chris-test-5@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-6','1234','chris-test-6@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-7','1234','chris-test-7@chris-test.ca',1);");
+        _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-8','1234','chris-test-8@chris-test.ca',1);");
+    }
+
+    /**
+     *
+     */
     @Order(1)
-    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindAllUsers() {
+        //init db
+        _insertAuthUsers();
+
         List<AuthUser> users = _dao.findAllUsers();
-        assertTrue(users.size() == 10);
-        users.stream().forEach(x -> System.out.println(x.toString()));
-        users.stream().forEach(x -> assertNull(x.getStatus()));
+        assertTrue(users.size() == _pageSize);
     }
 
     @Order(2)
-    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindAllUsersWithPage() {
-        List<AuthUser> users = _dao.findAllUsers(1, 2);
-        assertTrue(users.size() == 20);
-        users.stream().forEach(x -> System.out.println(x.toString()));
-        users.stream().forEach(x -> assertNull(x.getStatus()));
+        //init db
+        _insertAuthUsers();
+
+        //0-1 row
+        List<AuthUser> users = _dao.findAllUsers(0, 1);
+        assertTrue(users.size() == 2);
+
+        //2-3 row
+        users = _dao.findAllUsers(1, 1);
+        assertTrue(users.size() == 2);
+
+        //0-3 row
+        users = _dao.findAllUsers(0, 2);
+        assertTrue(users.size() == 4);
     }
 
     @Order(2)
@@ -112,10 +137,12 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(3)
-    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindUserByEmail() {
-        String email = "phil2024sidhu@chrismember.ca";
+        //init db
+        _insertAuthUsers();
+
+        String email = "chris-test-1@chris-test.ca";
         AuthUser user = _dao.findUserByEmail(email);
         assertNotNull(user);
         assertTrue(user.getEmail().equals(email));
@@ -137,22 +164,20 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(5)
-    //@Sql("/insert-auth-data.sql")
     @Test
     public void testFindUserByName2() {
-        String username = "philsidhu";
+        //init db
+        _insertAuthUsers();
+
+        String username = "chris-test-1";
         List<AuthUser> users = _dao.findUserByName(username);
         assertEquals(users.size(), 1);
         System.out.println("user: " + users.get(0).toString());
     }
 
-    /**
-     * register a user with default logout status and user role
-     */
     @Order(6)
-    //@Sql("/insert-role-data.sql")
     @Test
-    public void testSaveAuthUser() {
+    public void testSaveAuthUserWithDefaultStatus() {
         AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
                 .email(DEFAULT_EMAIL)
@@ -180,28 +205,29 @@ class AuthAccessDaoImplTest {
     }
 
     /**
-     * link user role to the persisted user and the user already has user role
-     * <p>
-     * no exception but throw warning for the existing relationship
-     */
-    @Order(7)
-    //@Sql("/insert-single-data.sql")
-    @Test
-    @Disabled
-    public void testUpdateUserRole() {
-        String email = DEFAULT_EMAIL;
-        AuthUser entity = _dao.findUserByEmail(email);
-        System.out.println("entity: " + entity.toString());
-        _dao.updateUserRole(entity, AuthCommon.USER);
-    }
-
-    /**
      * link admin role to the persisted user and the user already has user role
      */
     @Order(7)
-    //@Sql("/insert-single-data.sql")
     @Test
-    public void testUpdateUserRole2() {
+    public void testUpdateUserRoleWithUserUpdate() {
+        //persist one user
+        AuthUserDto dto = AuthUserDto.builder()
+                .username(DEFAULT_USERNAME)
+                .email(DEFAULT_EMAIL)
+                .password(DEFAULT_PASSWORD)
+                .enabled(true)
+                .build();
+        System.out.println("dto: " + dto.toString());
+
+        if (dto.isValid()) {
+            AuthUser entity = dto.toEntity();
+            System.out.println("entity: " + entity.toString());
+
+            Integer id = _dao.saveAuthUser(entity);
+            System.out.println("entity id: " + id);
+        }
+
+        //fetch same user
         String email = DEFAULT_EMAIL;
         AuthUser entity = _dao.findUserByEmail(email);
         System.out.println("old entity: " + entity.toString());
@@ -209,8 +235,6 @@ class AuthAccessDaoImplTest {
         //add admin role
         entity.getRoles().add(new Role(AuthCommon.ADMIN.getVal()));
         _dao.updateAuthUser(entity);
-
-        //_dao.updateUserRole(entity, AuthCommon.ADMIN);
 
         entity = _dao.findUserByEmail(email);
         System.out.println("new entity: " + entity);

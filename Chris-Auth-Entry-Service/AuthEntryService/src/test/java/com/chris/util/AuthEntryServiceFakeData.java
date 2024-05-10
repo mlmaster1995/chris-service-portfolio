@@ -12,7 +12,7 @@ public class AuthEntryServiceFakeData {
     /**
      * remove comment when generating test data
      */
-    @Test
+    //@Test
     public void genFakeData() {
         String base = "INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('%s','%s','%s2024%s@chrismember.ca', 1);";
 

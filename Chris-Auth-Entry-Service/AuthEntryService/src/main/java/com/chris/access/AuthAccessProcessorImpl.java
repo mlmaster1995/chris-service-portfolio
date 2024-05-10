@@ -83,22 +83,22 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _accessDao = accessDao;
         _encoder = encoder;
         _basicAuthAccessJwt = basicAuthAccessJwt;
-
-        if (_userStatusCheckPeriodSec < DEFAULT_CHECK_PERIOD) {
-            _userStatusCheckPeriodSec = DEFAULT_CHECK_PERIOD;
-            _LOG.warn("user status check period is lower than the min value at {}-sec", DEFAULT_CHECK_PERIOD);
-        }
-
-        _executor = Executors.newScheduledThreadPool(1);
-        _executor.scheduleAtFixedRate(new CheckUserStatus(), 0, _userStatusCheckPeriodSec, TimeUnit.SECONDS);
-        _LOG.warn("user status check is scheduled with {}-sec/time", _userStatusCheckPeriodSec);
+        _executor = Executors.newSingleThreadScheduledExecutor();
     }
 
     @PostConstruct
     public void postConstruct() {
+        if (_userStatusCheckPeriodSec < DEFAULT_CHECK_PERIOD) {
+            _userStatusCheckPeriodSec = DEFAULT_CHECK_PERIOD;
+            _LOG.warn("user status check period is lower than the min value at {}-sec", DEFAULT_CHECK_PERIOD);
+        }
+        _executor.scheduleAtFixedRate(new CheckUserStatus(), 0, _userStatusCheckPeriodSec, TimeUnit.SECONDS);
+        _LOG.warn("user status check is scheduled with {}-sec/time", _userStatusCheckPeriodSec);
+
         _LOG.warn("{} is constructed...", AUTH_ACCESS_PROCESS_BEAN);
         _LOG.warn("password encoder enabled: {}", _encoderEnabled);
-        _LOG.warn("login user session timeout: {}-s", _userLoginSession);
+        _LOG.warn("login user session timeout: {}-sec", _userLoginSession);
+        _LOG.warn("user status check period: {}-sec", _userStatusCheckPeriodSec);
     }
 
     /**

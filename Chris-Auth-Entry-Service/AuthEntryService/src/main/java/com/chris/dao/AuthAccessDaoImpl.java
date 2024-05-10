@@ -49,7 +49,7 @@ import java.util.Map;
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_DAO_BEAN;
 
 /**
- * dao impl for the auth user access
+ * dao impl with hibernate for '/api/v1/auth/*'
  */
 @Repository(value = AUTH_ACCESS_DAO_BEAN)
 public class AuthAccessDaoImpl implements AuthAccessDao {
@@ -289,7 +289,6 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             //link user to role into db
             Integer userId = user.getId();
             Integer roleId = _roleCache.get(AuthCommon.USER.getVal());
-
             Query userRoleExistQuery =
                     _manager.createNativeQuery(String.format(GET_USER_ROLE_COUNT, userId, roleId));
             if ((Long) userRoleExistQuery.getSingleResult() == 0L) {
