@@ -24,7 +24,7 @@
 package com.chris.access;
 
 import com.chris.dto.AuthUserDto;
-import com.chris.entity.AuthUser;
+import com.chris.dto.UserStatusDto;
 
 /**
  * top level of the auth access processor
@@ -33,5 +33,8 @@ public interface AuthAccessProcessor {
     void register(AuthUserDto userDto);
 
     String login(String email);
+
     void logout(String email);
+
+    UserStatusDto getUserStatusByEmail(String email);
 }

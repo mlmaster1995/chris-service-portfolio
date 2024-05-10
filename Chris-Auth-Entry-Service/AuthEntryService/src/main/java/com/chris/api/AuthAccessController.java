@@ -26,6 +26,8 @@ package com.chris.api;
 import com.chris.access.AuthAccessProcessor;
 import com.chris.dto.AuthUserDto;
 import com.chris.dto.UserStatusDto;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,12 +50,15 @@ import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_PROCESS_BEAN;
 public class AuthAccessController extends BaseController<ResponseEntity<Object>> {
     private Logger _LOG = LoggerFactory.getLogger(AuthAccessController.class);
 
+    private final ObjectMapper _mapper;
     private final AuthAccessProcessor _processor;
 
 
     @Autowired
     public AuthAccessController(
+            ObjectMapper mapper,
             @Qualifier(value = AUTH_ACCESS_PROCESS_BEAN) AuthAccessProcessor processor) {
+        _mapper = mapper;
         _processor = processor;
     }
 
@@ -164,15 +169,27 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      */
     @GetMapping("/token")
     public ResponseEntity<String> validJWT() {
-        return   ResponseEntity
+        return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("token is valid and here is DATA!");
     }
 
-    //ToDo: add the user status validation endpoint
     @PostMapping("/status")
-    public ResponseEntity<UserStatusDto> validateUserStatus(){
-        return null;
+    public ResponseEntity<UserStatusDto> validateUserStatus(@RequestBody String emailJson) {
+        UserStatusDto status = null;
+
+        try {
+            JsonNode node = _mapper.readTree(emailJson);
+            String email = node.get("email").asText();
+
+            status = _processor.getUserStatusByEmail(email);
+        } catch (Exception exp) {
+            _LOG.error("fails to find the user status by email({}) at the controller layer...",
+                    emailJson);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(status, HttpStatus.OK);
     }
 
 }

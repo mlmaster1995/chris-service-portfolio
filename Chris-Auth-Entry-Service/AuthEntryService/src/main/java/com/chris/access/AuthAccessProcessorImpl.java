@@ -25,6 +25,7 @@ package com.chris.access;
 
 import com.chris.dao.AuthAccessDao;
 import com.chris.dto.AuthUserDto;
+import com.chris.dto.UserStatusDto;
 import com.chris.entity.AuthUser;
 import com.chris.entity.UserStatus;
 import com.chris.exception.AuthServiceException;
@@ -190,6 +191,20 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         } catch (Exception exp) {
             throw new AuthServiceException("fails to log out user: " + exp);
         }
+    }
+
+    @Override
+    public UserStatusDto getUserStatusByEmail(String email) {
+        UserStatusDto status = null;
+
+        try {
+            AuthUser user = _accessDao.findUserByEmail(email);
+            status = user.getStatus().toDto();
+        } catch (Exception exp) {
+            throw new AuthServiceException("fails to get the user status at the service layer:" + exp);
+        }
+
+        return status;
     }
 
     /**

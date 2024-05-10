@@ -23,6 +23,7 @@
  */
 package com.chris.entity;
 
+import com.chris.dto.UserStatusDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -102,6 +103,22 @@ public class UserStatus {
         this.session = session;
         this.authUser = user;
     }
+
+    /**
+     * entity to dto
+     *
+     * @return
+     */
+    public UserStatusDto toDto() {
+        return UserStatusDto.builder()
+                .status(this.status)
+                .session(this.session)
+                .id(this.id)
+                .logInTimestamp(this.logInTimestamp)
+                .logOutTimestamp(this.logOutTimestamp)
+                .build();
+    }
+
 
     @Override
     public String toString() {
