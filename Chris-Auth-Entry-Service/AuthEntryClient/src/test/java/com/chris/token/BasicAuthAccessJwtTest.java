@@ -24,12 +24,13 @@
 package com.chris.token;
 
 import com.chris.AuthEntryClientTestApplication;
-import com.chris.util.AuthCommon;
+import com.chris.dto.UserStatusDto;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
+import com.chris.rest.BasicAuthRestClient;
+import com.chris.util.AuthCommon;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.Claims;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -38,6 +39,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
@@ -56,14 +59,23 @@ import static com.chris.token.AuthAccessJwt.JWT_TOKEN_SUBJECT;
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_AUTH;
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_EMAIL;
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_USERNAME;
+import static com.chris.util.AuthClientConstant.AUTH_REST_CLIENT_BEAN;
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestPropertySource("/application.properties")
-@SpringBootTest(classes = {BasicAuthAccessJwt.class, AuthEntryClientTestApplication.class})
+@SpringBootTest(classes = {BasicAuthRestClient.class, BasicAuthAccessJwt.class,
+        AuthEntryClientTestApplication.class})
 class BasicAuthAccessJwtTest {
+    @MockBean
+    @Qualifier(AUTH_REST_CLIENT_BEAN)
+    private BasicAuthRestClient _basicAuthClient;
+
     @Autowired
     @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN)
     private BasicAuthAccessJwt _basicJwtToken;
@@ -80,7 +92,8 @@ class BasicAuthAccessJwtTest {
         AuthUser user = new AuthUser("chris", "1234",
                 "kyang3@lakeheadu.ca", true);
 
-        String token = (String) _basicJwtToken.generate(user);
+        String token = _basicJwtToken.generate(user);
+        System.out.println("token: " + token);
 
         assertTrue(!token.isEmpty());
         assertNotNull(token);
@@ -89,18 +102,29 @@ class BasicAuthAccessJwtTest {
     @Order(2)
     @Test
     @Disabled
-    public void testJwtValidate1() {
+    public void testJwtValidateAuthWithoutRoles() throws JsonProcessingException {
+        //mock response
         String username = "chris";
         String email = "kyang3@lakeheadu.ca";
         Boolean enabled = true;
         AuthUser user = new AuthUser(username, "1234",
                 email, enabled);
+        UserStatusDto statusDto = UserStatusDto.builder()
+                .status(AuthCommon.LOG_IN.getVal())
+                .session(300L)
+                .id(1)
+                .build();
+
+        //any string[].class will return
+        when(_basicAuthClient.validate(any(String[].class))).thenReturn(statusDto);
 
         String token = _basicJwtToken.generate(user);
         System.out.println("jwt token: " + token);
 
         assertTrue(!token.isEmpty());
         assertNotNull(token);
+
+        _basicAuthClient.validate(new String[]{email, token});
 
         Claims payload = _basicJwtToken.validate(token);
         System.out.println("payload: " + payload);
@@ -123,7 +147,8 @@ class BasicAuthAccessJwtTest {
     @Order(2)
     @Test
     @Disabled
-    public void testJwtValidate2() {
+    public void testJwtValidateAuthWithRoles() {
+        //mock response
         String username = "chris";
         String email = "kyang3@lakeheadu.ca";
         Boolean enabled = true;
@@ -132,6 +157,14 @@ class BasicAuthAccessJwtTest {
                 new Role(AuthCommon.ADMIN.getVal())));
         AuthUser user = new AuthUser(username, "1234",
                 email, enabled, roles);
+        UserStatusDto statusDto = UserStatusDto.builder()
+                .status(AuthCommon.LOG_IN.getVal())
+                .session(300L)
+                .id(1)
+                .build();
+
+        //any string[].class will return
+        when(_basicAuthClient.validate(any(String[].class))).thenReturn(statusDto);
 
         String token = _basicJwtToken.generate(user);
         System.out.println("jwt token: " + token);
@@ -164,5 +197,65 @@ class BasicAuthAccessJwtTest {
         assertTrue(issuer.equals(JWT_TOKEN_ISSUER));
         assertTrue(subject.equals(JWT_TOKEN_SUBJECT));
         audience.stream().forEach(x -> assertTrue(x.equals(email)));
+    }
+
+    @Order(3)
+    @Test
+    @Disabled
+    public void testJwtValidateAuthLogout() {
+        //mock response
+        String username = "chris";
+        String email = "kyang3@lakeheadu.ca";
+        Boolean enabled = true;
+        List<Role> roles = new ArrayList<>(Arrays.asList(
+                new Role(AuthCommon.USER.getVal()),
+                new Role(AuthCommon.ADMIN.getVal())));
+        AuthUser user = new AuthUser(username, "1234",
+                email, enabled, roles);
+        UserStatusDto statusDto = UserStatusDto.builder()
+                .status(AuthCommon.LOG_OUT.getVal())
+                .id(1)
+                .build();
+
+        //any string[].class will return
+        when(_basicAuthClient.validate(any(String[].class))).thenReturn(statusDto);
+
+        String token = _basicJwtToken.generate(user);
+        System.out.println("jwt token: " + token);
+
+        assertTrue(!token.isEmpty());
+        assertNotNull(token);
+
+        assertThrows(BadCredentialsException.class, () -> {
+            _basicJwtToken.validate(token);
+        });
+    }
+
+    @Order(4)
+    @Test
+    @Disabled
+    public void testJwtValidateAuthWithNull() {
+        //mock response
+        String username = "chris";
+        String email = "kyang3@lakeheadu.ca";
+        Boolean enabled = true;
+        List<Role> roles = new ArrayList<>(Arrays.asList(
+                new Role(AuthCommon.USER.getVal()),
+                new Role(AuthCommon.ADMIN.getVal())));
+        AuthUser user = new AuthUser(username, "1234",
+                email, enabled, roles);
+
+        //any string[].class will return
+        when(_basicAuthClient.validate(any(String[].class))).thenReturn(null);
+
+        String token = _basicJwtToken.generate(user);
+        System.out.println("jwt token: " + token);
+
+        assertTrue(!token.isEmpty());
+        assertNotNull(token);
+
+        assertThrows(BadCredentialsException.class, () -> {
+            _basicJwtToken.validate(token);
+        });
     }
 }

@@ -56,7 +56,7 @@ public class AuthUserDto extends BaseDtoToEntity<AuthUser> implements Serializab
 
     private final Integer DEFAULT_USER_NAME_LEN = 128;
 
-    private int id;
+    private Integer id;
 
     @NonNull
     private String username;

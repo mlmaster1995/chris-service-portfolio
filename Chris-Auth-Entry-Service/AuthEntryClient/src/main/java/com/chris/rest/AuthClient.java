@@ -28,5 +28,5 @@ package com.chris.rest;
  */
 public interface AuthClient <T,V> {
     //validate token component via remote call
-    T validate(V[] v);
+    T validate(V v);
 }

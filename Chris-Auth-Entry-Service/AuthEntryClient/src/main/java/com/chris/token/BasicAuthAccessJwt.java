@@ -23,16 +23,17 @@
  */
 package com.chris.token;
 
-import com.chris.rest.BasicAuthRestClient;
 import com.chris.dto.UserStatusDto;
 import com.chris.entity.AuthUser;
 import com.chris.entity.Role;
 import com.chris.exception.AuthClientException;
+import com.chris.rest.BasicAuthRestClient;
 import com.chris.util.AuthCommon;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
  * <p>
  * This is the generic version of JWT token for this auth service testing without typical target backend service
  * <p>
- * more specific token should be designed and generated upon the target backend service
+ * more specific token should be designed and generated upon the target backend service domain
  */
 @Component(value = BASIC_AUTH_ACCESS_JWT_BEAN)
 public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> {
@@ -103,10 +104,6 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
         }
 
         _LOG.warn("{} is constructed...", BASIC_AUTH_ACCESS_JWT_BEAN);
-    }
-
-    public Long getJwtDurationSec() {
-        return _jwtDurationSec;
     }
 
     /**
@@ -177,8 +174,12 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
             String email = String.valueOf(payload.get(JWT_PAYLOAD_USERNAME));
 
             //check user status from remote auth service
-            UserStatusDto status = _client.validate(new String[]{email, jwtToken}).getBody();
-            if (status.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
+            UserStatusDto statusDto = _client.validate(new String[]{email, jwtToken});
+            if (statusDto == null) {
+                throw new AuthClientException("user status is null from the client call");
+            }
+
+            if (statusDto != null && statusDto.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
                 throw new BadCredentialsException(String.format("user with email ({}) logout already, " +
                         "token is revoked...", email));
             }
@@ -199,5 +200,15 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
      */
     private List<String> _getAuthorityList(List<Role> role) {
         return role.stream().map(x -> x.getName()).collect(Collectors.toList());
+    }
+
+    @VisibleForTesting
+    public Long getJwtDurationSec() {
+        return _jwtDurationSec;
+    }
+
+    @VisibleForTesting
+    public BasicAuthRestClient getClient() {
+        return _client;
     }
 }

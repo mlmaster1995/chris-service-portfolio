@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 public class RoleDto extends BaseDtoToEntity<Role> implements Serializable {
     private static final long serialVersionUID = -2338626292552177485L;
 
-    private int id;
+    private Integer id;
 
     @NonNull
     private String roleType;

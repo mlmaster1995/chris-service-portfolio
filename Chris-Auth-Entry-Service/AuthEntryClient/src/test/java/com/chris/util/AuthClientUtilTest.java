@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthClientUtilTest {
-
     @Order(1)
     @Test
     public void testEmail() {

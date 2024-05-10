@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestPropertySource("/application.properties")
-@SpringBootTest(classes = {BasicAuthAccessJwt.class, AuthEntryClientTestApplication.class})
+@SpringBootTest(classes = {AuthEntryClientTestApplication.class})
 class BasicJwtTokenValidFilterTest {
 
     private final String _skipEndpointsStr = "/api/v1/test/users,/api/v1/test/filters";

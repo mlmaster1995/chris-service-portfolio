@@ -49,7 +49,7 @@ import java.util.Date;
 public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serializable {
     private static final long serialVersionUID = -2338626292552197485L;
 
-    private int id;
+    private Integer id;
 
     @NonNull
     private String status;
@@ -63,7 +63,7 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
     @Nullable
     private Long session;
 
-    @NonNull
+    @Nullable
     private AuthUserDto user;
 
     public UserStatusDto(@NonNull String status,

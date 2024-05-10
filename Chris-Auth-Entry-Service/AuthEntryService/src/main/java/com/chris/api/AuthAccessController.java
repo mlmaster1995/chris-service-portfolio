@@ -168,12 +168,18 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
      * @return
      */
     @GetMapping("/token")
-    public ResponseEntity<String> validJWT() {
+    public ResponseEntity<String> validateJWT() {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("token is valid and here is DATA!");
     }
 
+    /**
+     * user status endpoint for backend service to call validating the JWT token
+     *
+     * @param emailJson
+     * @return
+     */
     @PostMapping("/status")
     public ResponseEntity<UserStatusDto> validateUserStatus(@RequestBody String emailJson) {
         UserStatusDto status = null;
