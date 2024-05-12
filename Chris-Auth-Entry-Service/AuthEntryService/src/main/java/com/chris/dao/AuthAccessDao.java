@@ -45,7 +45,7 @@ public interface AuthAccessDao {
 
     Integer saveAuthUser(AuthUser user);
 
-    void updateUserRole(AuthUser user, AuthCommon roleType);
+    void updateUserRole(Integer userId, AuthCommon roleType);
 
     void updateAuthUser(AuthUser user);
 

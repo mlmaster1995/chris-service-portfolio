@@ -59,8 +59,6 @@ import static com.chris.util.AuthClientUtil.validateEmailAddress;
 public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     private Logger _LOG = LoggerFactory.getLogger(AuthAccessProcessorImpl.class);
 
-    private final Long DEFAULT_CHECK_PERIOD = 300L; //default check period is 5-min
-
     private final AuthAccessDao _accessDao;
     private final PasswordEncoder _encoder;
     private final JwtGenerator _basicAuthAccessJwt;
@@ -68,6 +66,9 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
 
     @Value("${app.auth.user.status.check.sec:300}")
     private Long _userStatusCheckPeriodSec;
+
+    @Value("${app.auth.user.status.check.sec.default:300}")
+    private Long _userStatusCheckPeriodSecDefault;
 
     @Value("${app.auth.encoder.enabled:true}")
     private boolean _encoderEnabled;
@@ -88,10 +89,12 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
 
     @PostConstruct
     public void postConstruct() {
-        if (_userStatusCheckPeriodSec < DEFAULT_CHECK_PERIOD) {
-            _userStatusCheckPeriodSec = DEFAULT_CHECK_PERIOD;
-            _LOG.warn("user status check period is lower than the min value at {}-sec", DEFAULT_CHECK_PERIOD);
+        if (_userStatusCheckPeriodSec < _userStatusCheckPeriodSecDefault) {
+            _userStatusCheckPeriodSec = _userStatusCheckPeriodSecDefault;
+            _LOG.warn("user status check period is lower than the default value at {}-sec",
+                    _userStatusCheckPeriodSecDefault);
         }
+
         _executor.scheduleAtFixedRate(new CheckUserStatus(), 0, _userStatusCheckPeriodSec, TimeUnit.SECONDS);
         _LOG.warn("user status check is scheduled with {}-sec/time", _userStatusCheckPeriodSec);
 
@@ -143,7 +146,7 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     public String login(String email) {
         String jwt = null;
         try {
-            //fetch user
+            //fetch user with the lock
             AuthUser user = _accessDao.findUserByEmail(email, true);
 
             //update status

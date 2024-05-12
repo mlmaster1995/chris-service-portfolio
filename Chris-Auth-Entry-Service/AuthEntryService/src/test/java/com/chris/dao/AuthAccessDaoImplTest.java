@@ -88,9 +88,29 @@ class AuthAccessDaoImplTest {
         _template.execute("INSERT INTO `auth_user` (`username`,`password`,`email`,`enabled`) VALUES ('chris-test-8','1234','chris-test-8@chris-test.ca',1);");
     }
 
-    /**
-     *
-     */
+
+    private Integer _persistDefaultUser() {
+        //persist one user
+        AuthUserDto dto = AuthUserDto.builder()
+                .username(DEFAULT_USERNAME)
+                .email(DEFAULT_EMAIL)
+                .password(DEFAULT_PASSWORD)
+                .enabled(true)
+                .build();
+        System.out.println("dto: " + dto.toString());
+
+        Integer id = null;
+        if (dto.isValid()) {
+            AuthUser entity = dto.toEntity();
+            System.out.println("entity: " + entity.toString());
+
+            id = _dao.saveAuthUser(entity);
+            System.out.println("entity id: " + id);
+        }
+
+        return id;
+    }
+
     @Order(1)
     @Test
     public void testFindAllUsers() {
@@ -205,11 +225,12 @@ class AuthAccessDaoImplTest {
     }
 
     /**
-     * link admin role to the persisted user and the user already has user role
+     * link admin role to the persisted user and the user already has user role with 'merge'
+     * -> throw an exception
      */
     @Order(7)
     @Test
-    public void testUpdateUserRoleWithUserUpdate() {
+    public void testUpdateUserRoleWithMerge() {
         //persist one user
         AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
@@ -227,44 +248,35 @@ class AuthAccessDaoImplTest {
             System.out.println("entity id: " + id);
         }
 
-        //fetch same user
-        String email = DEFAULT_EMAIL;
-        AuthUser entity = _dao.findUserByEmail(email);
-        System.out.println("old entity: " + entity.toString());
+        assertThrows(AuthServiceException.class, () -> {
+            //fetch same user
+            String email = DEFAULT_EMAIL;
+            AuthUser entity = _dao.findUserByEmail(email);
+            System.out.println("old entity: " + entity.toString());
 
-        //add admin role
-        entity.getRoles().add(new Role(AuthCommon.ADMIN.getVal()));
-        _dao.updateAuthUser(entity);
+            //add admin role
+            entity.getRoles().add(new Role(AuthCommon.ADMIN.getVal()));
+            _dao.updateAuthUser(entity);
+        });
+    }
 
-        entity = _dao.findUserByEmail(email);
-        System.out.println("new entity: " + entity);
+    /**
+     * link admin role to the persisted user and the user already has user role with 'merge'
+     */
+    @Order(7)
+    @Test
+    public void testUpdateUserRoleWithUserUpdate2() {
+        //persist one user
+        Integer id = _persistDefaultUser();
 
+        //update role
+        _dao.updateUserRole(id, AuthCommon.ADMIN);
+
+        AuthUser entity = _dao.findUserById(id);
         assertTrue(entity.getRoles().stream().anyMatch(x -> x.getName().equals(AuthCommon.USER.getVal())));
         assertTrue(entity.getRoles().stream().anyMatch(x -> x.getName().equals(AuthCommon.ADMIN.getVal())));
     }
 
-
-    /**
-     * link a role to an entity without id -> throw exception
-     */
-    @Order(7)
-    @Test
-    public void testUpdateUserRole3() {
-        AuthUserDto dto = AuthUserDto.builder()
-                .username(DEFAULT_USERNAME)
-                .email(DEFAULT_EMAIL)
-                .password(DEFAULT_PASSWORD)
-                .enabled(true)
-                .build();
-
-        System.out.println("dto: " + dto.toString());
-
-        if (dto.isValid()) {
-            AuthUser entity = dto.toEntity();
-            System.out.println("entity: " + entity.toString());
-            assertThrows(AuthServiceException.class, () -> _dao.updateUserRole(entity, AuthCommon.USER));
-        }
-    }
 
     /**
      * update an user without id -> throw exception
@@ -287,12 +299,14 @@ class AuthAccessDaoImplTest {
     }
 
     @Order(9)
-    //@Sql("/insert-single-data.sql")
     @Test
     public void testUpdateAuthUser2() {
-        String newEmail = "chris-test4@chris-test4.ca";
+        //persist one user
+        Integer id = _persistDefaultUser();
 
-        AuthUser entity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        //update email
+        String newEmail = "chris-test4@chris-test4.ca";
+        AuthUser entity = _dao.findUserById(id);
         entity.setEmail(newEmail);
         _dao.updateAuthUser(entity);
 
@@ -303,32 +317,15 @@ class AuthAccessDaoImplTest {
         assertTrue(entity.getPassword().equals(DEFAULT_PASSWORD));
     }
 
-    /**
-     * update the user status manually with mariadb, h2 NOT supported
-     */
     @Order(10)
     @Test
     @Disabled
     public void testUpdateUserStatus1() {
-        //register
-        String username = "chris-test9";
-        String password = "1234";
-        String email = "chris-test9@chris-test9.ca";
-
-        AuthUserDto dto = AuthUserDto.builder()
-                .username(username)
-                .email(email)
-                .password(password)
-                .enabled(true)
-                .build();
-
-        if (dto.isValid()) {
-            AuthUser entity = dto.toEntity();
-            _dao.saveAuthUser(entity);
-        }
+        //persist one user
+        Integer id = _persistDefaultUser();
 
         //validate & pull out
-        AuthUser userEntity = _dao.findUserByEmail(email);
+        AuthUser userEntity = _dao.findUserById(id);
         System.out.println("user entity: " + userEntity);
 
         //update login
@@ -338,17 +335,35 @@ class AuthAccessDaoImplTest {
         status.setSession(session);
         System.out.println("status entity: " + status);
         _dao.updateUserStatus(status);
+
+        userEntity = _dao.findUserById(id);
+        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal()));
+        assertTrue(userEntity.getStatus().getSession() != null);
     }
 
     @Order(10)
-    //@Sql("/insert-single-data.sql")
     @Test
     public void testUpdateUserStatus2() {
+        //persist one user
+        Integer id = _persistDefaultUser();
+
         //validate
-        AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser userEntity = _dao.findUserById(id);
         System.out.println("user entity: " + userEntity);
 
-        //logout
+        //update login
+        Long session = 12 * 60 * 60 * 1000L;
+        UserStatus status = userEntity.getStatus();
+        status.setStatus(AuthCommon.LOG_IN.getVal());
+        status.setSession(session);
+        System.out.println("status entity: " + status);
+        _dao.updateUserStatus(status);
+        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal()));
+        assertTrue(userEntity.getStatus().getSession() != null);
+
+        //update logout
+        userEntity = _dao.findUserById(id);
+
         userEntity.getStatus().setStatus(AuthCommon.LOG_OUT.getVal());
         userEntity.getStatus().setSession(null);
         userEntity.getStatus().setLogOutTimestamp(new Date());
@@ -359,32 +374,44 @@ class AuthAccessDaoImplTest {
     }
 
     /**
-     * update user status via auth user
+     * update user status by flip
      */
     @Order(10)
-    //@Sql("/insert-single-data.sql")
     @Test
-    public void testUpdateUserStatus3() {
+    public void testUpdateUserStatus3() throws InterruptedException {
+        //persist one user
+        Integer id = _persistDefaultUser();
+
         //validate
-        AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser userEntity = _dao.findUserById(id);
         System.out.println("user entity: " + userEntity);
 
         //login
         userEntity.getStatus().setStatus(AuthCommon.LOG_IN.getVal());
-        userEntity.getStatus().setSession(10 * 60 * 1000L);
+        userEntity.getStatus().setSession(2L);
         userEntity.getStatus().setLogInTimestamp(new Date());
         _dao.updateAuthUser(userEntity);
 
-        userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
-        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal()));
+        //wait for expire
+        Thread.sleep(3_000L);
+
+        //flip status
+        _dao.flipLoginUserStatus();
+
+        //check
+        userEntity = _dao.findUserById(id);
+        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal()));
+        assertNull(userEntity.getStatus().getSession());
     }
 
     @Order(11)
-    //@Sql("/insert-single-data.sql")
     @Test
     public void testDeleteAuthUser1() {
+        //persist one user
+        Integer id = _persistDefaultUser();
+
         //validate
-        AuthUser userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        AuthUser userEntity = _dao.findUserById(id);
         System.out.println("user entity: " + userEntity);
 
         _dao.deleteAuthUserByEmail(DEFAULT_EMAIL);
@@ -396,10 +423,13 @@ class AuthAccessDaoImplTest {
 
 
     @Order(12)
-    //@Sql("/insert-single-data.sql")
     @Test
     public void testSameUserExists() {
+        //persist one user
+        Integer id = _persistDefaultUser();
+
         boolean res = _dao.sameUserExists(DEFAULT_EMAIL);
+
         assertTrue(res);
     }
 

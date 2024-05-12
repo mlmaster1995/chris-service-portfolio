@@ -62,21 +62,15 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     private final String GET_USER_ROLE_COUNT = "SELECT COUNT(*) FROM users_roles WHERE user_id=%s AND role_id=%s";
     private final String INSERT_USER_ROLE_MAP = "INSERT INTO users_roles VALUES (%s, %s)";
     private final String UPDATE_LOGIN_STATUS =
-            "UPDATE user_status SET status='%s',login_timestamp=current_timestamp,session='%s' " +
-                    "WHERE user_id='%s' " +
-                    "AND (UNIX_TIMESTAMP(login_timestamp)+session<UNIX_TIMESTAMP(NOW()))" +
-                    "AND status = 'LOG_OUT' " +
-                    "AND session != null";
+            "UPDATE user_status SET status='%s',login_timestamp=NOW(),session='%s' WHERE user_id='%s' AND status = 'LOG_OUT'";
     private final String UPDATE_LOGOUT_STATUS =
-            "UPDATE user_status SET status='%s',logout_timestamp=current_timestamp,session=null " +
-                    "WHERE user_id='%s' " +
-                    "AND status = 'LOG_IN'";
+            "UPDATE user_status SET status='%s',logout_timestamp=NOW(),session=null WHERE user_id='%s' AND status = 'LOG_IN'";
     private final String FLIP_USER_STATUS_TO_LOGOUT =
-            "UPDATE user_status SET status = 'LOG_OUT', session = null, logout_timestamp=now() " +
+            "UPDATE user_status SET status = 'LOG_OUT', session = null, logout_timestamp=NOW() " +
                     "WHERE status = 'LOG_IN' AND UNIX_TIMESTAMP(login_timestamp) + session < UNIX_TIMESTAMP(NOW());";
     private final String UPDATE_USER_STATUS_ATOMIC =
-            "UPDATE user_status SET status='%s', session=%s, login_timestamp=%s, " +
-                    "logout_timestamp=%s WHERE user_id=(SELECT id FROM auth_user WHERE email= %s);";
+            "UPDATE user_status SET status='%s', session=%s, %s=NOW() " +
+                    "WHERE user_id=(SELECT id FROM auth_user WHERE email= '%s');";
 
     private final String GET_USER_COUNT = "SELECT count(*) FROM auth_user WHERE email='%s'";
 
@@ -313,15 +307,15 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     /**
      * link a role to a user in the user_role table manually
      *
-     * @param user
+     * @param userId
      * @param roleType
      */
     @Override
     @Transactional
-    public void updateUserRole(AuthUser user, AuthCommon roleType) {
+    public void updateUserRole(Integer userId, AuthCommon roleType) {
         try {
-            if (user.getId() <= 0) {
-                throw new AuthServiceException("invalid auth user to update, missing id...");
+            if (userId == null || userId <= 0) {
+                throw new AuthServiceException("invalid user id...");
             }
 
             //for testing
@@ -330,7 +324,6 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
             }
 
             //link user with the role
-            Integer userId = user.getId();
             Integer roleId = _roleCache.get(roleType.getVal());
             Query userRoleExistQuery =
                     _manager.createNativeQuery(String.format(GET_USER_ROLE_COUNT, userId, roleId));
@@ -338,9 +331,9 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                 Query insertUserRoleQuery =
                         _manager.createNativeQuery(String.format(INSERT_USER_ROLE_MAP, userId, roleId));
                 insertUserRoleQuery.executeUpdate();
-                _LOG.warn("auth_user with email ({}) is assigned with role({}) for auth access...", user.getEmail(), roleType.getVal());
+                _LOG.warn("auth_user with id ({}) is assigned with role({}) for auth access...", userId, roleType.getVal());
             } else {
-                _LOG.warn("auth_user with email ({}) is assigned with role({}) already...", user.getEmail(), roleType.getVal());
+                _LOG.warn("auth_user with id ({}) is assigned with role({}) already...", userId, roleType.getVal());
             }
         } catch (Exception exp) {
             throw new AuthServiceException("fails to update user-role: " + exp);
@@ -387,15 +380,11 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
                 Query loginUpdateQuery = _manager.createNativeQuery(String.format(UPDATE_LOGIN_STATUS,
                         status.getStatus(), status.getSession(), status.getAuthUser().getId()));
                 loginUpdateQuery.executeUpdate();
-
-                _manager.flush();
                 _LOG.warn("login status is updated as {}", status.toString());
             } else if (status.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
                 Query logoutUpdateQuery = _manager.createNativeQuery(String.format(UPDATE_LOGOUT_STATUS,
                         status.getStatus(), status.getSession(), status.getAuthUser().getId()));
                 logoutUpdateQuery.executeUpdate();
-
-                _manager.flush();
                 _LOG.warn("logout status is updated as {}", status.toString());
             } else {
                 throw new AuthServiceException("invalid user status value...");
@@ -420,23 +409,14 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
     @Transactional
     public void updateUserStatusAtomic(String email, AuthCommon status, Long session) {
         try {
-            String updateQuery = null;
-
-            if (status.equals(AuthCommon.LOG_IN)) {
-                updateQuery = String.format(UPDATE_LOGOUT_STATUS, status.getVal(), session,
-                        "NOW()", null, email);
-            } else if (status.equals(AuthCommon.LOG_OUT)) {
-                updateQuery = String.format(UPDATE_LOGOUT_STATUS, status.getVal(), session,
-                        null, "NOW()", email);
-            } else {
-                throw new AuthServiceException(String.format("invalid user status: %s", status.getVal()));
-            }
-
-
-            Query flipLoginStatusQuery = _manager.createNativeQuery(UPDATE_USER_STATUS_ATOMIC);
-            flipLoginStatusQuery.executeUpdate();
-
+            String updateQuery = String.format(UPDATE_USER_STATUS_ATOMIC,
+                    status.getVal(), session,
+                    status.equals(AuthCommon.LOG_IN) ? "login_timestamp" : "logout_timestamp", email);
             _LOG.warn("user status update query: {}", updateQuery);
+
+            Query flipLoginStatusQuery = _manager.createNativeQuery(updateQuery);
+
+            flipLoginStatusQuery.executeUpdate();
         } catch (Exception exp) {
             throw new AuthServiceException("fails to update user status: " + exp);
         }
