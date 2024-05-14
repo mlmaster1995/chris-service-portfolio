@@ -26,6 +26,7 @@ package com.chris.api;
 import com.chris.access.AuthAccessProcessor;
 import com.chris.dto.AuthUserDto;
 import com.chris.dto.UserStatusDto;
+import com.chris.exception.AuthServiceException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -56,8 +57,8 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
 
     @Autowired
     public AuthAccessController(
-            ObjectMapper mapper,
-            @Qualifier(value = AUTH_ACCESS_PROCESS_BEAN) AuthAccessProcessor processor) {
+            @Qualifier(value = AUTH_ACCESS_PROCESS_BEAN) AuthAccessProcessor processor,
+            ObjectMapper mapper) {
         _mapper = mapper;
         _processor = processor;
     }
@@ -81,14 +82,16 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
         try {
             _processor.register(userDto);
 
-            String repMsg = String.format("user with email (%s) is registered successfully", userDto.getEmail());
+            String repMsg = String.format("user with email (%s) is registered successfully",
+                    userDto.getEmail());
             _LOG.warn(repMsg);
             responseEntity = ResponseEntity
                     .status(HttpStatus.OK)
                     .body(repMsg);
 
         } catch (Exception exp) {
-            String errMsg = String.format("fails to register user with email(%s): %s", userDto.getEmail(), exp);
+            String errMsg = String.format("fails to register user with email(%s): %s",
+                    userDto.getEmail(), exp);
             _LOG.error(errMsg);
             responseEntity = ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -109,6 +112,10 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
         ResponseEntity<String> responseEntity = null;
 
         try {
+            if(authentication == null){
+                throw new AuthServiceException("auth is null");
+            }
+
             String jwtToken = _processor.login(authentication.getName());
             _LOG.warn("basic jwt token is generated for user with email({})", authentication.getName());
 

@@ -131,7 +131,7 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
         try {
             String[] endpoints = _skipEndpoints.split(",");
 
-            if (Arrays.stream(endpoints).anyMatch(x -> request.getServletPath().equals(x))) {
+            if (Arrays.stream(endpoints).anyMatch(x -> request.getPathInfo().equals(x))) {
                 return true;
             } else {
                 return false;
