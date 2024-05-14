@@ -6,6 +6,7 @@ import com.chris.entity.AuthUser;
 import com.chris.exception.AuthServiceException;
 import com.chris.util.AuthCommon;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -195,6 +196,7 @@ class AuthAccessProcessorImplTest {
     //default check period is 5-sec in the test
     @Order(5)
     @Test
+    @Disabled
     public void testStatusFlip2() throws InterruptedException {
         //init db
         _registerDefaultUser();

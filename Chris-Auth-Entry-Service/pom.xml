@@ -19,7 +19,7 @@
     <modules>
         <module>AuthEntryClient</module>
         <module>AuthEntryService</module>
-        <module>AuthSchedulerService</module>
+        <module>AuthEntryScheduler</module>
     </modules>
 
     <properties>

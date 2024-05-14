@@ -42,9 +42,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_DAO_BEAN;
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_PROCESS_BEAN;
@@ -62,13 +59,6 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
     private final AuthAccessDao _accessDao;
     private final PasswordEncoder _encoder;
     private final JwtGenerator _basicAuthAccessJwt;
-    private ScheduledExecutorService _executor;
-
-    @Value("${app.auth.user.status.check.sec:300}")
-    private Long _userStatusCheckPeriodSec;
-
-    @Value("${app.auth.user.status.check.sec.default:300}")
-    private Long _userStatusCheckPeriodSecDefault;
 
     @Value("${app.auth.encoder.enabled:true}")
     private boolean _encoderEnabled;
@@ -84,24 +74,13 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
         _accessDao = accessDao;
         _encoder = encoder;
         _basicAuthAccessJwt = basicAuthAccessJwt;
-        _executor = Executors.newSingleThreadScheduledExecutor();
     }
 
     @PostConstruct
     public void postConstruct() {
-        if (_userStatusCheckPeriodSec < _userStatusCheckPeriodSecDefault) {
-            _userStatusCheckPeriodSec = _userStatusCheckPeriodSecDefault;
-            _LOG.warn("user status check period is lower than the default value at {}-sec",
-                    _userStatusCheckPeriodSecDefault);
-        }
-
-        _executor.scheduleAtFixedRate(new CheckUserStatus(), 0, _userStatusCheckPeriodSec, TimeUnit.SECONDS);
-        _LOG.warn("user status check is scheduled with {}-sec/time", _userStatusCheckPeriodSec);
-
         _LOG.warn("{} is constructed...", AUTH_ACCESS_PROCESS_BEAN);
         _LOG.warn("password encoder enabled: {}", _encoderEnabled);
         _LOG.warn("login user session timeout: {}-sec", _userLoginSession);
-        _LOG.warn("user status check period: {}-sec", _userStatusCheckPeriodSec);
     }
 
     /**
@@ -162,7 +141,6 @@ public class AuthAccessProcessorImpl implements AuthAccessProcessor {
                         String.format("user with email(%s) login already at %s", email,
                                 logInTime.toString()));
             }
-
 
             //generate token
             jwt = String.valueOf(_basicAuthAccessJwt.generate(user));

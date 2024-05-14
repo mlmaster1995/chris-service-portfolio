@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.chris.util.AuthClientConstant.AUTH_REST_CLIENT_BEAN;
+import static com.chris.util.AuthClientConstant.AUTH_SECURITY_PROFILE;
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 
 /**
@@ -61,6 +63,7 @@ import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
  * more specific token should be designed and generated upon the target backend service domain
  */
 @Component(value = BASIC_AUTH_ACCESS_JWT_BEAN)
+@Profile(value = AUTH_SECURITY_PROFILE)
 public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> {
     private Logger _LOG = LoggerFactory.getLogger(BasicAuthAccessJwt.class);
 

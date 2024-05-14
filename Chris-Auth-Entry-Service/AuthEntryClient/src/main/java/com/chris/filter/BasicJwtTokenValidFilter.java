@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,6 +53,7 @@ import java.util.List;
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_AUTH;
 import static com.chris.token.BasicAuthAccessJwt.JWT_PAYLOAD_USERNAME;
 import static com.chris.util.AuthClientConstant.AUTH_ACCESS_CAO_BEAN;
+import static com.chris.util.AuthClientConstant.AUTH_SECURITY_PROFILE;
 import static com.chris.util.AuthClientConstant.BASIC_AUTH_ACCESS_JWT_BEAN;
 import static com.chris.util.AuthClientConstant.BASIC_JWT_TOKEN_VALID_FILTER;
 import static com.chris.util.AuthClientConstant.JWT_TOKEN_HEADER;
@@ -60,6 +62,7 @@ import static com.chris.util.AuthClientConstant.JWT_TOKEN_HEADER;
  * a validation filter for "BasicAuthAccessJwt" Token
  */
 @Component(value = BASIC_JWT_TOKEN_VALID_FILTER)
+@Profile(value = AUTH_SECURITY_PROFILE)
 public class BasicJwtTokenValidFilter extends AuthServiceFilter {
     private Logger _LOG = LoggerFactory.getLogger(BasicJwtTokenValidFilter.class);
 
@@ -87,6 +90,7 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
             throws ServletException, IOException {
         //if jtw header not exists, move forward to http basic check
         String jwt = request.getHeader(JWT_TOKEN_HEADER);
+
         try {
             //request without 'Authorization' header
             if (jwt == null || jwt.isEmpty()) {

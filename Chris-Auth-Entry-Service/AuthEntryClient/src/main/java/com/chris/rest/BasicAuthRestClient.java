@@ -30,18 +30,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
 import static com.chris.util.AuthClientConstant.AUTH_REST_CLIENT_BEAN;
+import static com.chris.util.AuthClientConstant.AUTH_SECURITY_PROFILE;
 import static com.chris.util.AuthClientConstant.JWT_TOKEN_HEADER;
 
 /**
  * rest client to visit the auth service api to validate for 'BasicAuthAccessJwt' token
  */
-@Component(AUTH_REST_CLIENT_BEAN)
+@Component(value = AUTH_REST_CLIENT_BEAN)
+@Profile(value = AUTH_SECURITY_PROFILE)
 public class BasicAuthRestClient implements AuthClient<UserStatusDto, String[]> {
     private Logger _LOG = LoggerFactory.getLogger(BasicAuthRestClient.class);
 

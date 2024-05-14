@@ -2,12 +2,12 @@ package com.chris;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class AuthSchedulerService {
-
+@EnableScheduling
+public class AuthEntryScheduler {
 	public static void main(String[] args) {
-		SpringApplication.run(AuthSchedulerService.class, args);
+		SpringApplication.run(AuthEntryScheduler.class, args);
 	}
-
 }

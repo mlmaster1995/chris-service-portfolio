@@ -29,6 +29,8 @@
 
                     INSERT INTO `user_status` (user_id) VALUES (@user_id);
 
+                    INSERT INTO `user_status` (user_id, status) VALUES (@user_id, 'LOG_OUT');
+
                COMMIT;
             ]]>
         </sql>

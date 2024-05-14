@@ -23,11 +23,6 @@
  */
 package com.chris.util;
 
-public class AuthClientConstant {
-    public final static String BASIC_AUTH_ACCESS_JWT_BEAN = "basic_auth_access_jwt_bean";
-    public final static String BASIC_JWT_TOKEN_VALID_FILTER = "basic_jwt_token_valid_filter";
-    public final static String JWT_TOKEN_HEADER = "Authorization";
-    public static final String AUTH_ACCESS_CAO_BEAN = "auth_access_cao_bean";
-    public static final String AUTH_REST_CLIENT_BEAN = "auth_rest_client_bean";
-    public static final String AUTH_SECURITY_PROFILE = "security";
+public class AuthSchedulerConstants {
+    public static final String AUTH_USER_STATUS_CHECK_BEAN = "auth_user_status_check_bean";
 }
