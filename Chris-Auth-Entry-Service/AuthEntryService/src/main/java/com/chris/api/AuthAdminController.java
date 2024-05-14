@@ -24,7 +24,7 @@
 package com.chris.api;
 
 /**
- * custom apis for admin access only to update the auth user
+ * custom apis for admin access ONLY to update the auth user, roles, status
  */
 //ToDo: add the admin access api
 public class AuthAdminController extends BaseController<Object> {

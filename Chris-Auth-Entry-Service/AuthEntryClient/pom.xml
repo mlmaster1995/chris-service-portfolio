@@ -13,6 +13,8 @@
     <groupId>com.chris</groupId>
     <artifactId>AuthEntryClient</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <name>AuthEntryClient</name>
+    <description>client lib for backend service to integrate with the auth entry service</description>
     <packaging>jar</packaging>
 
     <properties>

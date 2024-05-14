@@ -23,6 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.chris.util.AuthAccessConstants.AUTH_ACCESS_CONTROL_BEAN;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +83,7 @@ class AuthAccessControllerTest {
                         MediaType.valueOf("text/plain;charset=UTF-8")));
     }
 
-    private void _registerUser() {
+    private void _registerDefaultUser() {
         AuthUserDto dto = AuthUserDto.builder()
                 .username(DEFAULT_USERNAME)
                 .email(DEFAULT_EMAIL)
@@ -122,7 +123,7 @@ class AuthAccessControllerTest {
     @WithMockUser(password = DEFAULT_PASSWORD, username = DEFAULT_EMAIL, roles = {"ADMIN", "USER"})
     public void testLogin() throws Exception {
         //init user
-        _registerUser();
+        _registerDefaultUser();
 
         //from client
         _mockMvc.perform(get("/api/v1/auth/login"))
@@ -140,7 +141,7 @@ class AuthAccessControllerTest {
                 .when(_service).login(any(String.class));
 
         //init user
-        _registerUser();
+        _registerDefaultUser();
 
         //from client
         _mockMvc.perform(get("/api/v1/auth/login"))
@@ -154,7 +155,7 @@ class AuthAccessControllerTest {
     @WithMockUser(password = DEFAULT_PASSWORD, username = DEFAULT_EMAIL, roles = {"ADMIN", "USER"})
     public void testLogin3() throws Exception {
         //init user
-        _registerUser();
+        _registerDefaultUser();
 
         //from client
         _mockMvc.perform(get("/api/v1/auth/login"))
@@ -167,6 +168,46 @@ class AuthAccessControllerTest {
         assertTrue(entity.getStatus().getSession().equals(5L));
     }
 
-    //ToDo: add logout test cases
+    @Order(3)
+    @Test
+    @WithMockUser(password = DEFAULT_PASSWORD, username = DEFAULT_EMAIL, roles = {"ADMIN", "USER"})
+    public void testLogout1() throws Exception {
+        //init user
+        _registerDefaultUser();
+
+        //user login
+        String jwt = _service.login(DEFAULT_EMAIL);
+        System.out.println("jwt: " + jwt);
+
+        AuthUser entity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        assertTrue(entity.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal()));
+        assertNotNull(entity.getStatus().getSession());
+        assertNotNull(jwt);
+
+        //user logout
+        _mockMvc.perform(get("/api/v1/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(
+                        MediaType.valueOf("text/plain;charset=UTF-8")));
+
+        entity = _dao.findUserByEmail(DEFAULT_EMAIL);
+        assertTrue(entity.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal()));
+        assertNull(entity.getStatus().getSession());
+    }
+
+    @Order(3)
+    @Test
+    @WithMockUser(password = DEFAULT_PASSWORD, username = DEFAULT_EMAIL, roles = {"ADMIN", "USER"})
+    public void testLogout2() throws Exception {
+        //mock exception
+        doThrow(new AuthServiceException("mocked error at service layer"))
+                .when(_service).login(any(String.class));
+
+        //user logout
+        _mockMvc.perform(get("/api/v1/auth/logout"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(
+                        MediaType.valueOf("text/plain;charset=UTF-8")));
+    }
 
 }
