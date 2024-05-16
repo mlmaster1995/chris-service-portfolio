@@ -32,6 +32,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,7 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
 
     private final BasicAuthAccessJwt _basicAuthAccessJwt;
 
-    @Value("${app.auth.jwt.valid.filter.skip:n/a}")
+    @Value("${app.auth.client.jwt.filter.skip:n/a}")
     private String _skipEndpoints;
 
     @Autowired
@@ -131,15 +132,14 @@ public class BasicJwtTokenValidFilter extends AuthServiceFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         try {
             String[] endpoints = _skipEndpoints.split(",");
 
-            if (Arrays.stream(endpoints).anyMatch(x -> request.getPathInfo().equals(x))) {
-                return true;
-            } else {
-                return false;
-            }
+            return Arrays.stream(endpoints).anyMatch(x -> {
+                String path = request.getServletPath().isEmpty() ? request.getPathInfo() : request.getServletPath();
+                return path.equals(x);
+            });
         } catch (Exception exp) {
             throw new AuthClientException("fails to get endpoints that basic jwt token should skip...");
         }

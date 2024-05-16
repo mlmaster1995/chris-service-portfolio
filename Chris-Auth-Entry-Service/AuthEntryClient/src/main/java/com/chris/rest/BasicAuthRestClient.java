@@ -41,24 +41,28 @@ import static com.chris.util.AuthClientConstant.AUTH_SECURITY_PROFILE;
 import static com.chris.util.AuthClientConstant.JWT_TOKEN_HEADER;
 
 /**
- * rest client to visit the auth service api to validate for 'BasicAuthAccessJwt' token
+ * NOTE:
+ * - this remote check only happens when client is applied on remote services
+ * - NOT used with AuthEntryService
+ * - remote service uses this rest client to call the auth service api '/api/v1/auth/status' to
+ * validate the 'BasicAuthAccessJwt' token
  */
 @Component(value = AUTH_REST_CLIENT_BEAN)
 @Profile(value = AUTH_SECURITY_PROFILE)
 public class BasicAuthRestClient implements AuthClient<UserStatusDto, String[]> {
-    private Logger _LOG = LoggerFactory.getLogger(BasicAuthRestClient.class);
+    private final Logger _LOG = LoggerFactory.getLogger(BasicAuthRestClient.class);
 
     private final String DEFAULT_CHECK_ENDPOINT = "/api/v1/auth/status";
     private final String DEFAULT_EMPTY_ENDPOINT = "n/a";
     private final String DEFAULT_REQUEST_BODY = "{\"email\": \"%s\"}";
 
-    @Value("${app.auth.client.remote.url}")
+    @Value("${app.auth.client.remote.url:http://127.0.0.1}")
     private String _remoteURL;
 
-    @Value("${app.auth.client.url.port}")
+    @Value("${app.auth.client.url.port:8888}")
     private String _remotePort;
 
-    @Value("${app.auth.client.url.endpoint:n/a}")
+    @Value("${app.auth.client.url.endpoint:/api/v1/auth/status}")
     private String _remoteEndpoint;
 
     private String _baseURL;

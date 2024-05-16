@@ -29,7 +29,10 @@ import com.chris.entity.Role;
 import com.chris.entity.UserStatus;
 import com.chris.exception.AuthServiceException;
 import com.chris.util.AuthCommon;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -40,8 +43,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.MariaDBContainer;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -69,6 +76,39 @@ class AuthAccessDaoImplTest {
     private final String DEFAULT_USERNAME = "chris-test";
     private final String DEFAULT_PASSWORD = "1234";
     private final String DEFAULT_EMAIL = "chris-test@chris-test.ca";
+
+    //init test containers
+    public static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:10.5.5");
+
+    @BeforeAll
+    public static void beforeAll() {
+        mariadb.withDatabaseName("auth-api");
+        mariadb.withUsername("root");
+        mariadb.withPassword("");
+        mariadb.start();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        mariadb.stop();
+    }
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mariadb::getJdbcUrl);
+        registry.add("spring.datasource.username", mariadb::getUsername);
+        registry.add("spring.datasource.password", mariadb::getPassword);
+    }
+
+    @BeforeEach
+    public void beforeEachTest() {
+        System.out.println("maridb url: " + mariadb.getJdbcUrl());
+        System.out.println("mariadb user: " + mariadb.getUsername());
+        System.out.println("mariadb password: " + mariadb.getPassword());
+        System.out.println("mariadb database: " + mariadb.getDatabaseName());
+        System.out.println("mariadb driver: " + mariadb.getDriverClassName());
+    }
+
 
     @AfterEach
     public void afterEachTest() {
@@ -113,12 +153,12 @@ class AuthAccessDaoImplTest {
 
     @Order(1)
     @Test
-    public void testFindAllUsers() {
+    public void testFindAllUsers() throws IOException, InterruptedException {
         //init db
         _insertAuthUsers();
 
         List<AuthUser> users = _dao.findAllUsers();
-        assertTrue(users.size() == _pageSize);
+        assertEquals(users.size(), (int) _pageSize);
     }
 
     @Order(2)
@@ -129,15 +169,15 @@ class AuthAccessDaoImplTest {
 
         //0-1 row
         List<AuthUser> users = _dao.findAllUsers(0, 1);
-        assertTrue(users.size() == 2);
+        assertEquals(2, users.size());
 
         //2-3 row
         users = _dao.findAllUsers(1, 1);
-        assertTrue(users.size() == 2);
+        assertEquals(2, users.size());
 
         //0-3 row
         users = _dao.findAllUsers(0, 2);
-        assertTrue(users.size() == 4);
+        assertEquals(4, users.size());
     }
 
     @Order(2)
@@ -165,7 +205,7 @@ class AuthAccessDaoImplTest {
         String email = "chris-test-1@chris-test.ca";
         AuthUser user = _dao.findUserByEmail(email);
         assertNotNull(user);
-        assertTrue(user.getEmail().equals(email));
+        assertEquals(user.getEmail(), email);
         assertNull(user.getStatus());
     }
 
@@ -219,9 +259,9 @@ class AuthAccessDaoImplTest {
 
         AuthUser user = _dao.findUserByEmail(DEFAULT_EMAIL);
         System.out.println("user: " + user.toString());
-        assertTrue(user.getEmail().equals(DEFAULT_EMAIL));
-        assertTrue(user.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal()));
-        assertTrue(user.getRoles().get(0).getName().equals(AuthCommon.USER.getVal()));
+        assertEquals(DEFAULT_EMAIL, user.getEmail());
+        assertEquals(user.getStatus().getStatus(), AuthCommon.LOG_OUT.getVal());
+        assertEquals(user.getRoles().get(0).getName(), AuthCommon.USER.getVal());
     }
 
     /**
@@ -250,8 +290,7 @@ class AuthAccessDaoImplTest {
 
         assertThrows(AuthServiceException.class, () -> {
             //fetch same user
-            String email = DEFAULT_EMAIL;
-            AuthUser entity = _dao.findUserByEmail(email);
+            AuthUser entity = _dao.findUserByEmail(DEFAULT_EMAIL);
             System.out.println("old entity: " + entity.toString());
 
             //add admin role
@@ -313,8 +352,8 @@ class AuthAccessDaoImplTest {
 
         entity = _dao.findUserByEmail(newEmail);
         System.out.println("new entity: " + entity.toString());
-        assertTrue(entity.getUsername().equals(DEFAULT_USERNAME));
-        assertTrue(entity.getPassword().equals(DEFAULT_PASSWORD));
+        assertEquals(DEFAULT_USERNAME, entity.getUsername());
+        assertEquals(DEFAULT_PASSWORD, entity.getPassword());
     }
 
     @Order(10)
@@ -337,8 +376,8 @@ class AuthAccessDaoImplTest {
         _dao.updateUserStatus(status);
 
         userEntity = _dao.findUserById(id);
-        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal()));
-        assertTrue(userEntity.getStatus().getSession() != null);
+        assertEquals(userEntity.getStatus().getStatus(), AuthCommon.LOG_IN.getVal());
+        assertNotNull(userEntity.getStatus().getSession());
     }
 
     @Order(10)
@@ -358,8 +397,8 @@ class AuthAccessDaoImplTest {
         status.setSession(session);
         System.out.println("status entity: " + status);
         _dao.updateUserStatus(status);
-        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_IN.getVal()));
-        assertTrue(userEntity.getStatus().getSession() != null);
+        assertEquals(userEntity.getStatus().getStatus(), AuthCommon.LOG_IN.getVal());
+        assertNotNull(userEntity.getStatus().getSession());
 
         //update logout
         userEntity = _dao.findUserById(id);
@@ -370,7 +409,7 @@ class AuthAccessDaoImplTest {
         _dao.updateAuthUser(userEntity);
 
         userEntity = _dao.findUserByEmail(DEFAULT_EMAIL);
-        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal()));
+        assertEquals(userEntity.getStatus().getStatus(), AuthCommon.LOG_OUT.getVal());
     }
 
     /**
@@ -400,7 +439,7 @@ class AuthAccessDaoImplTest {
 
         //check
         userEntity = _dao.findUserById(id);
-        assertTrue(userEntity.getStatus().getStatus().equals(AuthCommon.LOG_OUT.getVal()));
+        assertEquals(userEntity.getStatus().getStatus(), AuthCommon.LOG_OUT.getVal());
         assertNull(userEntity.getStatus().getSession());
     }
 

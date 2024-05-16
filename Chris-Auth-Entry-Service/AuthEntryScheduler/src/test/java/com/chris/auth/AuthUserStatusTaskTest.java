@@ -6,7 +6,6 @@ import org.springframework.scheduling.support.CronExpression;
 
 import java.time.LocalDateTime;
 
-
 class AuthUserStatusTaskTest {
 
     @Order(1)

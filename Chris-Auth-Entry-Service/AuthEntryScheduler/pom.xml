@@ -8,7 +8,6 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.chris</groupId>
     <artifactId>AuthEntryScheduler</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>AuthEntryScheduler</name>
@@ -17,12 +16,14 @@
         <java.version>17</java.version>
     </properties>
     <dependencies>
+        <!--   auth client     -->
         <dependency>
             <groupId>com.chris</groupId>
             <artifactId>AuthEntryClient</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!--  spring -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -36,19 +37,6 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>3.1.6</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

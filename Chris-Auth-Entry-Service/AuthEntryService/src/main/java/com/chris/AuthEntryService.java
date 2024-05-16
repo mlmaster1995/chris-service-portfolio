@@ -31,10 +31,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * WebSecurity debug could ONLY get turned on in local testing mod. Should NOT turn on in any env test
  */
 @SpringBootApplication
-@EnableWebSecurity(debug = false)
-public class AuthEntryServiceApplication {
+@EnableWebSecurity(debug = true)
+public class AuthEntryService {
     public static void main(String[] args) {
-        SpringApplication.run(AuthEntryServiceApplication.class, args);
+        SpringApplication.run(AuthEntryService.class, args);
     }
 
 }

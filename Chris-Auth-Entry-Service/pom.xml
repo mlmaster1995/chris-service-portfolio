@@ -13,7 +13,7 @@
     <artifactId>Chris-Auth-Entry-Service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>ChrisAuthEntryService</name>
-    <description>parent pom for both client and service of the auth entry</description>
+    <description>parent pom for both client,service,scheduler of the auth entry</description>
     <packaging>pom</packaging>
 
     <modules>
@@ -26,4 +26,46 @@
         <java.version>17</java.version>
     </properties>
 
+    <dependencies>
+        <!--  springboot tests      -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- testcontainers  -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mariadb</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>ChrisAuthEntryService</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <skipTests>false</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

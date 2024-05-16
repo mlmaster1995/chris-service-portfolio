@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -73,6 +74,9 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
     public static final String JWT_PAYLOAD_AUTH = "authorities";
     public static final String JWT_PAYLOAD_USER_ID = "id";
 
+    @Value("${app.auth.client.status.check:true}")
+    private boolean _statusCheck;
+
     //pre-load value into db by Dev/Ops
     private final String AUTH_PROP_SECRET_KEY = "app.auth.jwt.basic.secret.key";
     //pre-load value into db by Dev/Ops
@@ -100,6 +104,8 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
             _jwtKeyStr = _getServiceProp(AUTH_PROP_SECRET_KEY);
             _secretKey = Keys.hmacShaKeyFor(_jwtKeyStr.getBytes(StandardCharsets.UTF_8));
             _LOG.warn("jwt secret key is generated for token generation and validation...");
+
+            _LOG.warn("jwt remote check user status is enabled: {}", _statusCheck);
 
             _LOG.warn("{} is constructed..", BASIC_AUTH_ACCESS_JWT_BEAN);
         } catch (Exception exp) {
@@ -177,14 +183,17 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
             String email = String.valueOf(payload.get(JWT_PAYLOAD_USERNAME));
 
             //check user status from remote auth service
-            UserStatusDto statusDto = _client.validate(new String[]{email, jwtToken});
-            if (statusDto == null) {
-                throw new AuthClientException("user status is null from the client call");
-            }
+            if(_statusCheck){
+                UserStatusDto statusDto = _client.validate(new String[]{email, jwtToken});
 
-            if (statusDto != null && statusDto.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
-                throw new BadCredentialsException(String.format("user with email ({}) logout already, " +
-                        "token is revoked...", email));
+                if (statusDto == null) {
+                    throw new AuthClientException("user status is null from the client call");
+                }
+
+                if (statusDto != null && statusDto.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
+                    throw new BadCredentialsException(String.format("user with email ({}) logout already, " +
+                            "token is revoked...", email));
+                }
             }
 
             _LOG.warn("jwt token payload: " + payload.toString());

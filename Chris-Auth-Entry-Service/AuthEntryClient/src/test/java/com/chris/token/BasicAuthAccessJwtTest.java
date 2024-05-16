@@ -31,6 +31,9 @@ import com.chris.rest.BasicAuthRestClient;
 import com.chris.util.AuthCommon;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.Claims;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -41,7 +44,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.MariaDBContainer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,6 +85,38 @@ class BasicAuthAccessJwtTest {
     @Autowired
     @Qualifier(value = BASIC_AUTH_ACCESS_JWT_BEAN)
     private BasicAuthAccessJwt _basicJwtToken;
+
+    //init test containers
+    public static final MariaDBContainer<?> mariadb = new MariaDBContainer<>("mariadb:10.5.5");
+
+    @BeforeAll
+    public static void beforeAll() {
+        mariadb.withDatabaseName("service-common");
+        mariadb.withUsername("root");
+        mariadb.withPassword("");
+        mariadb.start();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        mariadb.stop();
+    }
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mariadb::getJdbcUrl);
+        registry.add("spring.datasource.username", mariadb::getUsername);
+        registry.add("spring.datasource.password", mariadb::getPassword);
+    }
+
+    @BeforeEach
+    public void beforeEachTest() {
+        System.out.println("maridb url: " + mariadb.getJdbcUrl());
+        System.out.println("mariadb user: " + mariadb.getUsername());
+        System.out.println("mariadb password: " + mariadb.getPassword());
+        System.out.println("mariadb database: " + mariadb.getDatabaseName());
+        System.out.println("mariadb driver: " + mariadb.getDriverClassName());
+    }
 
     @Order(1)
     @Test
