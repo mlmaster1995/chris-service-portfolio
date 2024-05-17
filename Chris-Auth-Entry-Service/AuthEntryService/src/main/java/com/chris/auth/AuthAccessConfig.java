@@ -60,7 +60,7 @@ public class AuthAccessConfig {
     private final String AUTH_LOGIN_ENDPOINT = "/api/v1/auth/login";
     private final String AUTH_LOGOUT_ENDPOINT = "/api/v1/auth/logout";
     private final String AUTH_JWT_TEST_ENDPOINT = "/api/v1/auth/token";
-    private final String AUTH_JWT_VALID_ENDPOINT = "/api/v1/auth/status";
+    private final String AUTH_JWT_STATUS_ENDPOINT = "/api/v1/auth/status";
     private final String HEALTH_CHECK_ENDPOINT = "/health";
 
     private final BasicJwtTokenValidFilter _basicJwtTokenFilter;
@@ -97,19 +97,19 @@ public class AuthAccessConfig {
                 .addFilterBefore(_basicJwtTokenFilter, BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf.csrfTokenRequestHandler(requestHandler)
                         .ignoringRequestMatchers(AUTH_REGISTER_ENDPOINT)
+                        .ignoringRequestMatchers(AUTH_JWT_STATUS_ENDPOINT)
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers(HttpMethod.POST, AUTH_REGISTER_ENDPOINT).permitAll();
+                    request.requestMatchers(HttpMethod.POST, AUTH_JWT_STATUS_ENDPOINT).permitAll();
                     request.requestMatchers(HttpMethod.GET, HEALTH_CHECK_ENDPOINT).permitAll();
                     request.requestMatchers(HttpMethod.GET, AUTH_LOGIN_ENDPOINT)
                             .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
                     request.requestMatchers(HttpMethod.GET, AUTH_LOGOUT_ENDPOINT)
                             .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
                     request.requestMatchers(HttpMethod.GET, AUTH_JWT_TEST_ENDPOINT)
-                            .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
-                    request.requestMatchers(HttpMethod.POST, AUTH_JWT_VALID_ENDPOINT)
                             .hasAnyRole(AuthCommon.ROLE_USER.getVal(), AuthCommon.ROLE_ADMIN.getVal());
                 })
                 .httpBasic(Customizer.withDefaults());

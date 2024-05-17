@@ -97,8 +97,7 @@ public class UserStatusDto extends BaseDtoToEntity<UserStatus> implements Serial
                 !status.equals(AuthCommon.LOG_OUT.getVal())) ||
                 id < 0 ||
                 logInTimestamp == null ||
-                logOutTimestamp == null ||
-                user == null) {
+                logOutTimestamp == null) {
             return false;
         }
 

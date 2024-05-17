@@ -180,7 +180,8 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
                     .parseSignedClaims(jwtToken)
                     .getPayload();
 
-            String email = String.valueOf(payload.get(JWT_PAYLOAD_USERNAME));
+            //email as the username
+            String email = String.valueOf(payload.get(JWT_PAYLOAD_EMAIL));
 
             //check user status from remote auth service
             if(_statusCheck){

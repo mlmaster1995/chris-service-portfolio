@@ -112,7 +112,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
         ResponseEntity<String> responseEntity = null;
 
         try {
-            if(authentication == null){
+            if (authentication == null) {
                 throw new AuthServiceException("auth is null");
             }
 
@@ -196,6 +196,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
             String email = node.get("email").asText();
 
             status = _processor.getUserStatusByEmail(email);
+            _LOG.warn("user status is fetched: {}", status.toString());
         } catch (Exception exp) {
             _LOG.error("fails to find the user status by email({}) at the controller layer...",
                     emailJson);
