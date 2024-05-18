@@ -78,7 +78,7 @@ public class AuthAccessDaoImpl implements AuthAccessDao {
 
     private Map<String, Integer> _roleCache;
 
-    @Value("${app.find.users.page.size:100}")
+    @Value("${app.auth.find.users.page.size:100}")
     private Integer _defaultPageSize;
 
     private final EntityManager _manager;
