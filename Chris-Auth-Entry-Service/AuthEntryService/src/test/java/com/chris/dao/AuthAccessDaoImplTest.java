@@ -63,7 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestPropertySource("/application.properties")
 @SpringBootTest
 class AuthAccessDaoImplTest {
-    @Value("${app.find.users.page.size}")
+    @Value("${app.auth.find.users.page.size}")
     private Integer _pageSize;
 
     @Autowired
