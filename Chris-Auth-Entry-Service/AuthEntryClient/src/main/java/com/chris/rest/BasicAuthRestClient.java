@@ -106,7 +106,7 @@ public class BasicAuthRestClient implements AuthClient<UserStatusDto, String[]> 
 
             return _client.post()
                     .uri(_remoteEndpoint)
-                    .header(JWT_TOKEN_HEADER, jwt)
+                    //.header(JWT_TOKEN_HEADER, jwt)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(data)
                     .retrieve()
