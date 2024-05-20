@@ -3,6 +3,3 @@
 
 ## About The Project
 Coming Soon...
-
-## Contact
-Chris Yang: kyang3@lakeheadu.ca
