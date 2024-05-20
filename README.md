@@ -24,7 +24,3 @@ Happy Coding! Cheers~~
 | [Basic Data Pipline with Spark Structred Streaming](https://github.com/mlmaster1995/Flume_Kafka_StructureStream_ELT)                                                                                                                                          | Done   |
 | [ETL(Extract Transform Load) Data Pipeline Collection OOP](https://github.com/mlmaster1995/Flume_Kafka_StructureStream_ELT_Updated)                                                                                                                           | Done   |
 
-
-## Contact
-Chris Yang: kyang3@lakeheadu.ca
-
