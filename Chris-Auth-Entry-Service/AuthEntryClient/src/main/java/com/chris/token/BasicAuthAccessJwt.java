@@ -192,7 +192,7 @@ public class BasicAuthAccessJwt extends AuthAccessJwt<String, Claims, AuthUser> 
                 }
 
                 if (statusDto != null && statusDto.getStatus().equals(AuthCommon.LOG_OUT.getVal())) {
-                    throw new BadCredentialsException(String.format("user with email ({}) logout already, " +
+                    throw new BadCredentialsException(String.format("user with email (%s) logout already, " +
                             "token is revoked...", email));
                 }
             }

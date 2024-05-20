@@ -24,6 +24,7 @@
 package com.chris.rest;
 
 import com.chris.dto.UserStatusDto;
+import com.chris.exception.AuthClientException;
 import jakarta.annotation.PostConstruct;
 import org.assertj.core.util.VisibleForTesting;
 import org.slf4j.Logger;
@@ -31,10 +32,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClient.Builder;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static com.chris.util.AuthClientConstant.AUTH_REST_CLIENT_BEAN;
 import static com.chris.util.AuthClientConstant.AUTH_SECURITY_PROFILE;
@@ -59,20 +61,22 @@ public class BasicAuthRestClient implements AuthClient<UserStatusDto, String[]> 
     @Value("${app.auth.client.remote.url:http://127.0.0.1}")
     private String _remoteURL;
 
-    @Value("${app.auth.client.url.port:8888}")
+    @Value("${app.auth.client.url.port:8080}")
     private String _remotePort;
 
     @Value("${app.auth.client.url.endpoint:/api/v1/auth/status}")
     private String _remoteEndpoint;
 
-    private String _baseURL;
+    private String _baseUrl;
+
+    private String _postUrl;
 
     private RestClient _client;
 
-    private final Builder _builder;
+    private final RestClient.Builder _builder;
 
     @Autowired
-    public BasicAuthRestClient(Builder builder) {
+    public BasicAuthRestClient(RestClient.Builder builder) {
         _builder = builder;
     }
 
@@ -85,37 +89,44 @@ public class BasicAuthRestClient implements AuthClient<UserStatusDto, String[]> 
             _remoteEndpoint = DEFAULT_CHECK_ENDPOINT;
         }
 
-        _baseURL = String.format("%s:%s", _remoteURL, _remotePort);
+        _baseUrl = String.format("%s:%s", _remoteURL, _remotePort);
+        _LOG.warn("auth client remote service base uri: {}", _baseUrl);
+
+        _postUrl = String.format("%s:%s%s", _remoteURL, _remotePort, _remoteEndpoint);
+        _LOG.warn("auth client remote service final uri: {}", _postUrl);
 
         _client = _builder
-                .baseUrl(_baseURL)
+                .uriBuilderFactory(new DefaultUriBuilderFactory(_postUrl))
                 .build();
+        _LOG.warn("{} is constructed...", AUTH_REST_CLIENT_BEAN);
     }
 
     /**
-     * call auth service to get the user status based on the email
+     * - call auth service to get the user status based on the email
+     * - RestClient is 100% thread-safe as well
      *
      * @param params
      * @return
      */
     public UserStatusDto validate(String[] params) {
-        synchronized (this) {
-            String email = params[0];
-            String jwt = params[1];
-            String data = String.format(DEFAULT_REQUEST_BODY, email);
+        String email = params[0];
+        String jwt = params[1];
+        String data = String.format(DEFAULT_REQUEST_BODY, email);
 
-            return _client.post()
-                    .uri(_remoteEndpoint)
-                    //.header(JWT_TOKEN_HEADER, jwt)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(data)
-                    .retrieve()
-                    .body(UserStatusDto.class);
-        }
+        return _client.post()
+                .header(JWT_TOKEN_HEADER, jwt)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(data)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (req, res) -> {
+                    throw new AuthClientException(String.format("code: %s, header: %s", res.getStatusCode(), res.getHeaders()));
+                })
+                .body(UserStatusDto.class);
+
     }
 
     @VisibleForTesting
     public String getBaseURL() {
-        return _baseURL;
+        return _postUrl;
     }
 }
