@@ -32,6 +32,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-volume:/var/lib/mysql
     networks:
       - chris-network
