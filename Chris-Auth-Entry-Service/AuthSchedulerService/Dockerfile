@@ -29,6 +29,6 @@ WORKDIR /opt/service
 
 USER chris
 
-COPY --chown=chris:chris target/AuthEntryScheduler.jar /opt/service
+COPY --chown=chris:chris target/AuthSchedulerService.jar /opt/service
 
-CMD ["java","-jar","AuthEntryScheduler.jar"]
+CMD ["java","-jar","AuthSchedulerService.jar"]
