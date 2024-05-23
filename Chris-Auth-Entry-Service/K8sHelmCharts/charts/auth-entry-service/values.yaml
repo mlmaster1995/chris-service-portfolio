@@ -1,0 +1,169 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+
+############# subchart values: k8s resources
+k8s:
+  deployment: true
+  service: true
+  configmap: true
+  secret: true
+  hpa: false
+
+############# subchart values: deploy env 
+deploy:
+  env: chris-env
+
+############# subchart values: auto scaling
+replicaCount: 1
+hpa:
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 80
+
+
+############# subchart values: service def
+# server port is service-advertise-port
+# management port is health-check and metrics-check 
+service:
+  type: ClusterIP
+  server: 
+    port: 8080
+  management:
+    port: 8081
+  healthcheck: 
+    exists: false
+    path: /health
+    readinessProbe: 
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+
+############# subchart values: image def
+image:
+  repository: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/auth-entry-service
+  tag: 1.0.0-SNAPSHOT
+  pullPolicy: Always
+  
+# pull image from private repo with secret
+imagePullSecrets: []
+
+# full name override
+fullnameOverride: ""
+
+############# subchart values: sidecar def
+sidecar: 
+  enabled: false
+  # value: 
+  #   - image: <aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/mariadb:11
+  #     name: sidecar-db
+  #     env:
+  #     - name: MYSQL_ROOT_PASSWORD
+  #       value: "password"
+  #     - name: MARIADB_DATABASE
+  #       value: "crud-api"
+  #     ports:
+  #     - containerPort: 3306
+  #       protocol: TCP
+  #     resources:
+  #       requests:
+  #         memory: "256Mi"
+  #         cpu: "500m"
+  #       limits:
+  #         memory: "256Mi"
+  #         cpu: "500m"
+
+############# subchart values: pod resource
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+############# subchart values: pod anno in spec
+podAnnotations: {}
+
+############# subchart values: pod privileges
+podSecurityContext: {}
+  # fsGroup: 2000
+  # runAsUser: 1000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+############# subchart values: pod allocation
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+############# subchart values: volume def
+volumes:
+  enabled: false
+  value: 
+    - name: config-vol
+      configMap:
+        name: db-init
+        defaultMode: 0755
+        items: 
+        - key: "db-init.sql"
+          path: "db-init.sql"
+
+############# subchart values: init container
+initContainers:
+  enabled: false
+  # value:
+  # - name: <dep service name>
+  #   image: busybox
+  #   command: 
+  #   - sh
+  #   - -c
+  #   args:
+  #   - "until nc -vz <dep service name> <dep service port>; do echo waiting for <dep service name>...; sleep 5; donee"
+
+############# subchart values: pod env
+envFrom:
+  exist: true
+
+############# subchart values: configmap def
+configmap:
+  data: 
+    APP_SERVER_PORT: "8080"
+    APP_MANAGEMENT_PORT: "8081"
+    DATABASE_URL: "jdbc:mariadb://localhost:3306/crud-api"
+    DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+
+############# subchart values: secret def
+secret:
+  stringData:
+    DATABASE_USER: "chris"
+    DATABASE_PASSWORD: "chris2024"

@@ -1,0 +1,250 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+
+# NOTE:
+# 1. this file is ONLY used to build the helm chart package MANUALLY and deployed to EKS MANUALLY.
+#all sensitive information needs to filled up in this file such as <aws_account_id> and more
+#
+# 2. In CI/CD pipeline, Ansible uses the helm_chart_values.j2 to generate this file on fly with
+# any values updated in the cd_vars.yml
+#
+# 3. In CI/CD pipeline, Ansible playbook enabled the vault for the sensitive data, but MANUL
+# build & deplopy NOT has this security measure
+
+############# parent chart values: !!! override values of sub-chart !!!
+auth-service-db:
+  enabled: true
+  k8s:
+    hpa: false
+  image:
+    repository: <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/mariadb
+    tag: 11
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 512Mi
+  volumeMounts:
+    enabled: true
+    value:
+      - mountPath: /docker-entrypoint-initdb.d/db-init.sql
+        subPath: db-init.sql
+        name: config-vol
+  volumes:
+    enabled: true
+    value:
+      - name: config-vol
+        configMap:
+          name: auth-service-db
+          defaultMode: 0755
+          items:
+            - key: "db-init.sql"
+              path: "db-init.sql"
+  replicaCount: 1
+  configmap:
+    data:
+      MYSQL_ROOT_PASSWORD: <custom-db-root-password>
+      MARIADB_DATABASE: <custom-db>
+      db-init.sql: |
+        DROP USER IF EXISTS <custom-db-user>;
+        CREATE OR REPLACE USER <custom-db-user>@'%' IDENTIFIED BY '<custom-db-password>';
+        GRANT ALL PRIVILEGES ON * . * TO '<custom-db-user>'@'%';
+        SELECT user FROM mysql.user;
+
+
+auth-entry-service:
+  enabled: true
+  k8s:
+    hpa: false
+  image: 
+    repository: <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/auth-entry-service
+    tag: 1.0.0-SNAPSHOT
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 512Mi
+  sidecar: 
+    enabled: false
+  volumes:
+    enabled: false
+  replicaCount: 1
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 80
+  initContainers:
+    enabled: true
+    value:
+    - name: auth-service-db
+      image: radial/busyboxplus:curl
+      command: 
+      - sh
+      - -c
+      args:
+      - "until nc -vz auth-service-db 3306; do echo waiting for auth-service-db...; sleep 5; done"
+  configmap:
+    data: 
+      APP_SERVER_PORT: "8080"
+      APP_MANAGEMENT_PORT: "8081"
+      DATABASE_URL: "jdbc:mariadb://auth-service-db:3306/auth-api"
+      DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+      APP_AUTH_JWT_BASIC_DURATION_SEC: 600
+      APP_AUTH_ENCODER_ENABLED: true
+      APP_AUTH_FIND_USERS_PAGE_SIZE: 100
+      APP_AUTH_CLIENT_PROFILE: "security"
+      APP_AUTH_CLIENT_JWT_FILTER_SKIP: "/api/v1/auth/register,/api/v1/auth/login,/api/v1/auth/logout,/api/v1/auth/status,/health"
+      APP_AUTH_CLIENT_STATUS_CHECK: false
+  secret:
+    stringData:
+      DATABASE_USER: <custom-db-user>
+      DATABASE_PASSWORD: <custom-db-password>
+
+
+auth-scheduler-service:
+  enabled: true
+  k8s:
+    hpa: false
+  image:
+    repository: <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/auth-scheduler-service
+    tag: 1.0.0-SNAPSHOT
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 512Mi
+  sidecar:
+    enabled: false
+  volumes:
+    enabled: false
+  replicaCount: 1
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 80
+  initContainers:
+    enabled: true
+    value:
+      - name: auth-service-db
+        image: radial/busyboxplus:curl
+        command:
+          - sh
+          - -c
+        args:
+          - "until nc -vz auth-service-db 3306; do echo waiting for auth-service-db...; sleep 5; done"
+  configmap:
+    data:
+      DATABASE_URL: "jdbc:mariadb://auth-service-db:3306/auth-api"
+      DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+      APP_AUTH_USER_STATUS_CHECK_CRON: "0 */5 * * * ?"
+  secret:
+    stringData:
+      DATABASE_USER: <custom-db-user>
+      DATABASE_PASSWORD: <custom-db-password>
+
+
+auth-test-service:
+  enabled: true
+  k8s:
+    hpa: false
+  image:
+    repository: <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/auth-test-service
+    tag: 1.0.0-SNAPSHOT
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 512Mi
+  sidecar:
+    enabled: false
+  volumes:
+    enabled: false
+  replicaCount: 1
+  hpa:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 80
+  initContainers:
+    enabled: true
+    value:
+      - name: auth-entry-service
+        image: radial/busyboxplus:curl
+        command:
+          - sh
+          - -c
+        args:
+          - "until curl -i auth-entry-service:8081/health; do echo waiting for auth-service-db...; sleep 5; done"
+  configmap:
+    data:
+      DATABASE_URL: "jdbc:mariadb://auth-service-db:3306/auth-api"
+      DATABASE_DRIVER: "org.mariadb.jdbc.Driver"
+      APP_SERVER_PORT: "8080"
+      APP_MANAGEMENT_PORT: "8081"
+      APP_AUTH_CLIENT_REMOTE_URL: "http://auth-entry-service"
+      APP_AUTH_CLIENT_URL_PORT: "8080"
+      APP_AUTH_CLIENT_URL_ENDPOINT: "api/v1/auth/status"
+      APP_AUTH_CLIENT_PROFILE: "security"
+      APP_AUTH_CLIENT_JWT_FILTER_SKIP: "/health"
+      APP_AUTH_CLIENT_STATUS_CHECK: true
+
+  secret:
+    stringData:
+      DATABASE_USER: <custom-db-user>
+      DATABASE_PASSWORD: <custom-db-password>
+
+
+############# parent chart values: k8s resources, status of serviceAccount
+# global.serviceAccount.enabled = k8s.serviceaccount
+k8s:
+  serviceaccount: true
+
+############# parent chart values: global values used by sub-chart
+# serviceAccount.name = global.serviceAccount.name
+global:
+  deploy:
+    env: chris-env
+  serviceAccount:
+    enabled: true
+    name: jenkins-cicd-test-service
+
+############# parent chart values: service account def
+# global.serviceAccount.name = serviceAccount.name
+serviceAccount:
+  annotations: {}
+  name: jenkins-cicd-test-service

@@ -1,0 +1,159 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+
+############# subchart values: k8s resources
+k8s:
+  deployment: true
+  service: false
+  configmap: true
+  secret: true
+  hpa: false
+
+############# subchart values: deploy env 
+deploy:
+  env: chris-env
+
+############# subchart values: auto scaling
+replicaCount: 1
+hpa:
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 80
+
+############# subchart values: auto scaling
+serviceAccount:
+  enabled: false 
+  name: auth-scheduler-service
+
+############# subchart values: service def
+# server port is service-advertise-port
+# management port is health-check and metrics-check 
+service:
+  type: ClusterIP
+  server: 
+    port: 8080
+  management:
+    port: 8081
+  healthcheck: 
+    exists: true
+    path: /health
+    readinessProbe: 
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 5
+
+############# subchart values: image def
+image:
+  repository: <repo>
+  tag: <tag>
+  pullPolicy: Always
+  
+# pull image from private repo with secret
+imagePullSecrets: []
+
+# full name override
+fullnameOverride: ""
+
+############# subchart values: sidecar def
+sidecar: 
+  enabled: false
+  value: 
+    - image: <repo-url>
+      name: <sidecar-name>
+      env:
+      - name: <key>
+        value: <value>
+      ports:
+      - containerPort: <port>
+        protocol: <protocol>
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "500m"
+        limits:
+          memory: "256Mi"
+          cpu: "500m"
+
+############# subchart values: pod resource
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+############# subchart values: pod anno in spec
+podAnnotations: {}
+
+############# subchart values: pod privileges
+podSecurityContext: {}
+  # fsGroup: 2000
+  # runAsUser: 1000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+############# subchart values: pod allocation
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+############# subchart values: volume def
+volumes:
+  enabled: false
+  # value: 
+  #   - name: <volume-name>
+
+############# subchart values: init container
+initContainers:
+  enabled: false
+  # value:
+  # - name: <dep service name>
+  #   image: radial/busyboxplus:curl
+  #   command: 
+  #   - sh
+  #   - -c
+  #   args:
+  #   - "until curl http://<service>.<namespace>.svc.cluster.local:8081/health; do echo waiting for <service>...; sleep 5; done"
+
+############# subchart values: pod env
+envFrom:
+  exist: true
+
+############# subchart values: configmap def
+configmap:
+  data:
+
+############# subchart values: secret def
+secret:
+  stringData:
