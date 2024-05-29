@@ -22,6 +22,13 @@
 # SOFTWARE.                                                                     #
 #################################################################################
 
+### add new user
+$ sudo useradd jenkinsadmin
+$ sudo passwd jenkinsadmin
+$ sudo usermod -aG wheel jenkinsadmin
+$ visudo /etc/sudoers
+#  %wheel  ALL=(ALL)       NOPASSWD: ALL
+
 ### install java-17 on amazon linux2
 $ sudo yum install java-17-amazon-corretto.x86_64 -y
 
