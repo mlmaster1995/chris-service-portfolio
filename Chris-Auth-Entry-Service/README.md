@@ -28,3 +28,4 @@
 * [Helm](https://helm.sh/)
 
 ## Diagram
+![auth-entry-service drawio](https://github.com/mlmaster1995/chris-service-portfolio/assets/55723894/72c23f27-c3e4-4462-b7f9-191a641a80e5)
