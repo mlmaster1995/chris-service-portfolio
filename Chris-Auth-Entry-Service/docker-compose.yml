@@ -1,0 +1,112 @@
+#################################################################################
+# MIT License                                                                   #
+#                                                                               #
+# Copyright (c) 2024 Chris Yang                                                 #
+#                                                                               #
+# Permission is hereby granted, free of charge, to any person obtaining a copy  #
+# of this software and associated documentation files (the "Software"), to deal #
+# in the Software without restriction, including without limitation the rights  #
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell     #
+# copies of the Software, and to permit persons to whom the Software is         #
+# furnished to do so, subject to the following conditions:                      #
+#                                                                               #
+# The above copyright notice and this permission notice shall be included in all#
+# copies or substantial portions of the Software.                               #
+#                                                                               #
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    #
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      #
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   #
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        #
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, #
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE #
+# SOFTWARE.                                                                     #
+#################################################################################
+version: "3.8"
+services:
+  db:
+    image: "mariadb:11"
+    container_name: "chris-db"
+    restart: on-failure
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-volume:/var/lib/mysql
+    networks:
+      - chris-network
+
+  auth-entry-service:
+    image: "auth-entry-service:${IMAGE_TAG}"
+    container_name: "auth-entry-service"
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - "8888:${SERVER_PORT}"
+      - "8889:${MANAGEMENT_PORT}"
+    environment:
+      - APP_SERVER_PORT=${SERVER_PORT}
+      - APP_MANAGEMENT_PORT=${MANAGEMENT_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - APP_AUTH_JWT_BASIC_DURATION_SEC=${APP_AUTH_JWT_BASIC_DURATION_SEC}
+      - APP_AUTH_ENCODER_ENABLED=${APP_AUTH_ENCODER_ENABLED}
+      - APP_AUTH_FIND_USERS_PAGE_SIZE=${APP_AUTH_FIND_USERS_PAGE_SIZE}
+      - APP_AUTH_CLIENT_PROFILE=${SPRING_BOOT_PROFILE}
+      - APP_AUTH_CLIENT_JWT_FILTER_SKIP=/api/v1/auth/register,/api/v1/auth/login,/api/v1/auth/logout,/api/v1/auth/status,/health
+      - APP_AUTH_CLIENT_STATUS_CHECK=false
+    networks:
+      - chris-network
+
+  auth-scheduler-service:
+    image: "auth-scheduler-service:${IMAGE_TAG}"
+    container_name: "auth-scheduler-service"
+    restart: on-failure
+    depends_on:
+      - auth-entry-service
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - APP_AUTH_USER_STATUS_CHECK_CRON=${SCHEDULER_CRON_EXP}
+    networks:
+      - chris-network
+
+  auth-test-service:
+    image: "auth-test-service:${IMAGE_TAG}"
+    container_name: "auth-test-service"
+    restart: on-failure
+    depends_on:
+      - auth-entry-service
+      - auth-scheduler-service
+    ports:
+      - "8898:${SERVER_PORT}"
+      - "8899:${MANAGEMENT_PORT}"
+    environment:
+      - APP_SERVER_PORT=${SERVER_PORT}
+      - APP_MANAGEMENT_PORT=${MANAGEMENT_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - APP_AUTH_CLIENT_REMOTE_URL=${APP_AUTH_CLIENT_REMOTE_URL}
+      - APP_AUTH_CLIENT_URL_PORT=${SERVER_PORT}
+      - APP_AUTH_CLIENT_URL_ENDPOINT=${APP_AUTH_CLIENT_URL_ENDPOINT}
+      - APP_AUTH_CLIENT_PROFILE=${SPRING_BOOT_PROFILE}
+      - APP_AUTH_CLIENT_JWT_FILTER_SKIP=/health
+      - APP_AUTH_CLIENT_STATUS_CHECK=true
+    networks:
+      - chris-network
+
+networks:
+  chris-network:
+    driver: bridge
+
+volumes:
+  db-volume:
+

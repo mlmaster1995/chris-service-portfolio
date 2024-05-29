@@ -177,7 +177,7 @@ public class AuthAccessController extends BaseController<ResponseEntity<Object>>
     @GetMapping("/token")
     public ResponseEntity<String> validateJWT() {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.OK)
                 .body("token is valid and here is DATA!");
     }
 
