@@ -96,7 +96,7 @@ spring.profiles.active=${APP_AUTH_CLIENT_PROFILE}
 ## Auth Entry Client
 1. The client is a lib dep used by the backend services. It's NOT a daemon or a service, but a maven package that needs to be added into backend service pom file. 
 
-2. To use the client lib in the backend service, following deps need to added into pom:
+2. To use the client lib in the backend service, following deps need to be in the pom:
 ```
 <dependency>
    <groupId>com.chris</groupId>
@@ -120,7 +120,7 @@ spring.profiles.active=${APP_AUTH_CLIENT_PROFILE}
 </dependency>
 ```
 
-3. The client lib also needs following properties that needs to defined in the ```application.properties```: 
+3. The client lib also needs following properties that needs to be in the ```application.properties```: 
 ```
 ######## auth client props ########
 #auth client needs the database access
