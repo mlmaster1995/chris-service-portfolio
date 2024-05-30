@@ -38,7 +38,7 @@
 4. all rest endpoints are secured by ```Basic Http Auth``` from ```SpringSecurity``` module. All the ```users```, ```roles``` and ```role-user``` mappings are setup by the ```liquibase changelog``` into the ```mariadb``` when the service starts.
 5. this service **NOT** provide the user ```registration``` and ```login endpoint``` to manage the auth feature, so any updates in the security data should be done by adding new ```liquibase changelogs```. 
 
-### REST API Endpiont 
+### REST API Endpoint 
 
 | Method | API                         | Feature                                             | Auth Role                  |
 |--------|-----------------------------|-----------------------------------------------------|----------------------------|

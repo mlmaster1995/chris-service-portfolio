@@ -22,12 +22,9 @@
 # SOFTWARE.                                                                     #
 #################################################################################
 
-### add new user
-$ sudo useradd jenkinsadmin
-$ sudo passwd jenkinsadmin
-$ sudo usermod -aG wheel jenkinsadmin
-$ visudo /etc/sudoers
-#  %wheel  ALL=(ALL)       NOPASSWD: ALL
+### always use root user
+$ sudo passwd root
+$ su -
 
 ### install java-17 on amazon linux2
 $ sudo yum install java-17-amazon-corretto.x86_64 -y
@@ -129,6 +126,12 @@ $ sudo find / -iname jvm
 # /etc/jvm
 # /usr/lib/jvm
 # /usr/share/jvm
+
+
+#https://maven.apache.org/install.html
+#https://maven.apache.org/download.cgi
+$ sudo wget https://dlcdn.apache.org/maven/maven-3/3.9.7/binaries/apache-maven-3.9.7-bin.tar.gz
+$ tar xzvf apache-maven-3.9.7-bin.tar.gz
 
 
 $ vi ~/.bash_profile

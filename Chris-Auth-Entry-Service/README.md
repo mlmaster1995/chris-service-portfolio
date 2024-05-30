@@ -257,9 +257,6 @@ Date: Mon, 20 May 2024 23:49:01 GMT
 
 access is authorized and data is retrieved...
 ```
-## K8S Env Test
-
-In Progress...
 
 
 
