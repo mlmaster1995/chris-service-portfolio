@@ -78,39 +78,39 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.44.0</version>
-                <configuration>
-                    <images>
-                        <image>
-                            <name>auth-test-service:${project.version}</name>
-                            <alias>${project.name}</alias>
-                            <build>
-                                <dockerFileDir>${project.basedir}</dockerFileDir>
-                                <buildx>
-                                    <platforms>
-                                        <platform>linux/amd64</platform>
-                                    </platforms>
-                                </buildx>
-                                <tags>
-                                    <tag>${project.version}</tag>
-                                </tags>
-                            </build>
-                        </image>
-                    </images>
-                </configuration>
+<!--            <plugin>-->
+<!--                <groupId>io.fabric8</groupId>-->
+<!--                <artifactId>docker-maven-plugin</artifactId>-->
+<!--                <version>0.44.0</version>-->
+<!--                <configuration>-->
+<!--                    <images>-->
+<!--                        <image>-->
+<!--                            <name>auth-test-service:${project.version}</name>-->
+<!--                            <alias>${project.name}</alias>-->
+<!--                            <build>-->
+<!--                                <dockerFileDir>${project.basedir}</dockerFileDir>-->
+<!--                                <buildx>-->
+<!--                                    <platforms>-->
+<!--                                        <platform>linux/amd64</platform>-->
+<!--                                    </platforms>-->
+<!--                                </buildx>-->
+<!--                                <tags>-->
+<!--                                    <tag>${project.version}</tag>-->
+<!--                                </tags>-->
+<!--                            </build>-->
+<!--                        </image>-->
+<!--                    </images>-->
+<!--                </configuration>-->
 
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
