@@ -1,9 +1,8 @@
 # Chris Auth Entry Service
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)   ![App Version](https://img.shields.io/badge/App_Version-1.0.0_SNAPSHOT-black) ![Helm Chart Version:1.0.0](https://img.shields.io/badge/Helm_Chart-1.0.0-purple) ![Dev Status](https://img.shields.io/badge/Status-In_Progress-red)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![CI/CD Build: Pass](https://img.shields.io/badge/CI/CD_Build-Pass-green)  ![App Version](https://img.shields.io/badge/App_Version-1.0.0_SNAPSHOT-black) ![Helm Chart Version:1.0.0](https://img.shields.io/badge/Helm_Chart-1.0.0-purple) ![Dev Status](https://img.shields.io/badge/Status-In_Progress-red)
 
 ## About The Project
-
 1. This project is to leverage the benefits of Spring Security to create a security layer filtering the http request
    with JWT(Json Web Token) mechanism for my backend services.
 2. This project includes 6 parts:
