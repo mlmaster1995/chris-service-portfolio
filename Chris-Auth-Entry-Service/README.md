@@ -234,7 +234,7 @@ $ curl --location '127.0.0.1:8888/api/v1/auth/token' \
 "token is valid and here is DATA!"
 ```
 
-5. Test token with ```Auth Test Service```
+4. Test token with ```Auth Test Service```
 ```
 $ curl -i --location '127.0.0.1:8898/api/v1/data' \
 --header 'Authorization:  eyJraWQiOiI2ZmJiNWQ1ZC1jYzYy....NeUg1-IS6_cqzOFhgURVHAA-zyX_AFSr9xRalOup2BDg' \
