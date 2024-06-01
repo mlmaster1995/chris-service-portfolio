@@ -41,6 +41,3 @@
 | helm          | backend service starter chart, and helm setup commands         |    updated |
 | jenkins       | jenkins server setup commands         | updated  |
 | k8s           | eks test pod & db yaml files, and eks component setup files         |    updated |
-
-## Contact
-Chris Yang: kyang3@lakeheadu.ca
