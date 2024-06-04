@@ -61,7 +61,7 @@ $ ansible --version
 $ sudo vi /etc/ssh/sshd_config # enable password auth access
 $ sudo systemctl restart sshd
 
-$ sudo ssh-keygen -c ''
+$ sudo ssh-keygen -C ''
 $ sudo ssh-copy-id ansibleadmin@<managed-node-id> # --->  !!!same user & setup needs to be done on the managed node as well and also update new users on all accessed documents by ansible!!!!
 
 $ sudo vi /etc/ansible/hosts

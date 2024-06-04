@@ -1,18 +1,21 @@
 # Chris Service Portfolio
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  ![Status: Updated](https://img.shields.io/badge/Status-In_Progress-red)
 
 ## About The Portfolio
-This is a **FUN** place for [me](https://www.linkedin.com/in/chris-yang-8083942aa) to create, test, present all my passions to explore the world of software engineering. 
+
+This is a **FUN** place for [me](https://www.linkedin.com/in/chris-yang-8083942aa) to explore the world of software
+engineering.
 Happy Coding! Cheers~~
 
-## My New Portfolio 
+## My New Portfolio
+
 | Project                                                                                                                                      | Status      |
 |----------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | [Backend Service Jenkins CI/CD Pipeline](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Backend-Service-Jenkins-Pipeline) | Updated     |
 | [Jenkins CI/CD Test Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Jenkins-CICD-Test-Service)                    | Done        |
-| [Chris Auth Entry Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Chris-Auth-Entry-Service)                       | In Progress |
-
-
+| [Chris Auth Entry Service](https://github.com/mlmaster1995/chris-service-portfolio/tree/main/Chris-Auth-Entry-Service)                       | Updated     |
+| Chris Payment Service                                                                                                                        | In Progress |
 
 ## My Old Portfolio ( From School Time )
 
